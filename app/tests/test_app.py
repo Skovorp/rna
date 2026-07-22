@@ -229,8 +229,8 @@ def test_condition_comparison_uses_fdr(monkeypatch):
     assert plot["data"][0]["showlegend"] is False
     assert plot["data"][0]["marker"] == {
         "color": "#f5b85b",
-        "opacity": 0.32,
-        "size": 6,
+        "opacity": 1.0,
+        "size": 3,
     }
     assert plot["layout"]["xaxis"]["title"]["text"] == "Average TPM (logarithmic scale)"
     assert plot["layout"]["xaxis"]["type"] == "log"
@@ -247,7 +247,7 @@ def test_condition_comparison_uses_fdr(monkeypatch):
     assert plot["layout"]["shapes"][0]["y1"] == 1
     captions = " ".join(element.value for element in app.caption)
     assert "A/B ratio is undefined" in captions
-    assert "same color and opacity regardless of FDR" in captions
+    assert "fully opaque and uses the same color regardless of FDR" in captions
     fdr_threshold = next(
         widget for widget in app.number_input if widget.label == "FDR threshold"
     )

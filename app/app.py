@@ -276,7 +276,7 @@ def ma_figure(results: pd.DataFrame) -> go.Figure:
             y=plotted["tpm_ratio_a_over_b"],
             mode="markers",
             showlegend=False,
-            marker={"size": 6, "color": "#f5b85b", "opacity": 0.32},
+            marker={"size": 3, "color": "#f5b85b", "opacity": 1.0},
             customdata=plotted[
                 [
                     "gene",
@@ -791,7 +791,7 @@ else:
                 f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero mean TPM in A or B are omitted because their A/B ratio is undefined. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme ratios; use Plotly zoom to inspect them."
             )
             st.caption(
-                "Every point uses the same color and opacity regardless of FDR. Darker regions contain overlapping points; darkness represents density, not significance."
+                "Every point is fully opaque and uses the same color regardless of FDR. The FDR threshold changes only the count and table column."
             )
             st.caption(
                 "Welch's t-test is run on log-transformed replicate TPM; FDR is Benjamini–Hochberg correction across all genes. This is exploratory because TPM-based tests do not model RNA-seq count dispersion. Use raw counts with DESeq2 or edgeR for publication-grade differential expression."
