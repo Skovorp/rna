@@ -231,11 +231,15 @@ def test_condition_comparison_uses_fdr(monkeypatch):
         trace["name"]: trace["marker"]["opacity"] for trace in plot["data"]
     }
     assert opacity_by_trace["FDR < 0.05 · opaque"] > opacity_by_trace["FDR ≥ 0.05 · faint"]
-    assert plot["layout"]["xaxis"]["title"]["text"] == "Average abundance: log₂(mean TPM + 1)"
+    assert plot["layout"]["xaxis"]["title"]["text"] == "Average abundance: log₂(mean TPM)"
+    assert plot["layout"]["xaxis"]["range"][0] < plot["layout"]["xaxis"]["range"][1]
     assert (
         plot["layout"]["yaxis"]["title"]["text"]
-        == "log₂((mean TPM A + 1) / (mean TPM B + 1))"
+        == "log₂(mean TPM A / mean TPM B)"
     )
+    assert plot["layout"]["yaxis"]["range"][0] == -plot["layout"]["yaxis"]["range"][1]
     assert plot["layout"]["shapes"][0]["y0"] == 0
     assert plot["layout"]["shapes"][0]["y1"] == 0
+    captions = " ".join(element.value for element in app.caption)
+    assert "log ratio is undefined" in captions
     assert any(button.label == "Download all comparison results" for button in app.download_button)

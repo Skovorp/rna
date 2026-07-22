@@ -38,8 +38,9 @@ def compare_conditions(
     """Compare all genes between two groups with Welch tests on log2(TPM + 1).
 
     The returned MA coordinates use average mean TPM for abundance and the
-    log2 ratio of mean TPM in A over B, both with a +1 pseudocount. Raw p-values
-    are adjusted across all tested genes using Benjamini-Hochberg FDR.
+    exact log2 ratio of mean TPM in A over B. Ratios are left undefined when
+    either condition has zero mean TPM. Raw p-values are adjusted across all
+    tested genes using Benjamini-Hochberg FDR.
     """
     if field not in dataset.samples.columns:
         raise ValueError(f"Unknown sample grouping field: {field}")
@@ -78,7 +79,13 @@ def compare_conditions(
     mean_tpm_a = tpm_a.mean(axis=1)
     mean_tpm_b = tpm_b.mean(axis=1)
     average_tpm = (mean_tpm_a + mean_tpm_b) / 2.0
-    log2_ratio_a_over_b = np.log2((mean_tpm_a + 1.0) / (mean_tpm_b + 1.0))
+    ma_plot_eligible = (mean_tpm_a > 0) & (mean_tpm_b > 0)
+    log2_average_tpm = np.full(len(average_tpm), np.nan, dtype=float)
+    log2_ratio_a_over_b = np.full(len(average_tpm), np.nan, dtype=float)
+    log2_average_tpm[ma_plot_eligible] = np.log2(average_tpm[ma_plot_eligible])
+    log2_ratio_a_over_b[ma_plot_eligible] = np.log2(
+        mean_tpm_a[ma_plot_eligible] / mean_tpm_b[ma_plot_eligible]
+    )
     results = pd.DataFrame(
         {
             "gene": annotations["display_name"].fillna("").to_numpy(),
@@ -86,10 +93,11 @@ def compare_conditions(
             "mean_tpm_a": mean_tpm_a,
             "mean_tpm_b": mean_tpm_b,
             "average_tpm": average_tpm,
-            "log2_average_tpm": np.log2(average_tpm + 1.0),
+            "log2_average_tpm": log2_average_tpm,
             "median_tpm_a": np.median(tpm_a, axis=1),
             "median_tpm_b": np.median(tpm_b, axis=1),
             "log2_ratio_a_over_b": log2_ratio_a_over_b,
+            "ma_plot_eligible": ma_plot_eligible,
             "p_value": p_values,
             "fdr": benjamini_hochberg(p_values),
         }
