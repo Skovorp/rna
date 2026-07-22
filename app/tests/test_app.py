@@ -169,3 +169,9 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     ]
     assert len(study_plots) == 4
     assert all(plot["data"][0]["orientation"] == "h" for plot in study_plots)
+    comparison_heatmaps = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
+    ]
+    assert len(comparison_heatmaps) == 2
