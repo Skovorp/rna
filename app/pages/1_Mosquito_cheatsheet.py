@@ -9,7 +9,7 @@ ASSET_DIR = Path(__file__).resolve().parents[1] / "assets"
 
 
 st.set_page_config(
-    page_title="Mosquito cheatsheet · Aedes RNA Atlas",
+    page_title="Mosquito basics · Aedes RNA Atlas",
     page_icon="🦟",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -25,8 +25,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown("[← Back to expression explorer](/)")
-st.title("Mosquito anatomy & stages")
+st.page_link("app.py", label="Back to expression explorer", icon="⬅️")
+st.title("Mosquito basics")
 st.markdown(
     '<div class="cheat-lead">Plain-language definitions for the tissues and adult reproductive conditions used in the RNA Atlas.</div>',
     unsafe_allow_html=True,

@@ -17,7 +17,7 @@ Open `http://localhost:8501`.
 - **Genes:** search symbols, `AAEL...` IDs, internal IDs, or aliases; compare panels such as `Ir25a, Orco`; inspect replicate points, group medians, paper annotations, and raw values.
 - **Families:** filter to annotated IR, OR, GR, or OBP genes; rank individual genes by peak group median; optionally use within-gene z-scores to emphasize relative patterns; export the complete family matrix. This is not a family-level statistical test.
 - **Compare conditions:** compare every gene between two conditions in one study; view an MA plot with readable base-10 axes for average TPM and the exact A/B fold ratio, plus uniform point styling, a configurable FDR threshold, TPM summaries, raw Welch p-values, and Benjamini–Hochberg FDR. Genes with zero mean TPM in either condition remain in the table but are omitted from the plot because their ratio is undefined.
-- **Mosquito cheatsheet:** look up adult anatomy, sampled tissues, life stages, feeding states, and the drought-study reproductive timeline in plain language.
+- **Mosquito basics:** look up adult anatomy, sampled tissues, life stages, feeding states, and the drought-study reproductive timeline in plain language.
 - **Data & provenance:** use the collapsed sidebar for dataset descriptions and local nf-core/rnaseq imports.
 
 The study selector shows the two biological studies only. The updated AaegL.RU annotation represents the 2016 paper; its duplicate AaegL3.3 matrix is retained internally for legacy identifier compatibility rather than displayed as a third study.
