@@ -1,4 +1,6 @@
+import json
 from pathlib import Path
+from statistics import median
 
 from streamlit.testing.v1 import AppTest
 
@@ -23,6 +25,10 @@ def _rendered_gene_names(app):
             if "gene" in str(column).casefold():
                 names.update(str(value).strip().casefold() for value in frame[column])
     return names
+
+
+def _plotly_spec(app, index=0):
+    return json.loads(app.get("plotly_chart")[index].proto.spec)
 
 
 def test_default_app_renders_without_exceptions(monkeypatch):
@@ -77,3 +83,42 @@ def test_public_mode_hides_persistent_import(monkeypatch):
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     assert not app.exception
     assert all(button.label != "Import nf-core TPM" for button in app.button)
+
+
+def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    assert not app.exception
+
+    plot = _plotly_spec(app)
+    assert plot["data"][0]["orientation"] == "h"
+    assert plot["layout"]["xaxis"]["title"]["text"] == "log₂(TPM + 1)"
+    assert plot["layout"]["yaxis"]["title"]["text"] == "Tissue + condition"
+    assert plot["layout"]["yaxis"]["autorange"] == "reversed"
+
+    sort_toggle = next(
+        toggle for toggle in app.toggle if toggle.label == "Sort conditions by expression"
+    )
+    sort_toggle.set_value(True).run()
+    sorted_plot = _plotly_spec(app)
+    first_trace = sorted_plot["data"][0]
+    values_by_condition = {}
+    for condition, customdata in zip(first_trace["y"], first_trace["customdata"]):
+        values_by_condition.setdefault(condition, []).append(customdata[1])
+    expected_order = sorted(
+        values_by_condition,
+        key=lambda condition: median(values_by_condition[condition]),
+        reverse=True,
+    )
+    assert sorted_plot["layout"]["yaxis"]["categoryarray"] == expected_order
+
+    studies = next(widget for widget in app.multiselect if widget.label == "Studies")
+    studies.set_value(["elife", "neuro_ru", "neuro_legacy"]).run()
+    assert not app.exception
+    study_plots = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "box"
+    ]
+    assert len(study_plots) == 6
+    assert all(plot["data"][0]["orientation"] == "h" for plot in study_plots)
