@@ -465,20 +465,30 @@ if mode == "Genes":
                 )
 
         if len(queries) > 1 and selected_keys:
-            comparison_key = selected_keys[0]
-            comparison_genes = resolved_for_comparison.get(comparison_key)
-            if comparison_genes is not None and len(comparison_genes) > 1:
+            comparisons = []
+            for comparison_key in selected_keys:
+                comparison_genes = resolved_for_comparison.get(comparison_key)
+                if comparison_genes is None or len(comparison_genes) <= 1:
+                    continue
                 dataset = datasets[comparison_key]
                 field, _ = default_grouping(dataset)
                 long = expression_long(dataset, comparison_genes)
                 grouped = grouped_median(long, field)
+                comparisons.append((comparison_key, dataset, field, grouped))
+
+            if comparisons:
                 st.markdown("## Compare selected genes")
-                st.caption(f"Group medians · {dataset.label}")
-                st.plotly_chart(
-                    heatmap_figure(grouped, field, "", row_zscore=False),
-                    width="stretch",
-                    key="gene_comparison_heatmap",
+                st.caption(
+                    "One heatmap per study. Colors are scaled within each panel; compare patterns rather than color intensity across papers."
                 )
+                for comparison_key, dataset, field, grouped in comparisons:
+                    st.markdown(f"**{dataset.label}**")
+                    st.caption("Group median TPM")
+                    st.plotly_chart(
+                        heatmap_figure(grouped, field, "", row_zscore=False),
+                        width="stretch",
+                        key=f"gene_comparison_heatmap_{comparison_key}",
+                    )
 
         missing = {key: values for key, values in unresolved.items() if values}
         if missing:
