@@ -35,3 +35,9 @@ Public origin: `https://pi-rus.tailc1209.ts.net`.
 
 `rna.getferal.ai` is served by GitHub Pages as a redirect to that stable Pi URL. The GoDaddy DNS zone needs a single `rna` CNAME pointing to `skovorp.github.io`.
 
+Initial Pi setup after cloning the repository:
+
+```bash
+./deploy/bootstrap-pi.sh
+tailscale funnel --bg --yes 8501
+```
