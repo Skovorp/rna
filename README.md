@@ -6,6 +6,7 @@ Small Streamlit prototype for exploring published *Aedes aegypti* RNA-seq TPM ma
 
 - Search individual genes and aliases such as `Ir25a`, `Orco`, `AaegOr7`, and `AAEL005776`.
 - Compare expression across tissues, conditions, and ovary reproductive states.
+- Compare every gene between two conditions with TPM summaries, log₂ differences, Welch p-values, Benjamini–Hochberg FDR, and an FDR-highlighted volcano plot.
 - Explore IR, OR, GR, and OBP gene families with replicate-aware plots and heatmaps.
 - Inspect available paper annotations, orthologs, aliases, and raw per-sample TPM values.
 

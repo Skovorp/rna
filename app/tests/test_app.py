@@ -39,7 +39,9 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert [title.value for title in app.title] == ["Aedes RNA Atlas"]
     assert not app.tabs
 
-    mode_selectors = _widgets_with_options(app, ["Genes", "Families"])
+    mode_selectors = _widgets_with_options(
+        app, ["Genes", "Families", "Compare conditions"]
+    )
     assert len(mode_selectors) == 1
     assert mode_selectors[0].value == "Genes"
 
@@ -176,3 +178,54 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
         if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
     ]
     assert len(comparison_heatmaps) == 2
+
+
+def test_family_mode_explains_filter_and_zscore(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    mode = _widgets_with_options(
+        app, ["Genes", "Families", "Compare conditions"]
+    )[0]
+    mode.set_value("Families").run()
+
+    assert not app.exception
+    captions = " ".join(element.value for element in app.caption)
+    assert "does not combine the family into one score" in captions
+    zscore_toggle = next(
+        toggle
+        for toggle in app.toggle
+        if toggle.label == "Show relative pattern within each gene"
+    )
+    assert "z-scores" in zscore_toggle.help
+
+
+def test_condition_comparison_uses_fdr(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    mode = _widgets_with_options(
+        app, ["Genes", "Families", "Compare conditions"]
+    )[0]
+    mode.set_value("Compare conditions").run()
+
+    assert not app.exception, [exception.message for exception in app.exception]
+    result_tables = [frame.value for frame in app.dataframe if "FDR" in frame.value.columns]
+    assert len(result_tables) == 1
+    assert {
+        "Gene",
+        "Mean TPM (A)",
+        "Mean TPM (B)",
+        "log₂ difference (B − A)",
+        "Raw p-value",
+        "FDR",
+    } <= set(result_tables[0].columns)
+    assert len(result_tables[0]) > 10_000
+
+    plot = _plotly_spec(app)
+    assert {trace["name"] for trace in plot["data"]} == {
+        "FDR ≥ 0.05",
+        "FDR < 0.05",
+    }
+    assert all(trace["type"] == "scattergl" for trace in plot["data"])
+    assert plot["layout"]["xaxis"]["title"]["text"].endswith("B − A")
+    assert plot["layout"]["yaxis"]["title"]["text"] == "−log₁₀(FDR)"
+    assert any(button.label == "Download all comparison results" for button in app.download_button)
