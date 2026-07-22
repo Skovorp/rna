@@ -334,7 +334,8 @@ if mode == "Genes":
     selected_keys = st.multiselect(
         "Studies",
         options=study_keys,
-        default=["neuro_ru"] if "neuro_ru" in datasets else study_keys[:1],
+        default=[key for key in ("elife", "neuro_ru") if key in study_keys]
+        or study_keys[:1],
         format_func=lambda key: datasets[key].label,
         help="AaegL3.3 is a legacy re-annotation of the same 2016 samples, not a third experiment.",
     )

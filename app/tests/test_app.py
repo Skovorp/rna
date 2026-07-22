@@ -62,6 +62,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     assert len(studies.options) == 2
     assert all("legacy" not in option.casefold() for option in studies.options)
+    assert studies.value == ["elife", "neuro_ru"]
 
     widget_types = (
         "button",
@@ -104,7 +105,7 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     assert plot["layout"]["xaxis"]["autorange"] is False
     assert plot["layout"]["xaxis"]["range"][0] == 0
     assert plot["layout"]["xaxis"]["range"][1] > 0
-    assert plot["layout"]["yaxis"]["title"]["text"] == "Tissue + condition"
+    assert plot["layout"]["yaxis"]["title"]["text"] == "Reproductive state"
     assert plot["layout"]["yaxis"]["autorange"] == "reversed"
     assert plot["layout"]["legend"]["itemclick"] is False
     assert plot["layout"]["legend"]["itemdoubleclick"] is False
