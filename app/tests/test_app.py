@@ -224,14 +224,15 @@ def test_condition_comparison_uses_fdr(monkeypatch):
     assert len(result_tables[0]) > 10_000
 
     plot = _plotly_spec(app)
-    assert len(plot["data"]) == 1
-    assert plot["data"][0]["type"] == "scattergl"
-    assert plot["data"][0]["showlegend"] is False
-    assert plot["data"][0]["marker"] == {
-        "color": "#f5b85b",
-        "opacity": 1.0,
-        "size": 3,
-    }
+    assert [trace["name"] for trace in plot["data"]] == [
+        "FDR ≥ 0.05",
+        "FDR < 0.05",
+    ]
+    assert all(trace["type"] == "scattergl" for trace in plot["data"])
+    assert [trace["marker"] for trace in plot["data"]] == [
+        {"color": "#66706f", "opacity": 1.0, "size": 3},
+        {"color": "#f5b85b", "opacity": 1.0, "size": 3},
+    ]
     assert plot["layout"]["xaxis"]["title"]["text"] == "Average TPM (logarithmic scale)"
     assert plot["layout"]["xaxis"]["type"] == "log"
     assert plot["layout"]["xaxis"]["range"][0] < plot["layout"]["xaxis"]["range"][1]
@@ -247,11 +248,16 @@ def test_condition_comparison_uses_fdr(monkeypatch):
     assert plot["layout"]["shapes"][0]["y1"] == 1
     captions = " ".join(element.value for element in app.caption)
     assert "A/B ratio is undefined" in captions
-    assert "fully opaque and uses the same color regardless of FDR" in captions
+    assert "Significant genes are gold and drawn last" in captions
     fdr_threshold = next(
         widget for widget in app.number_input if widget.label == "FDR threshold"
     )
     assert fdr_threshold.value == 0.05
     fdr_threshold.set_value(0.1).run()
     assert any("FDR < 0.1" in frame.value.columns for frame in app.dataframe)
+    threshold_plot = _plotly_spec(app)
+    assert [trace["name"] for trace in threshold_plot["data"]] == [
+        "FDR ≥ 0.1",
+        "FDR < 0.1",
+    ]
     assert any(button.label == "Download all comparison results" for button in app.download_button)

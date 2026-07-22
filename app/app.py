@@ -264,40 +264,47 @@ def base10_ticks(log_range: list[float], suffix: str = "") -> tuple[list[float],
     return values, labels
 
 
-def ma_figure(results: pd.DataFrame) -> go.Figure:
+def ma_figure(results: pd.DataFrame, fdr_threshold: float) -> go.Figure:
     plotted = results[results["ma_plot_eligible"]].copy()
     ratio_range = ma_ratio_log_range(results)
     abundance_range = ma_abundance_range(results)
     abundance_ticks, abundance_labels = base10_ticks(abundance_range)
     ratio_ticks, ratio_labels = base10_ticks(ratio_range, "×")
-    figure = go.Figure(
-        go.Scattergl(
-            x=plotted["average_tpm"],
-            y=plotted["tpm_ratio_a_over_b"],
-            mode="markers",
-            showlegend=False,
-            marker={"size": 3, "color": "#f5b85b", "opacity": 1.0},
-            customdata=plotted[
-                [
-                    "gene",
-                    "stable_id",
-                    "mean_tpm_a",
-                    "mean_tpm_b",
-                    "average_tpm",
-                    "fdr",
-                ]
-            ].to_numpy(),
-            hovertemplate=(
-                "<b>%{customdata[0]}</b><br>"
-                "Stable ID: %{customdata[1]}<br>"
-                "Mean TPM (A): %{customdata[2]:.3f}<br>"
-                "Mean TPM (B): %{customdata[3]:.3f}<br>"
-                "Average TPM: %{customdata[4]:.3f}<br>"
-                "TPM ratio (A / B): %{y:.3f}×<br>"
-                "FDR: %{customdata[5]:.3g}<extra></extra>"
-            ),
+    plotted["passes_fdr"] = plotted["fdr"] < fdr_threshold
+    figure = go.Figure()
+    for passes_fdr, label, color in (
+        (False, f"FDR ≥ {fdr_threshold:g}", "#66706f"),
+        (True, f"FDR < {fdr_threshold:g}", "#f5b85b"),
+    ):
+        subset = plotted[plotted["passes_fdr"].eq(passes_fdr)]
+        figure.add_trace(
+            go.Scattergl(
+                x=subset["average_tpm"],
+                y=subset["tpm_ratio_a_over_b"],
+                mode="markers",
+                name=label,
+                marker={"size": 3, "color": color, "opacity": 1.0},
+                customdata=subset[
+                    [
+                        "gene",
+                        "stable_id",
+                        "mean_tpm_a",
+                        "mean_tpm_b",
+                        "average_tpm",
+                        "fdr",
+                    ]
+                ].to_numpy(),
+                hovertemplate=(
+                    "<b>%{customdata[0]}</b><br>"
+                    "Stable ID: %{customdata[1]}<br>"
+                    "Mean TPM (A): %{customdata[2]:.3f}<br>"
+                    "Mean TPM (B): %{customdata[3]:.3f}<br>"
+                    "Average TPM: %{customdata[4]:.3f}<br>"
+                    "TPM ratio (A / B): %{y:.3f}×<br>"
+                    "FDR: %{customdata[5]:.3g}<extra></extra>"
+                ),
+            )
         )
-    )
     figure.add_hline(
         y=1,
         line={"color": "rgba(148,163,184,.38)", "dash": "dot", "width": 1},
@@ -748,7 +755,7 @@ else:
         value=0.05,
         step=0.01,
         format="%.3f",
-        help="Controls the significant-gene count and pass/fail column. It does not change point color or opacity.",
+        help="Controls which genes are colored gold, the significant-gene count, and the pass/fail table column.",
     )
 
     if condition_a == condition_b:
@@ -765,7 +772,7 @@ else:
             st.warning(str(exc))
         else:
             plotted_results = comparison_results[comparison_results["ma_plot_eligible"]]
-            significant_count = int((comparison_results["fdr"] < fdr_threshold).sum())
+            significant_count = int((plotted_results["fdr"] < fdr_threshold).sum())
             omitted_count = len(comparison_results) - len(plotted_results)
             ratio_range = ma_ratio_log_range(comparison_results)
             abundance_range = ma_abundance_range(comparison_results)
@@ -781,9 +788,9 @@ else:
             sample_a_metric, sample_b_metric, significant_metric = st.columns(3)
             sample_a_metric.metric("Samples in A", samples_a)
             sample_b_metric.metric("Samples in B", samples_b)
-            significant_metric.metric(f"Genes · FDR < {fdr_threshold:g}", significant_count)
+            significant_metric.metric(f"Colored genes · FDR < {fdr_threshold:g}", significant_count)
             st.plotly_chart(
-                ma_figure(comparison_results),
+                ma_figure(comparison_results, fdr_threshold),
                 width="stretch",
                 key=f"condition_comparison_{comparison_key}",
             )
@@ -791,7 +798,7 @@ else:
                 f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero mean TPM in A or B are omitted because their A/B ratio is undefined. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme ratios; use Plotly zoom to inspect them."
             )
             st.caption(
-                "Every point is fully opaque and uses the same color regardless of FDR. The FDR threshold changes only the count and table column."
+                "Gray genes do not pass the selected FDR threshold. Significant genes are gold and drawn last, so gray points cannot cover them. All markers are fully opaque."
             )
             st.caption(
                 "Welch's t-test is run on log-transformed replicate TPM; FDR is Benjamini–Hochberg correction across all genes. This is exploratory because TPM-based tests do not model RNA-seq count dispersion. Use raw counts with DESeq2 or edgeR for publication-grade differential expression."
