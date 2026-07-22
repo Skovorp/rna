@@ -16,6 +16,7 @@ Open `http://localhost:8501`.
 
 - **Genes:** search symbols, `AAEL...` IDs, internal IDs, or aliases; compare panels such as `Ir25a, Orco`; inspect replicate points, group medians, paper annotations, and raw values.
 - **Families:** inspect IR, OR, GR, or OBP families across separate study panels; rank by peak group median; view relative-pattern heatmaps; export the complete family matrix.
+- **Mosquito cheatsheet:** look up adult anatomy, sampled tissues, life stages, feeding states, and the drought-study reproductive timeline in plain language.
 - **Data & provenance:** use the collapsed sidebar for dataset descriptions, interpretation limits, and local nf-core/rnaseq imports.
 
 The updated AaegL.RU annotation is the default. The AaegL3.3 matrix remains available for legacy identifier compatibility but is not presented as a separate biological experiment.
