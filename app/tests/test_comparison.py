@@ -50,13 +50,14 @@ def test_compare_conditions_reports_tpm_difference_pvalue_and_fdr():
 
     assert (samples_a, samples_b) == (4, 4)
     assert indexed.loc["HigherB", "mean_tpm_b"] > indexed.loc["HigherB", "mean_tpm_a"]
-    assert indexed.loc["HigherB", "log2_ratio_a_over_b"] < 0
-    assert indexed.loc["HigherA", "log2_ratio_a_over_b"] > 0
+    assert indexed.loc["HigherB", "tpm_ratio_a_over_b"] < 1
+    assert indexed.loc["HigherA", "tpm_ratio_a_over_b"] > 1
+    assert indexed.loc["HigherB", "log10_ratio_a_over_b"] < 0
+    assert indexed.loc["HigherA", "log10_ratio_a_over_b"] > 0
     assert np.isclose(indexed.loc["HigherB", "average_tpm"], 10.775)
-    assert np.isclose(indexed.loc["HigherB", "log2_average_tpm"], np.log2(10.775))
+    assert np.isclose(indexed.loc["HigherB", "tpm_ratio_a_over_b"], 1.05 / 20.5)
     assert not indexed.loc["ZeroInA", "ma_plot_eligible"]
-    assert np.isnan(indexed.loc["ZeroInA", "log2_ratio_a_over_b"])
+    assert np.isnan(indexed.loc["ZeroInA", "tpm_ratio_a_over_b"])
     assert indexed.loc["Same", "p_value"] == 1.0
     assert indexed.loc["HigherB", "fdr"] < 0.05
-    assert indexed.loc["HigherB", "significant"]
     assert results["fdr"].between(0, 1).all()

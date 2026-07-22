@@ -215,31 +215,42 @@ def test_condition_comparison_uses_fdr(monkeypatch):
         "Mean TPM (A)",
         "Mean TPM (B)",
         "Average TPM",
-        "log₂ ratio (A / B)",
+        "TPM ratio (A / B)",
         "Raw p-value",
         "FDR",
+        "FDR < 0.05",
     } <= set(result_tables[0].columns)
     assert len(result_tables[0]) > 10_000
 
     plot = _plotly_spec(app)
-    assert {trace["name"] for trace in plot["data"]} == {
-        "FDR ≥ 0.05 · faint",
-        "FDR < 0.05 · opaque",
+    assert len(plot["data"]) == 1
+    assert plot["data"][0]["type"] == "scattergl"
+    assert plot["data"][0]["showlegend"] is False
+    assert plot["data"][0]["marker"] == {
+        "color": "#f5b85b",
+        "opacity": 0.32,
+        "size": 6,
     }
-    assert all(trace["type"] == "scattergl" for trace in plot["data"])
-    opacity_by_trace = {
-        trace["name"]: trace["marker"]["opacity"] for trace in plot["data"]
-    }
-    assert opacity_by_trace["FDR < 0.05 · opaque"] > opacity_by_trace["FDR ≥ 0.05 · faint"]
-    assert plot["layout"]["xaxis"]["title"]["text"] == "Average abundance: log₂(mean TPM)"
+    assert plot["layout"]["xaxis"]["title"]["text"] == "Average TPM (logarithmic scale)"
+    assert plot["layout"]["xaxis"]["type"] == "log"
     assert plot["layout"]["xaxis"]["range"][0] < plot["layout"]["xaxis"]["range"][1]
+    assert {"1", "10", "100", "1,000"} <= set(plot["layout"]["xaxis"]["ticktext"])
     assert (
         plot["layout"]["yaxis"]["title"]["text"]
-        == "log₂(mean TPM A / mean TPM B)"
+        == "TPM ratio A / B (logarithmic scale)"
     )
+    assert plot["layout"]["yaxis"]["type"] == "log"
     assert plot["layout"]["yaxis"]["range"][0] == -plot["layout"]["yaxis"]["range"][1]
-    assert plot["layout"]["shapes"][0]["y0"] == 0
-    assert plot["layout"]["shapes"][0]["y1"] == 0
+    assert {"0.1×", "1×", "10×"} <= set(plot["layout"]["yaxis"]["ticktext"])
+    assert plot["layout"]["shapes"][0]["y0"] == 1
+    assert plot["layout"]["shapes"][0]["y1"] == 1
     captions = " ".join(element.value for element in app.caption)
-    assert "log ratio is undefined" in captions
+    assert "A/B ratio is undefined" in captions
+    assert "same color and opacity regardless of FDR" in captions
+    fdr_threshold = next(
+        widget for widget in app.number_input if widget.label == "FDR threshold"
+    )
+    assert fdr_threshold.value == 0.05
+    fdr_threshold.set_value(0.1).run()
+    assert any("FDR < 0.1" in frame.value.columns for frame in app.dataframe)
     assert any(button.label == "Download all comparison results" for button in app.download_button)

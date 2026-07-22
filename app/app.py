@@ -230,78 +230,96 @@ def heatmap_figure(
     return figure
 
 
-def ma_ratio_limit(results: pd.DataFrame) -> float:
+def ma_ratio_log_range(results: pd.DataFrame) -> list[float]:
     finite_ratios = results.loc[
-        results["ma_plot_eligible"], "log2_ratio_a_over_b"
+        results["ma_plot_eligible"], "log10_ratio_a_over_b"
     ].dropna()
     if finite_ratios.empty:
-        return 2.0
-    return max(2.0, float(np.ceil(finite_ratios.abs().quantile(0.995))))
+        return [-1.0, 1.0]
+    limit = max(1.0, float(np.ceil(finite_ratios.abs().quantile(0.995))))
+    return [-limit, limit]
 
 
 def ma_abundance_range(results: pd.DataFrame) -> list[float]:
     finite_abundance = results.loc[
-        results["ma_plot_eligible"], "log2_average_tpm"
+        results["ma_plot_eligible"], "average_tpm"
     ].dropna()
     if finite_abundance.empty:
         return [-1.0, 1.0]
-    lower = float(np.floor(finite_abundance.quantile(0.005)))
-    upper = float(np.ceil(finite_abundance.max()))
+    lower = float(np.floor(np.log10(finite_abundance.quantile(0.005))))
+    upper = float(np.ceil(np.log10(finite_abundance.max())))
     return [lower, max(lower + 1.0, upper)]
+
+
+def base10_ticks(log_range: list[float], suffix: str = "") -> tuple[list[float], list[str]]:
+    exponents = range(int(np.ceil(log_range[0])), int(np.floor(log_range[1])) + 1)
+    values = [10.0**exponent for exponent in exponents]
+    labels = []
+    for exponent, value in zip(exponents, values):
+        if exponent >= 0:
+            label = f"{int(value):,}"
+        else:
+            label = f"{value:.{-exponent}f}"
+        labels.append(f"{label}{suffix}")
+    return values, labels
 
 
 def ma_figure(results: pd.DataFrame) -> go.Figure:
     plotted = results[results["ma_plot_eligible"]].copy()
-    ratio_limit = ma_ratio_limit(results)
+    ratio_range = ma_ratio_log_range(results)
     abundance_range = ma_abundance_range(results)
-    figure = go.Figure()
-    for significant, label, opacity in (
-        (False, "FDR ≥ 0.05 · faint", 0.12),
-        (True, "FDR < 0.05 · opaque", 0.92),
-    ):
-        subset = plotted[plotted["significant"].eq(significant)]
-        figure.add_trace(
-            go.Scattergl(
-                x=subset["log2_average_tpm"],
-                y=subset["log2_ratio_a_over_b"],
-                mode="markers",
-                name=label,
-                marker={"size": 6, "color": "#f5b85b", "opacity": opacity},
-                customdata=subset[
-                    [
-                        "gene",
-                        "stable_id",
-                        "mean_tpm_a",
-                        "mean_tpm_b",
-                        "average_tpm",
-                        "fdr",
-                    ]
-                ].to_numpy(),
-                hovertemplate=(
-                    "<b>%{customdata[0]}</b><br>"
-                    "Stable ID: %{customdata[1]}<br>"
-                    "Mean TPM (A): %{customdata[2]:.3f}<br>"
-                    "Mean TPM (B): %{customdata[3]:.3f}<br>"
-                    "Average TPM: %{customdata[4]:.3f}<br>"
-                    "log₂ ratio (A / B): %{y:.3f}<br>"
-                    "FDR: %{customdata[5]:.3g}<extra></extra>"
-                ),
-            )
+    abundance_ticks, abundance_labels = base10_ticks(abundance_range)
+    ratio_ticks, ratio_labels = base10_ticks(ratio_range, "×")
+    figure = go.Figure(
+        go.Scattergl(
+            x=plotted["average_tpm"],
+            y=plotted["tpm_ratio_a_over_b"],
+            mode="markers",
+            showlegend=False,
+            marker={"size": 6, "color": "#f5b85b", "opacity": 0.32},
+            customdata=plotted[
+                [
+                    "gene",
+                    "stable_id",
+                    "mean_tpm_a",
+                    "mean_tpm_b",
+                    "average_tpm",
+                    "fdr",
+                ]
+            ].to_numpy(),
+            hovertemplate=(
+                "<b>%{customdata[0]}</b><br>"
+                "Stable ID: %{customdata[1]}<br>"
+                "Mean TPM (A): %{customdata[2]:.3f}<br>"
+                "Mean TPM (B): %{customdata[3]:.3f}<br>"
+                "Average TPM: %{customdata[4]:.3f}<br>"
+                "TPM ratio (A / B): %{y:.3f}×<br>"
+                "FDR: %{customdata[5]:.3g}<extra></extra>"
+            ),
         )
+    )
     figure.add_hline(
-        y=0,
+        y=1,
         line={"color": "rgba(148,163,184,.38)", "dash": "dot", "width": 1},
     )
     figure.update_layout(
         height=510,
         margin={"l": 25, "r": 25, "t": 35, "b": 55},
         xaxis={
-            "title": "Average abundance: log₂(mean TPM)",
+            "title": "Average TPM (logarithmic scale)",
+            "type": "log",
             "range": abundance_range,
+            "tickmode": "array",
+            "tickvals": abundance_ticks,
+            "ticktext": abundance_labels,
         },
         yaxis={
-            "title": "log₂(mean TPM A / mean TPM B)",
-            "range": [-ratio_limit, ratio_limit],
+            "title": "TPM ratio A / B (logarithmic scale)",
+            "type": "log",
+            "range": ratio_range,
+            "tickmode": "array",
+            "tickvals": ratio_ticks,
+            "ticktext": ratio_labels,
             "zeroline": False,
         },
         legend={"title": {"text": ""}},
@@ -689,7 +707,7 @@ elif mode == "Families":
 else:
     st.markdown("### Compare all genes between two conditions")
     st.caption(
-        "This is an MA plot: right means higher average expression; above zero means higher in A; below zero means higher in B. Opaque genes have FDR < 0.05."
+        "This is an MA plot: right means higher average TPM. A ratio of 1× means equal expression; above 1× means higher in A; below 1× means higher in B."
     )
     comparison_key = st.selectbox(
         "Study",
@@ -723,6 +741,15 @@ else:
         condition_b = st.selectbox(
             "Condition B", comparison_groups, index=default_b_index
         )
+    fdr_threshold = st.number_input(
+        "FDR threshold",
+        min_value=0.001,
+        max_value=1.0,
+        value=0.05,
+        step=0.01,
+        format="%.3f",
+        help="Controls the significant-gene count and pass/fail column. It does not change point color or opacity.",
+    )
 
     if condition_a == condition_b:
         st.info("Choose two different conditions.")
@@ -738,30 +765,36 @@ else:
             st.warning(str(exc))
         else:
             plotted_results = comparison_results[comparison_results["ma_plot_eligible"]]
-            significant_count = int(plotted_results["significant"].sum())
+            significant_count = int((comparison_results["fdr"] < fdr_threshold).sum())
             omitted_count = len(comparison_results) - len(plotted_results)
-            ratio_limit = ma_ratio_limit(comparison_results)
+            ratio_range = ma_ratio_log_range(comparison_results)
             abundance_range = ma_abundance_range(comparison_results)
             off_scale_count = int(
-                (plotted_results["log2_ratio_a_over_b"].abs() > ratio_limit).sum()
+                (
+                    (plotted_results["log10_ratio_a_over_b"] < ratio_range[0])
+                    | (plotted_results["log10_ratio_a_over_b"] > ratio_range[1])
+                ).sum()
             )
             low_abundance_off_scale = int(
-                (plotted_results["log2_average_tpm"] < abundance_range[0]).sum()
+                (np.log10(plotted_results["average_tpm"]) < abundance_range[0]).sum()
             )
             sample_a_metric, sample_b_metric, significant_metric = st.columns(3)
             sample_a_metric.metric("Samples in A", samples_a)
             sample_b_metric.metric("Samples in B", samples_b)
-            significant_metric.metric("Opaque genes · FDR < 0.05", significant_count)
+            significant_metric.metric(f"Genes · FDR < {fdr_threshold:g}", significant_count)
             st.plotly_chart(
                 ma_figure(comparison_results),
                 width="stretch",
                 key=f"condition_comparison_{comparison_key}",
             )
             st.caption(
-                f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero mean TPM in A or B are omitted because their log ratio is undefined. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme ratios; use Plotly zoom to inspect them."
+                f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero mean TPM in A or B are omitted because their A/B ratio is undefined. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme ratios; use Plotly zoom to inspect them."
             )
             st.caption(
-                "Welch's t-test is run on replicate-level log₂(TPM + 1); FDR is Benjamini–Hochberg correction across all genes. This is exploratory because TPM-based tests do not model RNA-seq count dispersion. Use raw counts with DESeq2 or edgeR for publication-grade differential expression."
+                "Every point uses the same color and opacity regardless of FDR. Darker regions contain overlapping points; darkness represents density, not significance."
+            )
+            st.caption(
+                "Welch's t-test is run on log-transformed replicate TPM; FDR is Benjamini–Hochberg correction across all genes. This is exploratory because TPM-based tests do not model RNA-seq count dispersion. Use raw counts with DESeq2 or edgeR for publication-grade differential expression."
             )
 
             filter_text = st.text_input(
@@ -775,6 +808,10 @@ else:
                     comparison_results["gene"].astype(str).str.casefold().str.contains(needle, regex=False)
                     | comparison_results["stable_id"].astype(str).str.casefold().str.contains(needle, regex=False)
                 ]
+            threshold_column = f"FDR < {fdr_threshold:g}"
+            displayed_results = displayed_results.assign(
+                passes_fdr=displayed_results["fdr"] < fdr_threshold
+            )
             display_table = displayed_results.rename(
                 columns={
                     "gene": "Gene",
@@ -784,9 +821,10 @@ else:
                     "average_tpm": "Average TPM",
                     "median_tpm_a": "Median TPM (A)",
                     "median_tpm_b": "Median TPM (B)",
-                    "log2_ratio_a_over_b": "log₂ ratio (A / B)",
+                    "tpm_ratio_a_over_b": "TPM ratio (A / B)",
                     "p_value": "Raw p-value",
                     "fdr": "FDR",
+                    "passes_fdr": threshold_column,
                 }
             )[
                 [
@@ -797,9 +835,10 @@ else:
                     "Average TPM",
                     "Median TPM (A)",
                     "Median TPM (B)",
-                    "log₂ ratio (A / B)",
+                    "TPM ratio (A / B)",
                     "Raw p-value",
                     "FDR",
+                    threshold_column,
                 ]
             ]
             st.dataframe(
@@ -813,13 +852,16 @@ else:
                     "Average TPM": st.column_config.NumberColumn(format="%.3f"),
                     "Median TPM (A)": st.column_config.NumberColumn(format="%.3f"),
                     "Median TPM (B)": st.column_config.NumberColumn(format="%.3f"),
-                    "log₂ ratio (A / B)": st.column_config.NumberColumn(format="%.3f"),
+                    "TPM ratio (A / B)": st.column_config.NumberColumn(format="%.3f"),
                     "Raw p-value": st.column_config.NumberColumn(format="%.3e"),
                     "FDR": st.column_config.NumberColumn(format="%.3e"),
                 },
             )
 
-            download_table = comparison_results.rename(
+            download_results = comparison_results.assign(
+                passes_fdr=comparison_results["fdr"] < fdr_threshold
+            )
+            download_table = download_results.rename(
                 columns={
                     "gene": "Gene",
                     "stable_id": "Stable ID",
@@ -828,9 +870,10 @@ else:
                     "average_tpm": "Average TPM",
                     "median_tpm_a": "Median TPM (A)",
                     "median_tpm_b": "Median TPM (B)",
-                    "log2_ratio_a_over_b": "log₂ ratio (A / B)",
+                    "tpm_ratio_a_over_b": "TPM ratio (A / B)",
                     "p_value": "Raw p-value",
                     "fdr": "FDR",
+                    "passes_fdr": threshold_column,
                 }
             )[
                 [
@@ -841,9 +884,10 @@ else:
                     "Average TPM",
                     "Median TPM (A)",
                     "Median TPM (B)",
-                    "log₂ ratio (A / B)",
+                    "TPM ratio (A / B)",
                     "Raw p-value",
                     "FDR",
+                    threshold_column,
                 ]
             ]
             download_table.insert(0, "Condition B", condition_b)
