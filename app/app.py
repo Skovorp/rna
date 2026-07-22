@@ -398,7 +398,7 @@ if mode == "Genes":
                 dataset = datasets[key]
                 summary = gene_statistics(dataset, matches)
                 summary.insert(0, "Study", dataset.label)
-                summary["Detected samples"] = summary.apply(
+                summary["Samples ≥1 TPM"] = summary.apply(
                     lambda row: f"{round(row['detected_pct'] * len(dataset.sample_columns) / 100):.0f}/{len(dataset.sample_columns)}",
                     axis=1,
                 )
@@ -422,7 +422,7 @@ if mode == "Genes":
             )
             st.dataframe(
                 summary_table[
-                    ["Study", "Gene", "Stable ID", "Median TPM", "Maximum TPM", "Detected samples", "Top context"]
+                    ["Study", "Gene", "Stable ID", "Median TPM", "Maximum TPM", "Samples ≥1 TPM", "Top context"]
                 ],
                 hide_index=True,
                 width="stretch",
@@ -526,7 +526,11 @@ else:
             ranking = gene_statistics(dataset, members).merge(peak, on="gene", how="left").merge(
                 detected, on="gene", how="left"
             )
-            ranking["Detected samples"] = ranking["Detected n"].astype(int).astype(str) + f"/{len(dataset.sample_columns)}"
+            detection_column = f"Samples ≥{threshold:g} TPM"
+            ranking[detection_column] = (
+                ranking["Detected n"].astype(int).astype(str)
+                + f"/{len(dataset.sample_columns)}"
+            )
             ranking = ranking.sort_values("Peak group median TPM", ascending=False)
 
             pinned_names: list[str] = []
@@ -572,7 +576,7 @@ else:
                     "top_context": "Top context",
                 }
             )[
-                ["Gene", "Stable ID", "Peak median TPM", "Detected samples", "Top context"]
+                ["Gene", "Stable ID", "Peak median TPM", detection_column, "Top context"]
             ]
             st.dataframe(
                 concise.head(top_n),

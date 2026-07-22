@@ -54,6 +54,10 @@ def test_default_app_renders_without_exceptions(monkeypatch):
         token.casefold() for token in query_text.split()
     }
     assert {"ir25a", "orco"} <= _rendered_gene_names(app)
+    assert any(
+        "Samples ≥1 TPM" in element.value.columns
+        for element in app.dataframe
+    )
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     assert len(studies.options) == 2
