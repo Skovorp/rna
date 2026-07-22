@@ -98,6 +98,42 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     assert plot["layout"]["xaxis"]["range"][1] > 0
     assert plot["layout"]["yaxis"]["title"]["text"] == "Tissue + condition"
     assert plot["layout"]["yaxis"]["autorange"] == "reversed"
+    assert plot["layout"]["legend"]["itemclick"] is False
+    assert plot["layout"]["legend"]["itemdoubleclick"] is False
+    median_trace = next(trace for trace in plot["data"] if trace.get("name") == "Group median")
+    assert median_trace["showlegend"] is False
+
+    condition_order = plot["layout"]["yaxis"]["categoryarray"]
+    guides = plot["layout"]["shapes"]
+    assert [guide["y0"] for guide in guides] == condition_order[::2]
+    assert all(guide["line"]["dash"] == "dot" for guide in guides)
+    assert all(guide["layer"] == "below" for guide in guides)
+
+    median_toggle = next(
+        toggle for toggle in app.toggle if toggle.label == "Show group medians"
+    )
+    median_toggle.set_value(False).run()
+    without_medians = _plotly_spec(app)
+    assert all(trace.get("name") != "Group median" for trace in without_medians["data"])
+    assert without_medians["layout"]["height"] == plot["layout"]["height"]
+    assert without_medians["layout"]["xaxis"]["range"] == plot["layout"]["xaxis"]["range"]
+    assert (
+        without_medians["layout"]["yaxis"]["categoryarray"]
+        == plot["layout"]["yaxis"]["categoryarray"]
+    )
+
+    guide_toggle = next(
+        toggle for toggle in app.toggle if toggle.label == "Show row guides"
+    )
+    guide_toggle.set_value(False).run()
+    without_guides = _plotly_spec(app)
+    assert without_guides["layout"].get("shapes", []) == []
+    assert without_guides["layout"]["height"] == plot["layout"]["height"]
+    assert without_guides["layout"]["xaxis"]["range"] == plot["layout"]["xaxis"]["range"]
+    assert (
+        without_guides["layout"]["yaxis"]["categoryarray"]
+        == plot["layout"]["yaxis"]["categoryarray"]
+    )
 
     sort_toggle = next(
         toggle for toggle in app.toggle if toggle.label == "Sort conditions by expression"
