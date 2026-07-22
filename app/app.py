@@ -407,7 +407,7 @@ st.markdown(
 )
 st.page_link(
     "pages/1_Mosquito_cheatsheet.py",
-    label="Mosquito anatomy & stages cheatsheet",
+    label="Mosquito basics",
     icon="🦟",
 )
 

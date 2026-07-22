@@ -38,6 +38,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert not app.exception, [exception.message for exception in app.exception]
     assert [title.value for title in app.title] == ["Aedes RNA Atlas"]
     assert not app.tabs
+    assert 'label="Mosquito basics"' in APP.read_text()
 
     mode_selectors = _widgets_with_options(
         app, ["Genes", "Families", "Compare conditions"]

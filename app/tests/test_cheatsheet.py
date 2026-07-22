@@ -13,11 +13,13 @@ def test_cheatsheet_renders_dataset_terms(monkeypatch):
     assert ANATOMY_IMAGE.exists()
     assert ANATOMY_IMAGE.stat().st_size > 20_000
     assert ANATOMY_IMAGE.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
+    assert 'st.page_link("app.py", label="Back to expression explorer"' in CHEATSHEET.read_text()
     monkeypatch.syspath_prepend(str(CHEATSHEET.parents[1]))
+    monkeypatch.setattr("streamlit.page_link", lambda *args, **kwargs: None)
     app = AppTest.from_file(str(CHEATSHEET), default_timeout=30).run()
 
     assert not app.exception, [exception.message for exception in app.exception]
-    assert [title.value for title in app.title] == ["Mosquito anatomy & stages"]
+    assert [title.value for title in app.title] == ["Mosquito basics"]
 
     rendered = " ".join(
         str(element.value)
