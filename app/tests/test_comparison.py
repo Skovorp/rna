@@ -49,8 +49,10 @@ def test_compare_conditions_reports_tpm_difference_pvalue_and_fdr():
 
     assert (samples_a, samples_b) == (4, 4)
     assert indexed.loc["HigherB", "mean_tpm_b"] > indexed.loc["HigherB", "mean_tpm_a"]
-    assert indexed.loc["HigherB", "log2_difference"] > 0
-    assert indexed.loc["HigherA", "log2_difference"] < 0
+    assert indexed.loc["HigherB", "log2_ratio_a_over_b"] < 0
+    assert indexed.loc["HigherA", "log2_ratio_a_over_b"] > 0
+    assert np.isclose(indexed.loc["HigherB", "average_tpm"], 10.775)
+    assert np.isclose(indexed.loc["HigherB", "log2_average_tpm"], np.log2(11.775))
     assert indexed.loc["Same", "p_value"] == 1.0
     assert indexed.loc["HigherB", "fdr"] < 0.05
     assert indexed.loc["HigherB", "significant"]

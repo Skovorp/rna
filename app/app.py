@@ -230,50 +230,50 @@ def heatmap_figure(
     return figure
 
 
-def differential_figure(results: pd.DataFrame) -> go.Figure:
-    plot = results.copy()
-    plot["minus_log10_fdr"] = -np.log10(plot["fdr"].clip(lower=1e-300))
+def ma_figure(results: pd.DataFrame) -> go.Figure:
     figure = go.Figure()
-    for significant, label, color, opacity in (
-        (False, "FDR ≥ 0.05", "#879391", 0.34),
-        (True, "FDR < 0.05", "#f5b85b", 0.86),
+    for significant, label, opacity in (
+        (False, "FDR ≥ 0.05 · faint", 0.12),
+        (True, "FDR < 0.05 · opaque", 0.92),
     ):
-        subset = plot[plot["significant"].eq(significant)]
+        subset = results[results["significant"].eq(significant)]
         figure.add_trace(
             go.Scattergl(
-                x=subset["log2_difference"],
-                y=subset["minus_log10_fdr"],
+                x=subset["log2_average_tpm"],
+                y=subset["log2_ratio_a_over_b"],
                 mode="markers",
                 name=label,
-                marker={"size": 6, "color": color, "opacity": opacity},
+                marker={"size": 6, "color": "#f5b85b", "opacity": opacity},
                 customdata=subset[
-                    ["gene", "stable_id", "mean_tpm_a", "mean_tpm_b", "fdr"]
+                    [
+                        "gene",
+                        "stable_id",
+                        "mean_tpm_a",
+                        "mean_tpm_b",
+                        "average_tpm",
+                        "fdr",
+                    ]
                 ].to_numpy(),
                 hovertemplate=(
                     "<b>%{customdata[0]}</b><br>"
                     "Stable ID: %{customdata[1]}<br>"
                     "Mean TPM (A): %{customdata[2]:.3f}<br>"
                     "Mean TPM (B): %{customdata[3]:.3f}<br>"
-                    "log₂ difference (B − A): %{x:.3f}<br>"
-                    "FDR: %{customdata[4]:.3g}<extra></extra>"
+                    "Average TPM: %{customdata[4]:.3f}<br>"
+                    "log₂ ratio (A / B): %{y:.3f}<br>"
+                    "FDR: %{customdata[5]:.3g}<extra></extra>"
                 ),
             )
         )
     figure.add_hline(
-        y=-np.log10(0.05),
-        line={"color": "rgba(245,184,91,.55)", "dash": "dot", "width": 1},
-        annotation_text="FDR 0.05",
-        annotation_position="top left",
-    )
-    figure.add_vline(
-        x=0,
+        y=0,
         line={"color": "rgba(148,163,184,.38)", "dash": "dot", "width": 1},
     )
     figure.update_layout(
         height=510,
         margin={"l": 25, "r": 25, "t": 35, "b": 55},
-        xaxis={"title": "Difference in mean log₂(TPM + 1), B − A", "zeroline": False},
-        yaxis={"title": "−log₁₀(FDR)", "rangemode": "tozero"},
+        xaxis={"title": "Average abundance: log₂(mean TPM + 1)", "rangemode": "tozero"},
+        yaxis={"title": "log₂((mean TPM A + 1) / (mean TPM B + 1))", "zeroline": False},
         legend={"title": {"text": ""}},
     )
     return figure
@@ -659,7 +659,7 @@ elif mode == "Families":
 else:
     st.markdown("### Compare all genes between two conditions")
     st.caption(
-        "Choose two conditions from one study. Positive log₂ difference means higher expression in B; negative means higher in A."
+        "This is an MA plot: right means higher average expression; above zero means higher in A; below zero means higher in B. Opaque genes have FDR < 0.05."
     )
     comparison_key = st.selectbox(
         "Study",
@@ -713,7 +713,7 @@ else:
             sample_b_metric.metric("Samples in B", samples_b)
             significant_metric.metric("Genes with FDR < 0.05", significant_count)
             st.plotly_chart(
-                differential_figure(comparison_results),
+                ma_figure(comparison_results),
                 width="stretch",
                 key=f"condition_comparison_{comparison_key}",
             )
@@ -738,9 +738,10 @@ else:
                     "stable_id": "Stable ID",
                     "mean_tpm_a": "Mean TPM (A)",
                     "mean_tpm_b": "Mean TPM (B)",
+                    "average_tpm": "Average TPM",
                     "median_tpm_a": "Median TPM (A)",
                     "median_tpm_b": "Median TPM (B)",
-                    "log2_difference": "log₂ difference (B − A)",
+                    "log2_ratio_a_over_b": "log₂ ratio (A / B)",
                     "p_value": "Raw p-value",
                     "fdr": "FDR",
                 }
@@ -750,9 +751,10 @@ else:
                     "Stable ID",
                     "Mean TPM (A)",
                     "Mean TPM (B)",
+                    "Average TPM",
                     "Median TPM (A)",
                     "Median TPM (B)",
-                    "log₂ difference (B − A)",
+                    "log₂ ratio (A / B)",
                     "Raw p-value",
                     "FDR",
                 ]
@@ -765,9 +767,10 @@ else:
                 column_config={
                     "Mean TPM (A)": st.column_config.NumberColumn(format="%.3f"),
                     "Mean TPM (B)": st.column_config.NumberColumn(format="%.3f"),
+                    "Average TPM": st.column_config.NumberColumn(format="%.3f"),
                     "Median TPM (A)": st.column_config.NumberColumn(format="%.3f"),
                     "Median TPM (B)": st.column_config.NumberColumn(format="%.3f"),
-                    "log₂ difference (B − A)": st.column_config.NumberColumn(format="%.3f"),
+                    "log₂ ratio (A / B)": st.column_config.NumberColumn(format="%.3f"),
                     "Raw p-value": st.column_config.NumberColumn(format="%.3e"),
                     "FDR": st.column_config.NumberColumn(format="%.3e"),
                 },
@@ -779,9 +782,10 @@ else:
                     "stable_id": "Stable ID",
                     "mean_tpm_a": "Mean TPM (A)",
                     "mean_tpm_b": "Mean TPM (B)",
+                    "average_tpm": "Average TPM",
                     "median_tpm_a": "Median TPM (A)",
                     "median_tpm_b": "Median TPM (B)",
-                    "log2_difference": "log₂ difference (B − A)",
+                    "log2_ratio_a_over_b": "log₂ ratio (A / B)",
                     "p_value": "Raw p-value",
                     "fdr": "FDR",
                 }
@@ -791,9 +795,10 @@ else:
                     "Stable ID",
                     "Mean TPM (A)",
                     "Mean TPM (B)",
+                    "Average TPM",
                     "Median TPM (A)",
                     "Median TPM (B)",
-                    "log₂ difference (B − A)",
+                    "log₂ ratio (A / B)",
                     "Raw p-value",
                     "FDR",
                 ]

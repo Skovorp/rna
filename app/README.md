@@ -16,7 +16,7 @@ Open `http://localhost:8501`.
 
 - **Genes:** search symbols, `AAEL...` IDs, internal IDs, or aliases; compare panels such as `Ir25a, Orco`; inspect replicate points, group medians, paper annotations, and raw values.
 - **Families:** filter to annotated IR, OR, GR, or OBP genes; rank individual genes by peak group median; optionally use within-gene z-scores to emphasize relative patterns; export the complete family matrix. This is not a family-level statistical test.
-- **Compare conditions:** compare every gene between two conditions in one study; view mean and median TPM, the difference in mean log₂(TPM + 1), raw Welch p-values, Benjamini–Hochberg FDR, and an FDR-highlighted volcano plot.
+- **Compare conditions:** compare every gene between two conditions in one study; view an MA plot of average TPM versus log₂(A/B) with FDR-driven opacity, plus TPM summaries, raw Welch p-values, and Benjamini–Hochberg FDR.
 - **Mosquito cheatsheet:** look up adult anatomy, sampled tissues, life stages, feeding states, and the drought-study reproductive timeline in plain language.
 - **Data & provenance:** use the collapsed sidebar for dataset descriptions and local nf-core/rnaseq imports.
 
