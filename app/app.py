@@ -150,11 +150,17 @@ def replicate_figure(
                 hovertemplate="%{y}<br>Median log₂(TPM + 1): %{x:.2f}<extra></extra>",
             )
         )
+    expression_max = float(plot["log_tpm"].max()) if not plot.empty else 0.0
+    expression_upper = max(1.0, expression_max + max(0.2, expression_max * 0.04))
     figure.update_traces(jitter=0.34, marker={"opacity": 0.7}, selector={"type": "box"})
     figure.update_layout(
         height=max(340, 110 + 27 * len(condition_order)),
         margin={"l": 20, "r": 20, "t": 20, "b": 45},
-        xaxis={"title": "log₂(TPM + 1)", "rangemode": "tozero"},
+        xaxis={
+            "title": "log₂(TPM + 1)",
+            "range": [0, expression_upper],
+            "autorange": False,
+        },
         yaxis={
             "title": field_label,
             "categoryorder": "array",
@@ -284,6 +290,11 @@ st.title("Aedes RNA Atlas")
 st.markdown(
     '<div class="atlas-subtle">Search genes, compare a panel, or inspect a receptor family. Points are biological samples; diamonds are group medians.</div>',
     unsafe_allow_html=True,
+)
+st.page_link(
+    "pages/1_Mosquito_cheatsheet.py",
+    label="Mosquito anatomy & stages cheatsheet",
+    icon="🦟",
 )
 
 mode = st.segmented_control(

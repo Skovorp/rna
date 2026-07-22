@@ -93,6 +93,9 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     plot = _plotly_spec(app)
     assert plot["data"][0]["orientation"] == "h"
     assert plot["layout"]["xaxis"]["title"]["text"] == "log₂(TPM + 1)"
+    assert plot["layout"]["xaxis"]["autorange"] is False
+    assert plot["layout"]["xaxis"]["range"][0] == 0
+    assert plot["layout"]["xaxis"]["range"][1] > 0
     assert plot["layout"]["yaxis"]["title"]["text"] == "Tissue + condition"
     assert plot["layout"]["yaxis"]["autorange"] == "reversed"
 
