@@ -12,6 +12,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from expression_explorer.clustering import METHODS, sample_embedding
 from expression_explorer.comparison import compare_conditions
 from expression_explorer.data import (
     DATASET_ORDER,
@@ -80,6 +81,17 @@ ordered_dataset_keys = [key for key in DATASET_ORDER if key in datasets] + sorte
     key for key in datasets if key not in DATASET_ORDER
 )
 study_keys = [key for key in ordered_dataset_keys if key != "neuro_legacy"]
+
+
+@st.cache_data(show_spinner="Computing sample map…")
+def cluster_embedding_cached(
+    schema_version: str,
+    dataset_key: str,
+    method: str,
+    variable_genes: int,
+):
+    dataset = datasets_resource(schema_version)[dataset_key]
+    return sample_embedding(dataset, method, variable_genes)
 
 
 def parse_queries(raw: str) -> list[str]:
@@ -409,7 +421,7 @@ with st.sidebar:
             )
 st.title("Aedes RNA Atlas")
 st.markdown(
-    '<div class="atlas-subtle">Search genes, compare conditions, or inspect a receptor family. Points are biological samples; diamonds are group medians.</div>',
+    '<div class="atlas-subtle">Search genes, compare conditions, cluster samples, or inspect a receptor family. Points are biological samples; diamonds are group medians.</div>',
     unsafe_allow_html=True,
 )
 st.page_link(
@@ -420,7 +432,7 @@ st.page_link(
 
 mode = st.segmented_control(
     "Analysis mode",
-    ["Genes", "Families", "Compare conditions"],
+    ["Genes", "Families", "Compare conditions", "Clusters"],
     default="Genes",
     label_visibility="collapsed",
 )
@@ -711,7 +723,7 @@ elif mode == "Families":
                     f"family_download_{key}",
                 )
 
-else:
+elif mode == "Compare conditions":
     st.markdown("### Compare all genes between two conditions")
     st.caption(
         "This is an MA plot: right means higher average TPM. A ratio of 1× means equal expression; above 1× means higher in A; below 1× means higher in B."
@@ -906,3 +918,117 @@ else:
                 f"{comparison_key}_condition_comparison.tsv",
                 f"condition_comparison_download_{comparison_key}",
             )
+
+else:
+    st.markdown("### Cluster biological samples")
+    st.caption(
+        "Each point is one biological sample. Nearby points have more similar whole-transcriptome expression profiles."
+    )
+    study_column, method_column = st.columns(2)
+    with study_column:
+        cluster_key = st.selectbox(
+            "Study",
+            options=study_keys,
+            format_func=lambda key: datasets[key].label,
+            key="cluster_study",
+        )
+    with method_column:
+        cluster_method = st.selectbox("Method", METHODS, key="cluster_method")
+
+    cluster_dataset = datasets[cluster_key]
+    if cluster_key.startswith("neuro_"):
+        color_candidates = [
+            ("tissue", "Tissue"),
+            ("condition_label", "Feeding / reproductive state"),
+            ("sex", "Sex"),
+            ("tissue_condition", "Tissue + condition"),
+        ]
+    else:
+        color_candidates = [
+            ("reproductive_state", "Reproductive state"),
+        ]
+    color_options = [
+        field
+        for field, _ in color_candidates
+        if field in cluster_dataset.samples
+        and cluster_dataset.samples[field].fillna("").astype(str).nunique() > 1
+    ]
+    color_labels = dict(color_candidates)
+    if not color_options:
+        color_options = ["sample"]
+        color_labels["sample"] = "Sample"
+
+    color_column, genes_column = st.columns(2)
+    with color_column:
+        color_field = st.selectbox(
+            "Color by",
+            options=color_options,
+            format_func=lambda field: color_labels[field],
+            key="cluster_color",
+        )
+    with genes_column:
+        variable_genes = st.slider(
+            "Most-variable genes",
+            min_value=250,
+            max_value=5_000,
+            value=2_000,
+            step=250,
+            help="Genes are ranked by variance after log-transforming TPM. Constant genes are excluded.",
+        )
+
+    try:
+        cluster_frame, cluster_x, cluster_y, cluster_details = cluster_embedding_cached(
+            DATA_SCHEMA_VERSION,
+            cluster_key,
+            cluster_method,
+            variable_genes,
+        )
+    except ValueError as exc:
+        st.warning(str(exc))
+    else:
+        cluster_frame[color_field] = (
+            cluster_frame[color_field].fillna("").astype(str).replace("", "Unspecified")
+        )
+        color_order = cluster_frame[color_field].drop_duplicates().tolist()
+        hover_fields = [
+            field
+            for field in ("sample", "tissue", "condition_label", "sex")
+            if field in cluster_frame.columns
+        ]
+        hover_data = {field: True for field in hover_fields}
+        hover_data.update({"x": False, "y": False})
+        cluster_figure = px.scatter(
+            cluster_frame,
+            x="x",
+            y="y",
+            color=color_field,
+            hover_name="sample",
+            hover_data=hover_data,
+            labels={
+                "x": cluster_x,
+                "y": cluster_y,
+                color_field: color_labels[color_field],
+            },
+            category_orders={color_field: color_order},
+            color_discrete_sequence=px.colors.qualitative.Set2
+            + px.colors.qualitative.Pastel,
+        )
+        cluster_figure.update_traces(
+            marker={"size": 11, "opacity": 0.9, "line": {"width": 0.6, "color": "#111827"}}
+        )
+        cluster_figure.update_layout(
+            height=650,
+            margin={"l": 30, "r": 25, "t": 25, "b": 55},
+            legend={"title": {"text": color_labels[color_field]}},
+        )
+        st.plotly_chart(
+            cluster_figure,
+            width="stretch",
+            key=f"cluster_plot_{cluster_key}_{cluster_method}_{variable_genes}_{color_field}",
+        )
+        st.caption(
+            f"{cluster_method} · {cluster_details}. TPM was transformed as log₂(TPM + 1), then each selected gene was standardized across samples."
+        )
+        st.caption(
+            "PCA preserves broad linear variation. UMAP and t-SNE emphasize local neighborhoods; their axis values and distances between far-apart groups are not directly interpretable."
+        )

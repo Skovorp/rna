@@ -17,6 +17,7 @@ Open `http://localhost:8501`.
 - **Genes:** search symbols, `AAEL...` IDs, internal IDs, or aliases; compare panels such as `Ir25a, Orco`; inspect replicate points, group medians, paper annotations, and raw values.
 - **Families:** filter to annotated IR, OR, GR, or OBP genes; rank individual genes by peak group median; optionally use within-gene z-scores to emphasize relative patterns; export the complete family matrix. This is not a family-level statistical test.
 - **Compare conditions:** compare every gene between two conditions in one study; view an MA plot with readable base-10 axes for average TPM and the exact A/B fold ratio. A configurable FDR threshold colors significant genes gold and draws them above gray nonsignificant genes. The table retains TPM summaries, raw Welch p-values, and Benjamini–Hochberg FDR. Genes with zero mean TPM in either condition remain in the table but are omitted from the plot because their ratio is undefined.
+- **Clusters:** select one study and map biological samples with PCA, UMAP, or t-SNE using standardized values from the most-variable log-transformed TPM genes; color points by available sample metadata.
 - **Mosquito basics:** look up adult anatomy, sampled tissues, life stages, feeding states, and the drought-study reproductive timeline in plain language.
 - **Data & provenance:** use the collapsed sidebar for dataset descriptions and local nf-core/rnaseq imports.
 

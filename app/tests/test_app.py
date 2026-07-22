@@ -41,7 +41,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert 'label="Mosquito basics"' in APP.read_text()
 
     mode_selectors = _widgets_with_options(
-        app, ["Genes", "Families", "Compare conditions"]
+        app, ["Genes", "Families", "Compare conditions", "Clusters"]
     )
     assert len(mode_selectors) == 1
     assert mode_selectors[0].value == "Genes"
@@ -185,7 +185,7 @@ def test_family_mode_explains_filter_and_zscore(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     mode = _widgets_with_options(
-        app, ["Genes", "Families", "Compare conditions"]
+        app, ["Genes", "Families", "Compare conditions", "Clusters"]
     )[0]
     mode.set_value("Families").run()
 
@@ -204,7 +204,7 @@ def test_condition_comparison_uses_fdr(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     mode = _widgets_with_options(
-        app, ["Genes", "Families", "Compare conditions"]
+        app, ["Genes", "Families", "Compare conditions", "Clusters"]
     )[0]
     mode.set_value("Compare conditions").run()
 
@@ -261,3 +261,26 @@ def test_condition_comparison_uses_fdr(monkeypatch):
         "FDR < 0.1",
     ]
     assert any(button.label == "Download all comparison results" for button in app.download_button)
+
+
+def test_cluster_mode_renders_sample_pca(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    mode = _widgets_with_options(
+        app, ["Genes", "Families", "Compare conditions", "Clusters"]
+    )[0]
+    mode.set_value("Clusters").run()
+
+    assert not app.exception, [exception.message for exception in app.exception]
+    method = _widgets_with_options(app, ["PCA", "UMAP", "t-SNE"])
+    assert len(method) == 1
+    assert method[0].value == "PCA"
+    assert any(slider.label == "Most-variable genes" for slider in app.slider)
+
+    plot = _plotly_spec(app)
+    assert all(trace["type"] == "scatter" for trace in plot["data"])
+    assert plot["layout"]["xaxis"]["title"]["text"].startswith("PC1 (")
+    assert plot["layout"]["yaxis"]["title"]["text"].startswith("PC2 (")
+    captions = " ".join(element.value for element in app.caption)
+    assert "Each point is one biological sample" in captions
+    assert "most-variable genes" in captions
