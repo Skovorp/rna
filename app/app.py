@@ -1021,6 +1021,7 @@ else:
             margin={"l": 30, "r": 25, "t": 25, "b": 55},
             legend={"title": {"text": color_labels[color_field]}},
         )
+        cluster_figure.update_yaxes(showgrid=False, zeroline=False)
         st.plotly_chart(
             cluster_figure,
             width="stretch",

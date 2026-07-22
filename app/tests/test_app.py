@@ -281,6 +281,8 @@ def test_cluster_mode_renders_sample_pca(monkeypatch):
     assert all(trace["type"] == "scatter" for trace in plot["data"])
     assert plot["layout"]["xaxis"]["title"]["text"].startswith("PC1 (")
     assert plot["layout"]["yaxis"]["title"]["text"].startswith("PC2 (")
+    assert plot["layout"]["yaxis"]["showgrid"] is False
+    assert plot["layout"]["yaxis"]["zeroline"] is False
     captions = " ".join(element.value for element in app.caption)
     assert "Each point is one biological sample" in captions
     assert "most-variable genes" in captions
