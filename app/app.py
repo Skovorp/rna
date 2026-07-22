@@ -105,18 +105,33 @@ def grouped_median(long: pd.DataFrame, field: str) -> pd.DataFrame:
     return grouped.sort_values([field, "gene"])
 
 
-def replicate_figure(long: pd.DataFrame, field: str, field_label: str) -> go.Figure:
+def replicate_figure(
+    long: pd.DataFrame,
+    field: str,
+    field_label: str,
+    sort_by_expression: bool = False,
+) -> go.Figure:
     plot = long.copy()
     plot["log_tpm"] = np.log2(plot["tpm"] + 1.0)
     plot[field] = plot[field].fillna("Unspecified").astype(str)
+    condition_order = plot[field].drop_duplicates().tolist()
+    if sort_by_expression:
+        condition_order = (
+            plot.groupby(field, sort=False)["tpm"]
+            .median()
+            .sort_values(ascending=False, kind="stable")
+            .index.tolist()
+        )
     gene_count = plot["gene"].nunique()
     figure = px.strip(
         plot,
-        x=field,
-        y="log_tpm",
+        x="log_tpm",
+        y=field,
         color="gene" if gene_count > 1 else None,
+        orientation="h",
         hover_data={"sample": True, "tpm": ":.3f", "log_tpm": False},
         labels={field: field_label, "log_tpm": "log₂(TPM + 1)", "gene": "Gene"},
+        category_orders={field: condition_order},
         color_discrete_sequence=px.colors.qualitative.Set2,
     )
     medians = (
@@ -127,19 +142,26 @@ def replicate_figure(long: pd.DataFrame, field: str, field_label: str) -> go.Fig
     if gene_count == 1:
         figure.add_trace(
             go.Scatter(
-                x=medians[field],
-                y=medians["median"],
+                x=medians["median"],
+                y=medians[field],
                 mode="markers",
                 name="Group median",
                 marker={"symbol": "diamond", "size": 11, "color": "#f5b85b"},
-                hovertemplate="%{x}<br>Median log₂(TPM + 1): %{y:.2f}<extra></extra>",
+                hovertemplate="%{y}<br>Median log₂(TPM + 1): %{x:.2f}<extra></extra>",
             )
         )
     figure.update_traces(jitter=0.34, marker={"opacity": 0.7}, selector={"type": "box"})
     figure.update_layout(
-        height=430,
-        margin={"l": 20, "r": 15, "t": 20, "b": 70},
-        xaxis_tickangle=-35,
+        height=max(340, 110 + 27 * len(condition_order)),
+        margin={"l": 20, "r": 20, "t": 20, "b": 45},
+        xaxis={"title": "log₂(TPM + 1)", "rangemode": "tozero"},
+        yaxis={
+            "title": field_label,
+            "categoryorder": "array",
+            "categoryarray": condition_order,
+            "autorange": "reversed",
+            "automargin": True,
+        },
         legend_title_text="",
     )
     return figure
@@ -284,6 +306,11 @@ if mode == "Genes":
         format_func=lambda key: datasets[key].label,
         help="AaegL3.3 is a legacy re-annotation of the same 2016 samples, not a third experiment.",
     )
+    sort_conditions = st.toggle(
+        "Sort conditions by expression",
+        value=False,
+        help="Show the highest median TPM condition first within each study plot.",
+    )
     queries = parse_queries(query_text)
 
     if not queries:
@@ -359,18 +386,16 @@ if mode == "Genes":
                 },
             )
 
-            plot_columns = st.columns(len(per_study))
-            for column, (key, matches) in zip(plot_columns, per_study.items()):
+            for key, matches in per_study.items():
                 dataset = datasets[key]
                 field, field_label = default_grouping(dataset)
                 long = expression_long(dataset, matches)
-                with column:
-                    st.markdown(f"**{dataset.label}**")
-                    st.plotly_chart(
-                        replicate_figure(long, field, field_label),
-                        width="stretch",
-                        key=f"gene_plot_{query}_{key}",
-                    )
+                st.markdown(f"**{dataset.label}**")
+                st.plotly_chart(
+                    replicate_figure(long, field, field_label, sort_conditions),
+                    width="stretch",
+                    key=f"gene_plot_{query}_{key}",
+                )
 
             with st.expander("Identifiers, raw values & download"):
                 st.dataframe(pd.concat(annotations, ignore_index=True), hide_index=True, width="stretch")
