@@ -78,6 +78,7 @@ datasets = datasets_resource(DATA_SCHEMA_VERSION)
 ordered_dataset_keys = [key for key in DATASET_ORDER if key in datasets] + sorted(
     key for key in datasets if key not in DATASET_ORDER
 )
+study_keys = [key for key in ordered_dataset_keys if key != "neuro_legacy"]
 
 
 def parse_queries(raw: str) -> list[str]:
@@ -293,10 +294,14 @@ with st.sidebar:
     if not PUBLIC_MODE and st.button("Import nf-core TPM", width="stretch"):
         import_nfcore_dialog()
     with st.expander("Datasets"):
-        for key in ordered_dataset_keys:
+        for key in study_keys:
             dataset = datasets[key]
             st.markdown(f"**{dataset.label}**")
             st.caption(f"{dataset.paper} · {len(dataset.sample_columns)} sample columns")
+        if "neuro_legacy" in datasets:
+            st.caption(
+                "The AaegL3.3 matrix is retained internally for legacy identifier compatibility; it re-annotates the same 2016 samples and is not a third study."
+            )
     with st.expander("Methods & limits"):
         st.markdown(
             "TPM supports descriptive expression patterns within a study. Studies are plotted separately; raw TPM should not be ranked across papers. Differential-expression claims require raw counts and a replicate-aware model."
@@ -328,7 +333,7 @@ if mode == "Genes":
     )
     selected_keys = st.multiselect(
         "Studies",
-        options=ordered_dataset_keys,
+        options=study_keys,
         default=["neuro_ru"] if "neuro_ru" in datasets else study_keys[:1],
         format_func=lambda key: datasets[key].label,
         help="AaegL3.3 is a legacy re-annotation of the same 2016 samples, not a third experiment.",
@@ -486,7 +491,7 @@ else:
     family_name = FAMILIES[family_label]
     family_keys = st.multiselect(
         "Studies",
-        options=ordered_dataset_keys,
+        options=study_keys,
         default=[key for key in ("neuro_ru", "elife") if key in datasets],
         format_func=lambda key: datasets[key].label,
     )

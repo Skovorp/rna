@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import streamlit as st
+
+
+ASSET_DIR = Path(__file__).resolve().parents[1] / "assets"
 
 
 st.set_page_config(
@@ -29,6 +34,12 @@ st.markdown(
 
 st.info(
     "Both RNA-seq studies in this atlas sampled adult mosquitoes. Egg, larva, and pupa are included below for orientation, but they are not expression conditions in these matrices."
+)
+
+st.image(
+    ASSET_DIR / "mosquito_anatomy.png",
+    caption="Simplified adult mosquito anatomy · dorsal view · not to scale",
+    width=800,
 )
 
 st.markdown("## How to read a plot row")

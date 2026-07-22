@@ -19,7 +19,7 @@ Open `http://localhost:8501`.
 - **Mosquito cheatsheet:** look up adult anatomy, sampled tissues, life stages, feeding states, and the drought-study reproductive timeline in plain language.
 - **Data & provenance:** use the collapsed sidebar for dataset descriptions, interpretation limits, and local nf-core/rnaseq imports.
 
-The updated AaegL.RU annotation is the default. The AaegL3.3 matrix remains available for legacy identifier compatibility but is not presented as a separate biological experiment.
+The study selector shows the two biological studies only. The updated AaegL.RU annotation represents the 2016 paper; its duplicate AaegL3.3 matrix is retained internally for legacy identifier compatibility rather than displayed as a third study.
 
 The import dialog accepts `salmon.merged.gene_tpm.tsv`, `rsem.merged.gene_tpm.tsv`, or equivalent nf-core/rnaseq 3.26.0 merged gene-TPM output. Imported matrices remain local under `rna/expression/imports/`.
 
