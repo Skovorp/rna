@@ -1,0 +1,13 @@
+.DS_Store
+.pytest_cache/
+.venv/
+__pycache__/
+*.pyc
+app/logs/
+expression/imports/
+logs/
+manifests/
+papers/
+raw/
+supplementary/
+scripts/

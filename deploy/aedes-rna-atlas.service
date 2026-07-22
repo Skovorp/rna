@@ -1,0 +1,15 @@
+[Unit]
+Description=Aedes RNA Atlas Streamlit app
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi-rus/Downloads/feral-remote/aedes-rna-atlas
+Environment=RNA_ATLAS_PUBLIC=1
+ExecStart=/home/pi-rus/miniforge3/envs/aedes-rna-atlas/bin/streamlit run app/app.py --server.address 127.0.0.1 --server.port 8501 --server.headless true
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+

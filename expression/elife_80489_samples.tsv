@@ -1,0 +1,34 @@
+sample	reproductive_state	replicate
+Fe_Ov_NBF_1_TPM	Non-blood-fed	1
+Fe_Ov_NBF_2_TPM	Non-blood-fed	2
+Fe_Ov_NBF_3_TPM	Non-blood-fed	3
+Fe_Ov_3hBF_1_TPM	3 hours post-blood-meal	1
+Fe_Ov_3hBF_2_TPM	3 hours post-blood-meal	2
+Fe_Ov_3hBF_3_TPM	3 hours post-blood-meal	3
+Fe_Ov_6hBF_1_TPM	6 hours post-blood-meal	1
+Fe_Ov_6hBF_2_TPM	6 hours post-blood-meal	2
+Fe_Ov_6hBF_3_TPM	6 hours post-blood-meal	3
+Fe_Ov_12hBF_1_TPM	12 hours post-blood-meal	1
+Fe_Ov_12hBF_2_TPM	12 hours post-blood-meal	2
+Fe_Ov_12hBF_3_TPM	12 hours post-blood-meal	3
+Fe_Ov_24hBF_1_TPM	24 hours (1 day) post-blood-meal	1
+Fe_Ov_24hBF_2_TPM	24 hours (1 day) post-blood-meal	2
+Fe_Ov_24hBF_3_TPM	24 hours (1 day) post-blood-meal	3
+Fe_Ov_48hBF_1_TPM	48 hours (2 days) post-blood-meal	1
+Fe_Ov_48hBF_2_TPM	48 hours (2 days) post-blood-meal	2
+Fe_Ov_48hBF_3_TPM	48 hours (2 days) post-blood-meal	3
+Fe_Ov_72hBF_1_TPM	72 hours (3 days) post-blood-meal	1
+Fe_Ov_72hBF_2_TPM	72 hours (3 days) post-blood-meal	2
+Fe_Ov_72hBF_3_TPM	72 hours (3 days) post-blood-meal	3
+Fe_Ov_96hBF_1_TPM	96 hours (4 days) post-blood-meal	1
+Fe_Ov_96hBF_2_TPM	96 hours (4 days) post-blood-meal	2
+Fe_Ov_96hBF_3_TPM	96 hours (4 days) post-blood-meal	3
+Fe_Ov_6dBF_Retained_1_TPM	6 days post-blood-meal (eggs retained)	1
+Fe_Ov_6dBF_Retained_2_TPM	6 days post-blood-meal (eggs retained)	2
+Fe_Ov_6dBF_Retained_3_TPM	6 days post-blood-meal (eggs retained)	3
+Fe_Ov_6dBF_Laid_1_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	1
+Fe_Ov_6dBF_Laid_2_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	2
+Fe_Ov_6dBF_Laid_3_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	3
+Fe_Ov_13dBF_1_TPM	13 days post-blood-meal (eggs laid >1 week prior)	1
+Fe_Ov_13dBF_2_TPM	13 days post-blood-meal (eggs laid >1 week prior)	2
+Fe_Ov_13dBF_3_TPM	13 days post-blood-meal (eggs laid >1 week prior)	3

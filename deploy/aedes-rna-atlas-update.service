@@ -1,0 +1,8 @@
+[Unit]
+Description=Update Aedes RNA Atlas from GitHub
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/pi-rus/Downloads/feral-remote/aedes-rna-atlas/deploy/update.sh
+
