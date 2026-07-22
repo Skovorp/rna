@@ -12,6 +12,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from expression_explorer.comparison import compare_conditions
 from expression_explorer.data import (
     DATASET_ORDER,
     expression_long,
@@ -229,6 +230,55 @@ def heatmap_figure(
     return figure
 
 
+def differential_figure(results: pd.DataFrame) -> go.Figure:
+    plot = results.copy()
+    plot["minus_log10_fdr"] = -np.log10(plot["fdr"].clip(lower=1e-300))
+    figure = go.Figure()
+    for significant, label, color, opacity in (
+        (False, "FDR ≥ 0.05", "#879391", 0.34),
+        (True, "FDR < 0.05", "#f5b85b", 0.86),
+    ):
+        subset = plot[plot["significant"].eq(significant)]
+        figure.add_trace(
+            go.Scattergl(
+                x=subset["log2_difference"],
+                y=subset["minus_log10_fdr"],
+                mode="markers",
+                name=label,
+                marker={"size": 6, "color": color, "opacity": opacity},
+                customdata=subset[
+                    ["gene", "stable_id", "mean_tpm_a", "mean_tpm_b", "fdr"]
+                ].to_numpy(),
+                hovertemplate=(
+                    "<b>%{customdata[0]}</b><br>"
+                    "Stable ID: %{customdata[1]}<br>"
+                    "Mean TPM (A): %{customdata[2]:.3f}<br>"
+                    "Mean TPM (B): %{customdata[3]:.3f}<br>"
+                    "log₂ difference (B − A): %{x:.3f}<br>"
+                    "FDR: %{customdata[4]:.3g}<extra></extra>"
+                ),
+            )
+        )
+    figure.add_hline(
+        y=-np.log10(0.05),
+        line={"color": "rgba(245,184,91,.55)", "dash": "dot", "width": 1},
+        annotation_text="FDR 0.05",
+        annotation_position="top left",
+    )
+    figure.add_vline(
+        x=0,
+        line={"color": "rgba(148,163,184,.38)", "dash": "dot", "width": 1},
+    )
+    figure.update_layout(
+        height=510,
+        margin={"l": 25, "r": 25, "t": 35, "b": 55},
+        xaxis={"title": "Difference in mean log₂(TPM + 1), B − A", "zeroline": False},
+        yaxis={"title": "−log₁₀(FDR)", "rangemode": "tozero"},
+        legend={"title": {"text": ""}},
+    )
+    return figure
+
+
 def annotation_table(matches: pd.DataFrame) -> pd.DataFrame:
     return matches.reindex(columns=ANNOTATION_COLUMNS, fill_value="").rename(
         columns={
@@ -302,14 +352,9 @@ with st.sidebar:
             st.caption(
                 "The AaegL3.3 matrix is retained internally for legacy identifier compatibility; it re-annotates the same 2016 samples and is not a third study."
             )
-    with st.expander("Methods & limits"):
-        st.markdown(
-            "TPM supports descriptive expression patterns within a study. Studies are plotted separately; raw TPM should not be ranked across papers. Differential-expression claims require raw counts and a replicate-aware model."
-        )
-
 st.title("Aedes RNA Atlas")
 st.markdown(
-    '<div class="atlas-subtle">Search genes, compare a panel, or inspect a receptor family. Points are biological samples; diamonds are group medians.</div>',
+    '<div class="atlas-subtle">Search genes, compare conditions, or inspect a receptor family. Points are biological samples; diamonds are group medians.</div>',
     unsafe_allow_html=True,
 )
 st.page_link(
@@ -320,7 +365,7 @@ st.page_link(
 
 mode = st.segmented_control(
     "Analysis mode",
-    ["Genes", "Families"],
+    ["Genes", "Families", "Compare conditions"],
     default="Genes",
     label_visibility="collapsed",
 )
@@ -497,7 +542,10 @@ if mode == "Genes":
                 for key, values in missing.items():
                     st.write(f"**{datasets[key].label}:** {', '.join(values)}")
 
-else:
+elif mode == "Families":
+    st.caption(
+        "Family selection filters to genes annotated as IR, OR, GR, or OBP and ranks individual genes by their highest condition median TPM. It does not combine the family into one score or run a family-level statistical test."
+    )
     family_label = st.selectbox("Gene family", list(FAMILIES), index=0)
     family_name = FAMILIES[family_label]
     family_keys = st.multiselect(
@@ -509,7 +557,11 @@ else:
     with st.expander("Advanced display options"):
         top_n = st.slider("Genes in each heatmap", 10, 80, 40, 5)
         threshold = st.number_input("Exploratory detection threshold (TPM)", 0.0, value=1.0, step=0.5)
-        row_zscore = st.toggle("Show relative pattern within each gene", value=True)
+        row_zscore = st.toggle(
+            "Show relative pattern within each gene",
+            value=True,
+            help="Convert each gene's log₂(TPM + 1) values to z-scores across conditions. Positive means above that gene's average; negative means below it.",
+        )
 
     if not family_keys:
         st.info("Choose at least one study.")
@@ -604,7 +656,154 @@ else:
                     f"family_download_{key}",
                 )
 
-with st.expander("How to interpret these plots"):
-    st.markdown(
-        "Points are individual samples and diamonds are group medians. TPM is descriptive normalized abundance. Compare patterns within a study; across papers, compare qualitative patterns only. Family z-scores emphasize where each gene is relatively enriched, while the adjacent table preserves absolute TPM context."
+else:
+    st.markdown("### Compare all genes between two conditions")
+    st.caption(
+        "Choose two conditions from one study. Positive log₂ difference means higher expression in B; negative means higher in A."
     )
+    comparison_key = st.selectbox(
+        "Study",
+        options=study_keys,
+        format_func=lambda key: datasets[key].label,
+    )
+    comparison_dataset = datasets[comparison_key]
+    comparison_field, _ = default_grouping(comparison_dataset)
+    comparison_groups = [
+        value
+        for value in comparison_dataset.samples[comparison_field]
+        .fillna("")
+        .astype(str)
+        .drop_duplicates()
+        if value
+    ]
+    default_b_name = (
+        "6 days post-blood-meal (eggs retained)"
+        if comparison_key == "elife"
+        else "Antenna · Non-blood-fed / sugar-fed"
+    )
+    default_b_index = (
+        comparison_groups.index(default_b_name)
+        if default_b_name in comparison_groups
+        else min(1, len(comparison_groups) - 1)
+    )
+    condition_a_column, condition_b_column = st.columns(2)
+    with condition_a_column:
+        condition_a = st.selectbox("Condition A", comparison_groups, index=0)
+    with condition_b_column:
+        condition_b = st.selectbox(
+            "Condition B", comparison_groups, index=default_b_index
+        )
+
+    if condition_a == condition_b:
+        st.info("Choose two different conditions.")
+    else:
+        try:
+            comparison_results, samples_a, samples_b = compare_conditions(
+                comparison_dataset,
+                comparison_field,
+                condition_a,
+                condition_b,
+            )
+        except ValueError as exc:
+            st.warning(str(exc))
+        else:
+            significant_count = int(comparison_results["significant"].sum())
+            sample_a_metric, sample_b_metric, significant_metric = st.columns(3)
+            sample_a_metric.metric("Samples in A", samples_a)
+            sample_b_metric.metric("Samples in B", samples_b)
+            significant_metric.metric("Genes with FDR < 0.05", significant_count)
+            st.plotly_chart(
+                differential_figure(comparison_results),
+                width="stretch",
+                key=f"condition_comparison_{comparison_key}",
+            )
+            st.caption(
+                "Welch's t-test is run on replicate-level log₂(TPM + 1); FDR is Benjamini–Hochberg correction across all genes. This is exploratory because TPM-based tests do not model RNA-seq count dispersion. Use raw counts with DESeq2 or edgeR for publication-grade differential expression."
+            )
+
+            filter_text = st.text_input(
+                "Filter results by gene or Stable ID",
+                placeholder="e.g. Ir25a or AAEL005776",
+            ).strip()
+            displayed_results = comparison_results
+            if filter_text:
+                needle = filter_text.casefold()
+                displayed_results = comparison_results[
+                    comparison_results["gene"].astype(str).str.casefold().str.contains(needle, regex=False)
+                    | comparison_results["stable_id"].astype(str).str.casefold().str.contains(needle, regex=False)
+                ]
+            display_table = displayed_results.rename(
+                columns={
+                    "gene": "Gene",
+                    "stable_id": "Stable ID",
+                    "mean_tpm_a": "Mean TPM (A)",
+                    "mean_tpm_b": "Mean TPM (B)",
+                    "median_tpm_a": "Median TPM (A)",
+                    "median_tpm_b": "Median TPM (B)",
+                    "log2_difference": "log₂ difference (B − A)",
+                    "p_value": "Raw p-value",
+                    "fdr": "FDR",
+                }
+            )[
+                [
+                    "Gene",
+                    "Stable ID",
+                    "Mean TPM (A)",
+                    "Mean TPM (B)",
+                    "Median TPM (A)",
+                    "Median TPM (B)",
+                    "log₂ difference (B − A)",
+                    "Raw p-value",
+                    "FDR",
+                ]
+            ]
+            st.dataframe(
+                display_table,
+                hide_index=True,
+                width="stretch",
+                height=620,
+                column_config={
+                    "Mean TPM (A)": st.column_config.NumberColumn(format="%.3f"),
+                    "Mean TPM (B)": st.column_config.NumberColumn(format="%.3f"),
+                    "Median TPM (A)": st.column_config.NumberColumn(format="%.3f"),
+                    "Median TPM (B)": st.column_config.NumberColumn(format="%.3f"),
+                    "log₂ difference (B − A)": st.column_config.NumberColumn(format="%.3f"),
+                    "Raw p-value": st.column_config.NumberColumn(format="%.3e"),
+                    "FDR": st.column_config.NumberColumn(format="%.3e"),
+                },
+            )
+
+            download_table = comparison_results.rename(
+                columns={
+                    "gene": "Gene",
+                    "stable_id": "Stable ID",
+                    "mean_tpm_a": "Mean TPM (A)",
+                    "mean_tpm_b": "Mean TPM (B)",
+                    "median_tpm_a": "Median TPM (A)",
+                    "median_tpm_b": "Median TPM (B)",
+                    "log2_difference": "log₂ difference (B − A)",
+                    "p_value": "Raw p-value",
+                    "fdr": "FDR",
+                }
+            )[
+                [
+                    "Gene",
+                    "Stable ID",
+                    "Mean TPM (A)",
+                    "Mean TPM (B)",
+                    "Median TPM (A)",
+                    "Median TPM (B)",
+                    "log₂ difference (B − A)",
+                    "Raw p-value",
+                    "FDR",
+                ]
+            ]
+            download_table.insert(0, "Condition B", condition_b)
+            download_table.insert(0, "Condition A", condition_a)
+            download_table.insert(0, "Study", comparison_dataset.label)
+            download_tsv(
+                "Download all comparison results",
+                download_table,
+                f"{comparison_key}_condition_comparison.tsv",
+                f"condition_comparison_download_{comparison_key}",
+            )
