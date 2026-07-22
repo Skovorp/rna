@@ -55,6 +55,10 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     }
     assert {"ir25a", "orco"} <= _rendered_gene_names(app)
 
+    studies = next(widget for widget in app.multiselect if widget.label == "Studies")
+    assert len(studies.options) == 2
+    assert all("legacy" not in option.casefold() for option in studies.options)
+
     widget_types = (
         "button",
         "checkbox",
@@ -152,12 +156,12 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     assert sorted_plot["layout"]["yaxis"]["categoryarray"] == expected_order
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
-    studies.set_value(["elife", "neuro_ru", "neuro_legacy"]).run()
+    studies.set_value(["elife", "neuro_ru"]).run()
     assert not app.exception
     study_plots = [
         _plotly_spec(app, index)
         for index in range(len(app.get("plotly_chart")))
         if _plotly_spec(app, index)["data"][0]["type"] == "box"
     ]
-    assert len(study_plots) == 6
+    assert len(study_plots) == 4
     assert all(plot["data"][0]["orientation"] == "h" for plot in study_plots)
