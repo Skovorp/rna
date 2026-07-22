@@ -230,13 +230,36 @@ def heatmap_figure(
     return figure
 
 
+def ma_ratio_limit(results: pd.DataFrame) -> float:
+    finite_ratios = results.loc[
+        results["ma_plot_eligible"], "log2_ratio_a_over_b"
+    ].dropna()
+    if finite_ratios.empty:
+        return 2.0
+    return max(2.0, float(np.ceil(finite_ratios.abs().quantile(0.995))))
+
+
+def ma_abundance_range(results: pd.DataFrame) -> list[float]:
+    finite_abundance = results.loc[
+        results["ma_plot_eligible"], "log2_average_tpm"
+    ].dropna()
+    if finite_abundance.empty:
+        return [-1.0, 1.0]
+    lower = float(np.floor(finite_abundance.quantile(0.005)))
+    upper = float(np.ceil(finite_abundance.max()))
+    return [lower, max(lower + 1.0, upper)]
+
+
 def ma_figure(results: pd.DataFrame) -> go.Figure:
+    plotted = results[results["ma_plot_eligible"]].copy()
+    ratio_limit = ma_ratio_limit(results)
+    abundance_range = ma_abundance_range(results)
     figure = go.Figure()
     for significant, label, opacity in (
         (False, "FDR ≥ 0.05 · faint", 0.12),
         (True, "FDR < 0.05 · opaque", 0.92),
     ):
-        subset = results[results["significant"].eq(significant)]
+        subset = plotted[plotted["significant"].eq(significant)]
         figure.add_trace(
             go.Scattergl(
                 x=subset["log2_average_tpm"],
@@ -272,8 +295,15 @@ def ma_figure(results: pd.DataFrame) -> go.Figure:
     figure.update_layout(
         height=510,
         margin={"l": 25, "r": 25, "t": 35, "b": 55},
-        xaxis={"title": "Average abundance: log₂(mean TPM + 1)", "rangemode": "tozero"},
-        yaxis={"title": "log₂((mean TPM A + 1) / (mean TPM B + 1))", "zeroline": False},
+        xaxis={
+            "title": "Average abundance: log₂(mean TPM)",
+            "range": abundance_range,
+        },
+        yaxis={
+            "title": "log₂(mean TPM A / mean TPM B)",
+            "range": [-ratio_limit, ratio_limit],
+            "zeroline": False,
+        },
         legend={"title": {"text": ""}},
     )
     return figure
@@ -707,15 +737,28 @@ else:
         except ValueError as exc:
             st.warning(str(exc))
         else:
-            significant_count = int(comparison_results["significant"].sum())
+            plotted_results = comparison_results[comparison_results["ma_plot_eligible"]]
+            significant_count = int(plotted_results["significant"].sum())
+            omitted_count = len(comparison_results) - len(plotted_results)
+            ratio_limit = ma_ratio_limit(comparison_results)
+            abundance_range = ma_abundance_range(comparison_results)
+            off_scale_count = int(
+                (plotted_results["log2_ratio_a_over_b"].abs() > ratio_limit).sum()
+            )
+            low_abundance_off_scale = int(
+                (plotted_results["log2_average_tpm"] < abundance_range[0]).sum()
+            )
             sample_a_metric, sample_b_metric, significant_metric = st.columns(3)
             sample_a_metric.metric("Samples in A", samples_a)
             sample_b_metric.metric("Samples in B", samples_b)
-            significant_metric.metric("Genes with FDR < 0.05", significant_count)
+            significant_metric.metric("Opaque genes · FDR < 0.05", significant_count)
             st.plotly_chart(
                 ma_figure(comparison_results),
                 width="stretch",
                 key=f"condition_comparison_{comparison_key}",
+            )
+            st.caption(
+                f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero mean TPM in A or B are omitted because their log ratio is undefined. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme ratios; use Plotly zoom to inspect them."
             )
             st.caption(
                 "Welch's t-test is run on replicate-level log₂(TPM + 1); FDR is Benjamini–Hochberg correction across all genes. This is exploratory because TPM-based tests do not model RNA-seq count dispersion. Use raw counts with DESeq2 or edgeR for publication-grade differential expression."

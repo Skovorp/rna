@@ -18,14 +18,15 @@ def test_compare_conditions_reports_tpm_difference_pvalue_and_fdr():
             [1.0, 1.2, 0.9, 1.1, 20.0, 21.0, 19.0, 22.0],
             [30.0, 28.0, 31.0, 29.0, 2.0, 2.2, 1.8, 2.1],
             [5.0, 5.1, 4.9, 5.0, 5.0, 5.1, 4.9, 5.0],
+            [0.0, 0.0, 0.0, 0.0, 0.1, 0.2, 0.1, 0.2],
         ],
         columns=sample_names,
     )
     genes = pd.DataFrame(
         {
-            "row_id": [0, 1, 2],
-            "display_name": ["HigherB", "HigherA", "Same"],
-            "stable_id": ["ID1", "ID2", "ID3"],
+            "row_id": [0, 1, 2, 3],
+            "display_name": ["HigherB", "HigherA", "Same", "ZeroInA"],
+            "stable_id": ["ID1", "ID2", "ID3", "ID4"],
         }
     )
     samples = pd.DataFrame(
@@ -52,7 +53,9 @@ def test_compare_conditions_reports_tpm_difference_pvalue_and_fdr():
     assert indexed.loc["HigherB", "log2_ratio_a_over_b"] < 0
     assert indexed.loc["HigherA", "log2_ratio_a_over_b"] > 0
     assert np.isclose(indexed.loc["HigherB", "average_tpm"], 10.775)
-    assert np.isclose(indexed.loc["HigherB", "log2_average_tpm"], np.log2(11.775))
+    assert np.isclose(indexed.loc["HigherB", "log2_average_tpm"], np.log2(10.775))
+    assert not indexed.loc["ZeroInA", "ma_plot_eligible"]
+    assert np.isnan(indexed.loc["ZeroInA", "log2_ratio_a_over_b"])
     assert indexed.loc["Same", "p_value"] == 1.0
     assert indexed.loc["HigherB", "fdr"] < 0.05
     assert indexed.loc["HigherB", "significant"]
