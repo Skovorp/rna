@@ -4,9 +4,15 @@ from streamlit.testing.v1 import AppTest
 
 
 CHEATSHEET = Path(__file__).resolve().parents[1] / "pages" / "1_Mosquito_cheatsheet.py"
+ANATOMY_IMAGE = (
+    Path(__file__).resolve().parents[1] / "assets" / "mosquito_body_parts_reference.png"
+)
 
 
 def test_cheatsheet_renders_dataset_terms(monkeypatch):
+    assert ANATOMY_IMAGE.exists()
+    assert ANATOMY_IMAGE.stat().st_size > 20_000
+    assert ANATOMY_IMAGE.read_bytes().startswith(b"\x89PNG\r\n\x1a\n")
     monkeypatch.syspath_prepend(str(CHEATSHEET.parents[1]))
     app = AppTest.from_file(str(CHEATSHEET), default_timeout=30).run()
 
