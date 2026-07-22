@@ -110,6 +110,8 @@ def replicate_figure(
     field: str,
     field_label: str,
     sort_by_expression: bool = False,
+    show_medians: bool = True,
+    show_guides: bool = True,
 ) -> go.Figure:
     plot = long.copy()
     plot["log_tpm"] = np.log2(plot["tpm"] + 1.0)
@@ -139,19 +141,33 @@ def replicate_figure(
         .median()
         .rename(columns={"log_tpm": "median"})
     )
-    if gene_count == 1:
+    if show_medians and gene_count == 1:
         figure.add_trace(
             go.Scatter(
                 x=medians["median"],
                 y=medians[field],
                 mode="markers",
                 name="Group median",
+                showlegend=False,
                 marker={"symbol": "diamond", "size": 11, "color": "#f5b85b"},
                 hovertemplate="%{y}<br>Median log₂(TPM + 1): %{x:.2f}<extra></extra>",
             )
         )
     expression_max = float(plot["log_tpm"].max()) if not plot.empty else 0.0
     expression_upper = max(1.0, expression_max + max(0.2, expression_max * 0.04))
+    if show_guides:
+        for condition in condition_order[::2]:
+            figure.add_shape(
+                type="line",
+                xref="paper",
+                x0=0,
+                x1=1,
+                yref="y",
+                y0=condition,
+                y1=condition,
+                layer="below",
+                line={"color": "rgba(148, 163, 184, 0.28)", "dash": "dot", "width": 1},
+            )
     figure.update_traces(jitter=0.34, marker={"opacity": 0.7}, selector={"type": "box"})
     figure.update_layout(
         height=max(340, 110 + 27 * len(condition_order)),
@@ -168,7 +184,7 @@ def replicate_figure(
             "autorange": "reversed",
             "automargin": True,
         },
-        legend_title_text="",
+        legend={"title": {"text": ""}, "itemclick": False, "itemdoubleclick": False},
     )
     return figure
 
@@ -317,11 +333,25 @@ if mode == "Genes":
         format_func=lambda key: datasets[key].label,
         help="AaegL3.3 is a legacy re-annotation of the same 2016 samples, not a third experiment.",
     )
-    sort_conditions = st.toggle(
-        "Sort conditions by expression",
-        value=False,
-        help="Show the highest median TPM condition first within each study plot.",
-    )
+    sort_column, median_column, guide_column = st.columns(3)
+    with sort_column:
+        sort_conditions = st.toggle(
+            "Sort conditions by expression",
+            value=False,
+            help="Show the highest median TPM condition first within each study plot.",
+        )
+    with median_column:
+        show_medians = st.toggle(
+            "Show group medians",
+            value=True,
+            help="Show orange diamonds at the group median.",
+        )
+    with guide_column:
+        show_guides = st.toggle(
+            "Show row guides",
+            value=True,
+            help="Show a dotted horizontal guide on alternating condition rows.",
+        )
     queries = parse_queries(query_text)
 
     if not queries:
@@ -403,7 +433,14 @@ if mode == "Genes":
                 long = expression_long(dataset, matches)
                 st.markdown(f"**{dataset.label}**")
                 st.plotly_chart(
-                    replicate_figure(long, field, field_label, sort_conditions),
+                    replicate_figure(
+                        long,
+                        field,
+                        field_label,
+                        sort_conditions,
+                        show_medians,
+                        show_guides,
+                    ),
                     width="stretch",
                     key=f"gene_plot_{query}_{key}",
                 )
