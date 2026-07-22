@@ -37,8 +37,9 @@ def compare_conditions(
 ) -> tuple[pd.DataFrame, int, int]:
     """Compare all genes between two groups with Welch tests on log2(TPM + 1).
 
-    The returned log difference is mean(log2(TPM + 1)) in B minus A. Raw
-    p-values are adjusted across all tested genes using Benjamini-Hochberg FDR.
+    The returned MA coordinates use average mean TPM for abundance and the
+    log2 ratio of mean TPM in A over B, both with a +1 pseudocount. Raw p-values
+    are adjusted across all tested genes using Benjamini-Hochberg FDR.
     """
     if field not in dataset.samples.columns:
         raise ValueError(f"Unknown sample grouping field: {field}")
@@ -74,23 +75,29 @@ def compare_conditions(
         .set_index("row_id")
         .reindex(dataset.values.index)
     )
+    mean_tpm_a = tpm_a.mean(axis=1)
+    mean_tpm_b = tpm_b.mean(axis=1)
+    average_tpm = (mean_tpm_a + mean_tpm_b) / 2.0
+    log2_ratio_a_over_b = np.log2((mean_tpm_a + 1.0) / (mean_tpm_b + 1.0))
     results = pd.DataFrame(
         {
             "gene": annotations["display_name"].fillna("").to_numpy(),
             "stable_id": annotations["stable_id"].fillna("").to_numpy(),
-            "mean_tpm_a": tpm_a.mean(axis=1),
-            "mean_tpm_b": tpm_b.mean(axis=1),
+            "mean_tpm_a": mean_tpm_a,
+            "mean_tpm_b": mean_tpm_b,
+            "average_tpm": average_tpm,
+            "log2_average_tpm": np.log2(average_tpm + 1.0),
             "median_tpm_a": np.median(tpm_a, axis=1),
             "median_tpm_b": np.median(tpm_b, axis=1),
-            "log2_difference": log_b.mean(axis=1) - log_a.mean(axis=1),
+            "log2_ratio_a_over_b": log2_ratio_a_over_b,
             "p_value": p_values,
             "fdr": benjamini_hochberg(p_values),
         }
     )
     results["significant"] = results["fdr"] < 0.05
-    results["absolute_log2_difference"] = results["log2_difference"].abs()
+    results["absolute_log2_ratio"] = results["log2_ratio_a_over_b"].abs()
     results = results.sort_values(
-        ["fdr", "p_value", "absolute_log2_difference"],
+        ["fdr", "p_value", "absolute_log2_ratio"],
         ascending=[True, True, False],
         kind="stable",
     ).reset_index(drop=True)

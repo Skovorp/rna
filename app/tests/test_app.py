@@ -214,7 +214,8 @@ def test_condition_comparison_uses_fdr(monkeypatch):
         "Gene",
         "Mean TPM (A)",
         "Mean TPM (B)",
-        "log₂ difference (B − A)",
+        "Average TPM",
+        "log₂ ratio (A / B)",
         "Raw p-value",
         "FDR",
     } <= set(result_tables[0].columns)
@@ -222,10 +223,19 @@ def test_condition_comparison_uses_fdr(monkeypatch):
 
     plot = _plotly_spec(app)
     assert {trace["name"] for trace in plot["data"]} == {
-        "FDR ≥ 0.05",
-        "FDR < 0.05",
+        "FDR ≥ 0.05 · faint",
+        "FDR < 0.05 · opaque",
     }
     assert all(trace["type"] == "scattergl" for trace in plot["data"])
-    assert plot["layout"]["xaxis"]["title"]["text"].endswith("B − A")
-    assert plot["layout"]["yaxis"]["title"]["text"] == "−log₁₀(FDR)"
+    opacity_by_trace = {
+        trace["name"]: trace["marker"]["opacity"] for trace in plot["data"]
+    }
+    assert opacity_by_trace["FDR < 0.05 · opaque"] > opacity_by_trace["FDR ≥ 0.05 · faint"]
+    assert plot["layout"]["xaxis"]["title"]["text"] == "Average abundance: log₂(mean TPM + 1)"
+    assert (
+        plot["layout"]["yaxis"]["title"]["text"]
+        == "log₂((mean TPM A + 1) / (mean TPM B + 1))"
+    )
+    assert plot["layout"]["shapes"][0]["y0"] == 0
+    assert plot["layout"]["shapes"][0]["y1"] == 0
     assert any(button.label == "Download all comparison results" for button in app.download_button)
