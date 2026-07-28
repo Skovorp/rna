@@ -77,13 +77,14 @@ def canonical_symbol(symbol: object, stable_id: object = "") -> str:
 
 def classify_family(symbol: object) -> str:
     normalized = normalize_alias(symbol).upper()
-    if normalized == "ORCO" or re.fullmatch(r"OR\d+[A-Z]*", normalized):
+    numbered_symbol = r"\d+(?:[A-Z]+\d*)?"
+    if normalized == "ORCO" or re.fullmatch(rf"OR{numbered_symbol}", normalized):
         return "Odorant receptors (OR)"
-    if re.fullmatch(r"IR\d+[A-Z]*", normalized):
+    if re.fullmatch(rf"IR{numbered_symbol}", normalized):
         return "Ionotropic receptors (IR)"
-    if re.fullmatch(r"GR\d+[A-Z]*", normalized):
+    if re.fullmatch(rf"GR{numbered_symbol}", normalized):
         return "Gustatory receptors (GR)"
-    if re.fullmatch(r"OBP\d+[A-Z]*", normalized):
+    if re.fullmatch(rf"OBP{numbered_symbol}", normalized):
         return "Odorant-binding proteins (OBP)"
     return "Other"
 

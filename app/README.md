@@ -14,17 +14,14 @@ Open `http://localhost:8501`.
 
 ## Main workflows
 
+- **Home:** understand the atlas, the available studies, and the four analysis workflows before opening an explorer.
 - **Genes:** search symbols, `AAEL...` IDs, internal IDs, or aliases; compare panels such as `Ir25a, Orco`; inspect replicate points, group medians, paper annotations, and raw values.
-- **Families:** filter to annotated IR, OR, GR, or OBP genes; rank individual genes by peak group median; optionally use within-gene z-scores to emphasize relative patterns; export the complete family matrix. This is not a family-level statistical test.
+- **Families:** filter to annotated IR, OR, GR, or OBP genes, or enter a custom gene set with the Genes-page token editor; rank individual genes by mean TPM across all samples; show all genes by default or select the top N; optionally use within-gene z-scores to emphasize relative patterns; export the complete family matrix. This is not a family-level statistical test.
 - **Compare conditions:** compare every gene between two conditions in one study; view an MA plot with readable base-10 axes for average TPM and the exact A/B fold ratio. A configurable FDR threshold colors significant genes gold and draws them above gray nonsignificant genes. The table retains TPM summaries, raw Welch p-values, and Benjamini–Hochberg FDR. Genes with zero mean TPM in either condition remain in the table but are omitted from the plot because their ratio is undefined.
 - **Clusters:** select one study and map biological samples with PCA, UMAP, or t-SNE using standardized values from the most-variable log-transformed TPM genes; color points by available sample metadata.
-- **Mosquito basics:** look up adult anatomy, sampled tissues, life stages, feeding states, and the drought-study reproductive timeline in plain language.
-- **Data & provenance:** use the collapsed sidebar for dataset descriptions and local nf-core/rnaseq imports.
 
-The study selector shows the two biological studies only. The updated AaegL.RU annotation represents the 2016 paper; its duplicate AaegL3.3 matrix is retained internally for legacy identifier compatibility rather than displayed as a third study.
-
-The import dialog accepts `salmon.merged.gene_tpm.tsv`, `rsem.merged.gene_tpm.tsv`, or equivalent nf-core/rnaseq 3.26.0 merged gene-TPM output. Imported matrices remain local under `rna/expression/imports/`.
+The primary workflows are available from the persistent menu at the top of every page. The Streamlit sidebar and developer toolbar are hidden from the interface.
 
 The alias layer maps `Orco`, `AaegOr7`, and `AAEL005776` to the same gene. It also strips the historical `Aaeg` prefix for cross-paper matching such as `AaegIr25a` → `Ir25a`.
 
-nf-core/rnaseq remains the upstream route for future raw-read processing. This UI reads normalized gene-by-sample matrices; additional nf-core-derived matrices can be added to `expression_explorer/data.py` using the same dataset contract.
+This UI reads normalized gene-by-sample matrices. Additional matrices can be added to `expression_explorer/data.py` using the same dataset contract.

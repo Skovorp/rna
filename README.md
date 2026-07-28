@@ -31,7 +31,7 @@ Open `http://127.0.0.1:8501`.
 
 ## Pi prototype
 
-The Pi runs the public app with `RNA_ATLAS_PUBLIC=1`, which removes the local nf-core upload control. `aedes-rna-atlas-update.timer` checks `main` every minute, runs tests after a fast-forward pull, and restarts the service only when tests pass.
+`aedes-rna-atlas-update.timer` checks `main` every minute, runs tests after a fast-forward pull, and restarts the service only when tests pass.
 
 Public origin: `https://pi-rus.tailc1209.ts.net`.
 
