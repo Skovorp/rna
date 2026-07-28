@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from expression_explorer.data import (
+    classify_family,
     expression_long,
     family_members,
     load_datasets,
@@ -10,6 +11,13 @@ from expression_explorer.data import (
 
 
 EXPRESSION_DIR = Path(__file__).resolve().parents[2] / "expression"
+
+
+def test_family_classifier_accepts_numbered_gene_copies():
+    for symbol in ("Ir31a1", "Ir100a.1", "AaegIr100a.2"):
+        canonical = symbol.removeprefix("Aaeg")
+        assert classify_family(canonical) == "Ionotropic receptors (IR)"
+    assert classify_family("Ir") == "Other"
 
 
 def test_dataset_dimensions_and_sample_metadata():

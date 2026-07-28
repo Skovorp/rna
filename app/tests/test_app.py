@@ -6,6 +6,7 @@ from streamlit.testing.v1 import AppTest
 
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
+NAVIGATION_ITEMS = ["Home", "Genes", "Families", "Compare conditions", "Clusters"]
 
 
 def _widgets_with_options(app, expected_options):
@@ -31,20 +32,41 @@ def _plotly_spec(app, index=0):
     return json.loads(app.get("plotly_chart")[index].proto.spec)
 
 
+def _select_page(app, page):
+    navigation = _widgets_with_options(app, NAVIGATION_ITEMS)
+    assert len(navigation) == 1
+    navigation[0].set_value(page).run()
+    return app
+
+
 def test_default_app_renders_without_exceptions(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
 
     assert not app.exception, [exception.message for exception in app.exception]
-    assert [title.value for title in app.title] == ["Aedes RNA Atlas"]
+    assert not app.title
     assert not app.tabs
-    assert 'label="Mosquito basics"' in APP.read_text()
 
-    mode_selectors = _widgets_with_options(
-        app, ["Genes", "Families", "Compare conditions", "Clusters"]
-    )
+    mode_selectors = _widgets_with_options(app, NAVIGATION_ITEMS)
     assert len(mode_selectors) == 1
-    assert mode_selectors[0].value == "Genes"
+    assert mode_selectors[0].value == "Home"
+    home_html = " ".join(element.value for element in app.markdown)
+    assert "# Aedes RNA Atlas" in home_html
+    assert "Use the menu above to:" in home_html
+    assert "## Data sources" in home_html
+    assert 'class="home-hero"' not in home_html
+    assert 'class="home-card-grid"' not in home_html
+    assert 'class="home-metrics"' not in home_html
+
+    source = APP.read_text()
+    assert '[data-testid="stSidebar"]' in source
+    assert '[data-testid="stSidebarCollapsedControl"]' in source
+    assert '[data-testid="stToolbar"]' in source
+    assert "with st.sidebar" not in source
+    assert "not a third study" not in source
+
+    _select_page(app, "Genes")
+    assert not app.exception, [exception.message for exception in app.exception]
 
     query_text = " ".join(
         widget.value
@@ -56,11 +78,53 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert {"ir25a", "orco"} <= {
         token.casefold() for token in query_text.split()
     }
+    token_html = next(
+        element.value
+        for element in app.markdown
+        if '<div class="gene-token-overlay"' in element.value
+    )
+    assert "Ir25a" in token_html
+    assert "Orco" in token_html
+    assert token_html.count("gene-token-found") == 2
     assert {"ir25a", "orco"} <= _rendered_gene_names(app)
     assert any(
         "Samples ≥1 TPM" in element.value.columns
         for element in app.dataframe
     )
+    summary_tables = [
+        element.value
+        for element in app.dataframe
+        if "Samples ≥1 TPM" in element.value.columns
+    ]
+    assert len(summary_tables) == 1
+    assert {"ir25a", "orco"} <= {
+        str(value).casefold() for value in summary_tables[0]["Gene"]
+    }
+    raw_tables = [
+        element.value
+        for element in app.dataframe
+        if {"Gene", "Sample", "TPM"} <= set(element.value.columns)
+    ]
+    assert len(raw_tables) == 1
+    assert ".st-key-gene_setup_panel" in source
+    assert ".matched-genes-scroll" in source
+    assert "max-height: 15rem" in source
+    assert "overflow-y: auto" in source
+    info_html = " ".join(
+        element.value
+        for element in app.markdown
+        if "section-title-with-info" in element.value
+    )
+    assert "Expression across selected genes" in info_html
+    assert "One replicate plot per study" in info_html
+    assert "Expression heatmaps" in info_html
+    assert "One heatmap per study" in info_html
+    assert 'class="section-info-tooltip"' in info_html
+    assert 'tabindex="0"' in info_html
+    captions = " ".join(element.value for element in app.caption)
+    assert "One replicate plot per study" not in captions
+    assert "One heatmap per study" not in captions
+    assert "Group median TPM" not in captions
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     assert len(studies.options) == 2
@@ -88,26 +152,42 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     table_count = len(app.dataframe) + len(app.table)
     assert widget_count + table_count <= 20
 
+    logo = next(button for button in app.button if button.label == "🧬 Aedes RNA Atlas")
+    logo.click().run()
+    assert _widgets_with_options(app, NAVIGATION_ITEMS)[0].value == "Home"
+    assert any("# Aedes RNA Atlas" in element.value for element in app.markdown)
 
-def test_public_mode_hides_persistent_import(monkeypatch):
+
+def test_home_has_no_import_controls(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
-    monkeypatch.setenv("RNA_ATLAS_PUBLIC", "1")
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     assert not app.exception
-    assert all(button.label != "Import nf-core TPM" for button in app.button)
+    assert not app.file_uploader
+    assert all("import" not in button.label.casefold() for button in app.button)
+    source = APP.read_text()
+    assert "import_nfcore_dialog" not in source
+    assert "Import local nf-core TPM" not in source
 
 
 def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     assert not app.exception
+    _select_page(app, "Genes")
 
     plot = _plotly_spec(app)
     assert plot["data"][0]["orientation"] == "h"
-    assert plot["layout"]["xaxis"]["title"]["text"] == "log₂(TPM + 1)"
+    axis_scale = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "TPM scale"
+    )
+    assert list(axis_scale.options) == ["Linear", "Log base 2", "Log base 10"]
+    assert axis_scale.value == "Log base 2"
+    assert plot["layout"]["xaxis"]["title"]["text"] == "TPM (log₂ scale)"
     assert plot["layout"]["xaxis"]["autorange"] is False
     assert plot["layout"]["xaxis"]["range"][0] == 0
     assert plot["layout"]["xaxis"]["range"][1] > 0
+    assert {"0", "1", "2", "4"} <= set(plot["layout"]["xaxis"]["ticktext"])
+    assert "TPM=" in plot["data"][0]["hovertemplate"]
     assert plot["layout"]["yaxis"]["title"]["text"] == "Reproductive state"
     assert plot["layout"]["yaxis"]["autorange"] == "reversed"
     assert plot["layout"]["legend"]["itemclick"] is False
@@ -117,9 +197,54 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
 
     condition_order = plot["layout"]["yaxis"]["categoryarray"]
     guides = plot["layout"]["shapes"]
-    assert [guide["y0"] for guide in guides] == condition_order[::2]
+    assert [guide["y0"] for guide in guides] == condition_order
     assert all(guide["line"]["dash"] == "dot" for guide in guides)
     assert all(guide["layer"] == "below" for guide in guides)
+
+    axis_scale.set_value("Log base 10").run()
+    base10_plot = _plotly_spec(app, 1)
+    assert base10_plot["layout"]["xaxis"]["title"]["text"] == "TPM (log₁₀ scale)"
+    assert {"0", "1", "10", "100"} <= set(
+        base10_plot["layout"]["xaxis"]["ticktext"]
+    )
+    base10_heatmaps = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
+    ]
+    assert base10_heatmaps
+    assert all(
+        heatmap["data"][0]["colorbar"]["title"]["text"]
+        == "Median TPM<br>(log base 10 scale)"
+        for heatmap in base10_heatmaps
+    )
+    assert any(
+        {"1", "10", "100"}
+        <= set(heatmap["data"][0]["colorbar"]["ticktext"])
+        for heatmap in base10_heatmaps
+    )
+    assert all(
+        "Median TPM: %{customdata:.3f}" in heatmap["data"][0]["hovertemplate"]
+        for heatmap in base10_heatmaps
+    )
+
+    axis_scale.set_value("Linear").run()
+    linear_plot = _plotly_spec(app)
+    assert linear_plot["layout"]["xaxis"]["title"]["text"] == "TPM (linear scale)"
+    assert "ticktext" not in linear_plot["layout"]["xaxis"]
+    linear_heatmaps = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
+    ]
+    assert all(
+        heatmap["data"][0]["colorbar"]["title"]["text"]
+        == "Median TPM<br>(linear scale)"
+        for heatmap in linear_heatmaps
+    )
+
+    axis_scale.set_value("Log base 2").run()
+    plot = _plotly_spec(app)
 
     median_toggle = next(
         toggle for toggle in app.toggle if toggle.label == "Show group medians"
@@ -152,10 +277,12 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     )
     sort_toggle.set_value(True).run()
     sorted_plot = _plotly_spec(app)
-    first_trace = sorted_plot["data"][0]
     values_by_condition = {}
-    for condition, customdata in zip(first_trace["y"], first_trace["customdata"]):
-        values_by_condition.setdefault(condition, []).append(customdata[1])
+    for trace in sorted_plot["data"]:
+        if trace["type"] != "box":
+            continue
+        for condition, customdata in zip(trace["y"], trace["customdata"]):
+            values_by_condition.setdefault(condition, []).append(customdata[1])
     expected_order = sorted(
         values_by_condition,
         key=lambda condition: median(values_by_condition[condition]),
@@ -171,7 +298,7 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
         for index in range(len(app.get("plotly_chart")))
         if _plotly_spec(app, index)["data"][0]["type"] == "box"
     ]
-    assert len(study_plots) == 4
+    assert len(study_plots) == 2
     assert all(plot["data"][0]["orientation"] == "h" for plot in study_plots)
     comparison_heatmaps = [
         _plotly_spec(app, index)
@@ -180,18 +307,149 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     ]
     assert len(comparison_heatmaps) == 2
 
+    query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
+    query.set_value("Ir25a Orco Ir7a").run()
+    assert not app.exception
+    three_gene_plots = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "box"
+    ]
+    assert len(three_gene_plots) == 2
+    assert sum(trace["type"] == "box" for trace in three_gene_plots[0]["data"]) == 3
+    assert sum(trace["type"] == "box" for trace in three_gene_plots[1]["data"]) == 2
 
-def test_family_mode_explains_filter_and_zscore(monkeypatch):
+
+def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
-    mode = _widgets_with_options(
-        app, ["Genes", "Families", "Compare conditions", "Clusters"]
-    )[0]
-    mode.set_value("Families").run()
+    _select_page(app, "Genes")
+    query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
+
+    query.set_value("Orco").run()
+    assert not app.exception
+    matched_html = next(
+        element.value
+        for element in app.markdown
+        if '<div class="matched-genes-panel"' in element.value
+    )
+    assert "Matched genes · 1" in matched_html
+    assert "AAEL005776" in matched_html
+    assert "AaegOr7" in matched_html
+    assert "Or7" in matched_html
+    assert "gene14494" in matched_html
+    single_gene_plots = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "box"
+    ]
+    assert len(single_gene_plots) == 2
+    assert all(
+        any(trace.get("name") == "Orco" for trace in plot["data"])
+        for plot in single_gene_plots
+    )
+    single_gene_heatmaps = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
+    ]
+    assert len(single_gene_heatmaps) == 2
+
+    query.set_value("Ir7a").run()
+    assert not app.exception
+    query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
+    assert query.value == "ir7a"
+    warnings = " ".join(element.value for element in app.warning)
+    assert "Gene not found:" in warnings
+    assert "ir7a" in warnings
+    assert "Neurotranscriptome · updated AaegL.RU" in warnings
+    matched_html = next(
+        element.value
+        for element in app.markdown
+        if '<div class="matched-genes-panel"' in element.value
+    )
+    assert "No alternative names found" in matched_html
+
+    query.set_value("definitely_not_a_gene").run()
+    assert not app.exception
+    warnings = [element.value for element in app.warning]
+    assert len(warnings) == 2
+    assert all("Gene not found:" in warning for warning in warnings)
+
+
+def test_gene_input_normalizes_and_color_codes_submitted_tokens(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Genes")
+    query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
+
+    query.set_value("oRco, ir7a dlkvnsdlknv").run()
+    assert not app.exception
+    query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
+    assert query.value == "orco ir7a dlkvnsdlknv"
+    token_html = next(
+        element.value
+        for element in app.markdown
+        if '<div class="gene-token-overlay"' in element.value
+    )
+    assert "Orco" in token_html
+    assert ">OR<" in token_html
+    assert "Ir7a" in token_html
+    assert ">IR<" in token_html
+    assert "dlkvnsdlknv" in token_html
+    assert ">not found<" in token_html
+    assert token_html.count("gene-token-found") == 2
+    assert token_html.count("gene-token-missing") == 1
+    assert "gene-token-gene-0" in token_html
+    assert "gene-token-gene-6" in token_html
+    assert "gene-family-or" in token_html
+    assert "gene-family-ir" in token_html
+    assert "Click the field to edit as plain text" in token_html
+    assert "identifies this gene" in token_html
+    assert "Gray means no matching gene was detected" in token_html
+
+
+def test_family_mode_defaults_to_all_and_ranks_top_n_by_mean_tpm(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Families")
 
     assert not app.exception
+    source = APP.read_text()
+    assert ".st-key-family_setup_panel" in source
     captions = " ".join(element.value for element in app.caption)
-    assert "does not combine the family into one score" in captions
+    assert "does not combine the family into one score" not in captions
+    family_selector = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Gene family"
+    )
+    assert family_selector.options[-1] == "Custom family"
+    gene_count = next(
+        slider
+        for slider in app.select_slider
+        if slider.label == "Genes in each heatmap"
+    )
+    coverage = next(
+        frame.value
+        for frame in app.dataframe
+        if "Family genes" in frame.value.columns
+    )
+    assert gene_count.value == int(coverage["Family genes"].max())
+    assert gene_count.options[-1] == f"All ({gene_count.value})"
+    assert "ranked by mean TPM across all biological samples" in gene_count.help
+    assert "Selecting N shows exactly the N highest-ranked genes" in gene_count.help
+    assert "Heatmap cells still show the median TPM" in gene_count.help
+    assert all(
+        widget.label != "Exploratory detection threshold (TPM)"
+        for widget in app.number_input
+    )
+    all_gene_tables = [
+        frame.value
+        for frame in app.dataframe
+        if "Mean TPM" in frame.value.columns
+    ][::2]
+    assert [len(table) for table in all_gene_tables] == coverage[
+        "Family genes"
+    ].tolist()
     zscore_toggle = next(
         toggle
         for toggle in app.toggle
@@ -199,16 +457,73 @@ def test_family_mode_explains_filter_and_zscore(monkeypatch):
     )
     assert "z-scores" in zscore_toggle.help
 
+    gene_count.set_value(10).run()
+    assert not app.exception
+    displayed_tables = [
+        frame.value
+        for frame in app.dataframe
+        if "Mean TPM" in frame.value.columns
+    ][::2]
+    heatmaps = [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
+    ]
+    assert len(displayed_tables) == len(heatmaps) == 2
+    for table, heatmap in zip(displayed_tables, heatmaps):
+        assert len(table) == 10
+        assert table["Mean TPM"].is_monotonic_decreasing
+        assert heatmap["data"][0]["y"] == table["Gene"].tolist()
+
+
+def test_custom_family_reuses_gene_editor_and_shows_all_matches(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Families")
+
+    family_selector = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Gene family"
+    )
+    family_selector.set_value("Custom family").run()
+    query = next(
+        widget for widget in app.text_input if widget.label == "Genes or identifiers"
+    )
+    query.set_value("Ir25a Orco").run()
+
+    assert not app.exception
+    token_html = next(
+        element.value
+        for element in app.markdown
+        if '<div class="gene-token-overlay"' in element.value
+    )
+    assert "Ir25a" in token_html
+    assert "Orco" in token_html
+    assert token_html.count("gene-token-found") == 2
+    gene_count = next(
+        slider
+        for slider in app.select_slider
+        if slider.label == "Genes in each heatmap"
+    )
+    assert gene_count.value == 2
+    assert gene_count.options[-1] == "All (2)"
+    displayed_tables = [
+        frame.value
+        for frame in app.dataframe
+        if "Mean TPM" in frame.value.columns
+    ][::2]
+    assert displayed_tables
+    assert all(len(table) == 2 for table in displayed_tables)
+    source = APP.read_text()
+    assert ".st-key-family_query_editor" in source
+
 
 def test_condition_comparison_uses_fdr(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
-    mode = _widgets_with_options(
-        app, ["Genes", "Families", "Compare conditions", "Clusters"]
-    )[0]
-    mode.set_value("Compare conditions").run()
+    _select_page(app, "Compare conditions")
 
     assert not app.exception, [exception.message for exception in app.exception]
+    assert ".st-key-condition_setup_panel" in APP.read_text()
     result_tables = [frame.value for frame in app.dataframe if "FDR" in frame.value.columns]
     assert len(result_tables) == 1
     assert {
@@ -266,12 +581,10 @@ def test_condition_comparison_uses_fdr(monkeypatch):
 def test_cluster_mode_renders_sample_pca(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
-    mode = _widgets_with_options(
-        app, ["Genes", "Families", "Compare conditions", "Clusters"]
-    )[0]
-    mode.set_value("Clusters").run()
+    _select_page(app, "Clusters")
 
     assert not app.exception, [exception.message for exception in app.exception]
+    assert ".st-key-cluster_setup_panel" in APP.read_text()
     method = _widgets_with_options(app, ["PCA", "UMAP", "t-SNE"])
     assert len(method) == 1
     assert method[0].value == "PCA"
@@ -285,4 +598,13 @@ def test_cluster_mode_renders_sample_pca(monkeypatch):
     assert plot["layout"]["yaxis"]["zeroline"] is False
     captions = " ".join(element.value for element in app.caption)
     assert "Each point is one biological sample" in captions
-    assert "most-variable genes" in captions
+    assert "most-variable genes" not in captions
+    info_html = next(
+        element.value
+        for element in app.markdown
+        if "Cluster map" in element.value and "section-info-icon" in element.value
+    )
+    assert "PCA · 2,000 most-variable genes" in info_html
+    assert "TPM was transformed as log₂(TPM + 1)" in info_html
+    assert "PCA preserves broad linear variation" in info_html
+    assert "UMAP and t-SNE emphasize local neighborhoods" in info_html
