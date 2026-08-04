@@ -24,7 +24,7 @@ Open `http://127.0.0.1:8501`.
 ## Repository layout
 
 - `app/` — Streamlit app, data layer, and tests.
-- `expression/` — published and lab-generated TPM matrices plus compact metadata used by the app.
+- `expression/` — our ovary/midgut Salmon TPM matrices, published neurotranscriptome matrices, and compact metadata used by the app.
 - `deploy/` — Pi systemd service and one-minute pull/update timer.
 - `docs/` — prototype redirect for `rna.getferal.ai`.
 - `DATA_SOURCES.md` — paper and dataset attribution.

@@ -1328,14 +1328,15 @@ def render_home() -> None:
           (VectorBase 58 with Jové et al. 2019 gene names; SHA-256
           `0bf20c3fae7f8788e44b56fdbc1e81f5dd502da8c4350d5e4c8757a048a74580`).
 
-        The midgut run used Trim Galore followed by **Salmon 1.10.3
+        The ovary FASTQs were quantified by us with **Salmon 2.4.1**. The
+        midgut run used Trim Galore followed by **Salmon 1.10.3
         pseudoalignment and quantification**. It did not create genomic BAM
         alignments: the recorded nf-core setting was `skip_alignment: true`
         with `pseudo_aligner: salmon`.
 
         | Dataset | What this site currently displays | Processing provenance |
         |---|---|---|
-        | Venkataraman et al. 2023 · ovary (`PRJNA796320`) | Published TPM matrix from the study supplement | We independently reprocessed its FASTQs with Salmon 2.4.1 against the same FASTA/GTF pair, but those new values are not yet substituted for the displayed published matrix. |
+        | Venkataraman et al. 2023 · ovary (`PRJNA796320`) | Our Salmon 2.4.1 gene-level TPM matrix | We quantified all 33 biological samples from the raw paired-end FASTQs against the shared AaegL5 FASTA and VectorBase 58 + Jové GTF above. The study's published TPM values are not displayed. |
         | Matthews et al. 2016 · neurotranscriptome (`PRJNA236239`) | Published `AaegL.RU` TPM matrix from the study supplement | The displayed values retain the authors' annotation. Our raw-FASTQ reprocessing is tracked separately and is not presented as complete here. |
         | Nadav Shai · midgut | Our Salmon gene-level TPM matrix and our seven DESeq2 contrasts | We ran nf-core/rnaseq 3.26.0 and nf-core/differentialabundance 2.0.0 ourselves from the raw paired-end FASTQs using the reference pair above. |
 

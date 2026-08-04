@@ -1,4 +1,4 @@
-"""Load, harmonize, search, and summarize the published TPM matrices."""
+"""Load, harmonize, search, and summarize the bundled TPM matrices."""
 
 from __future__ import annotations
 
@@ -347,7 +347,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
     )
 
     elife_annotations, elife_values = _read_matrix(
-        expression_dir / "elife_80489_tpm.tsv.gz",
+        expression_dir / "elife_80489_salmon_gene_tpm.tsv.gz",
         ["IDs", "Symbols"],
     )
     elife_genes = _finalize_genes(
@@ -385,7 +385,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
             key="elife",
             label="Drought resilience · ovary time course",
             paper="Venkataraman et al., eLife 2023",
-            annotation_version="Published eLife gene symbols",
+            annotation_version="AaegL5 · VectorBase 58 + Jové et al. 2019",
             genes=elife_genes,
             values=elife_values,
             samples=elife_samples,

@@ -121,8 +121,10 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "VectorBase-68_AaegyptiLVP_AGWG_Genome.fasta" in home_html
     assert "AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf" in home_html
     assert "Salmon 1.10.3" in home_html
+    assert "Salmon 2.4.1" in home_html
     assert "skip_alignment: true" in home_html
-    assert "published matrix" in home_html
+    assert "Our Salmon 2.4.1 gene-level TPM matrix" in home_html
+    assert "published TPM values are not displayed" in home_html
     assert "## Exact nf-core commands" in home_html
     assert 'class="home-hero"' not in home_html
     assert 'class="home-card-grid"' not in home_html

@@ -22,10 +22,14 @@ def test_family_classifier_accepts_numbered_gene_copies():
 
 def test_dataset_dimensions_and_sample_metadata():
     datasets = load_datasets(EXPRESSION_DIR)
-    assert datasets["elife"].values.shape == (18_473, 33)
+    assert datasets["elife"].values.shape == (19_920, 33)
     assert datasets["neuro_ru"].values.shape == (16_176, 122)
     assert datasets["neuro_legacy"].values.shape == (17_478, 122)
     assert datasets["midgut"].values.shape == (18_943, 24)
+    assert all(
+        abs(total - 1_000_000.0) < 0.5
+        for total in datasets["elife"].values.sum(axis=0)
+    )
     for dataset in datasets.values():
         assert dataset.samples.index.tolist() == dataset.sample_columns
         assert dataset.samples["sample"].notna().all()
