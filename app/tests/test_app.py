@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from statistics import median
 
 from streamlit.testing.v1 import AppTest
 
@@ -113,6 +112,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     mode_selectors = _widgets_with_options(app, NAVIGATION_ITEMS)
     assert len(mode_selectors) == 1
     assert mode_selectors[0].value == "Home"
+    assert app.query_params["page"] == ["Home"]
     home_html = " ".join(element.value for element in app.markdown)
     assert "# Aedes RNA Atlas" in home_html
     assert "Use the menu above to:" in home_html
@@ -144,6 +144,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
 
     _select_page(app, "Genes")
     assert not app.exception, [exception.message for exception in app.exception]
+    assert app.query_params["page"] == ["Genes"]
 
     query_text = " ".join(
         widget.value
@@ -266,6 +267,18 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert any("# Aedes RNA Atlas" in element.value for element in app.markdown)
 
 
+def test_url_page_state_restores_genes_after_a_fresh_session(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45)
+    app.query_params["page"] = "Genes"
+    app.run()
+
+    assert not app.exception
+    navigation = _widgets_with_options(app, NAVIGATION_ITEMS)
+    assert len(navigation) == 1
+    assert navigation[0].value == "Genes"
+
+
 def test_home_has_no_import_controls(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
@@ -277,7 +290,7 @@ def test_home_has_no_import_controls(monkeypatch):
     assert "Import local nf-core TPM" not in source
 
 
-def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
+def test_gene_plots_are_horizontal_and_scaled(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     assert not app.exception
@@ -379,23 +392,9 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
         == plot["layout"]["yaxis"]["categoryarray"]
     )
 
-    sort_toggle = next(
-        toggle for toggle in app.toggle if toggle.label == "Sort conditions by expression"
+    assert all(
+        toggle.label != "Sort conditions by expression" for toggle in app.toggle
     )
-    sort_toggle.set_value(True).run()
-    sorted_plot = _plotly_spec(app)
-    values_by_condition = {}
-    for trace in sorted_plot["data"]:
-        if trace["type"] != "box":
-            continue
-        for condition, customdata in zip(trace["y"], trace["customdata"]):
-            values_by_condition.setdefault(condition, []).append(customdata[1])
-    expected_order = sorted(
-        values_by_condition,
-        key=lambda condition: median(values_by_condition[condition]),
-        reverse=True,
-    )
-    assert sorted_plot["layout"]["yaxis"]["categoryarray"] == expected_order
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     studies.set_value(["elife", "neuro_ru"]).run()
@@ -466,6 +465,10 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
     assert all(value.endswith("/33") for value in ovary_summary["Samples ≥1 TPM"])
 
     neuro_plot_before_coloring = _plotly_specs_by_type(app, "box")[1]
+    original_condition_order = neuro_plot_before_coloring["layout"]["yaxis"][
+        "categoryarray"
+    ]
+    assert neuro_plot_before_coloring["layout"].get("annotations", []) == []
     point_colors_before = {
         trace["name"]: trace["marker"]["color"]
         for trace in neuro_plot_before_coloring["data"]
@@ -476,7 +479,7 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
         for widget in app.selectbox
         if widget.key == "gene_label_color_neuro_ru"
     )
-    neuro_color.set_value("sex").run()
+    neuro_color.set_value("tissue").run()
     assert not app.exception
     neuro_plot = _plotly_specs_by_type(app, "box")[1]
     point_colors_after = {
@@ -486,13 +489,32 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
     }
     assert point_colors_after == point_colors_before
     scatter_annotations = neuro_plot["layout"]["annotations"]
+    colored_condition_order = neuro_plot["layout"]["yaxis"]["categoryarray"]
     assert {annotation["text"] for annotation in scatter_annotations} == set(
-        neuro_plot["layout"]["yaxis"]["categoryarray"]
+        colored_condition_order
     )
-    assert len({annotation["font"]["color"] for annotation in scatter_annotations}) == 2
+    annotation_colors = {
+        annotation["text"]: annotation["font"]["color"]
+        for annotation in scatter_annotations
+    }
+    ordered_colors = [annotation_colors[condition] for condition in colored_condition_order]
+    color_blocks = [
+        color
+        for index, color in enumerate(ordered_colors)
+        if index == 0 or color != ordered_colors[index - 1]
+    ]
+    assert len(color_blocks) == len(set(ordered_colors)) == 10
+    for color in color_blocks:
+        original_positions = [
+            original_condition_order.index(condition)
+            for condition in colored_condition_order
+            if annotation_colors[condition] == color
+        ]
+        assert original_positions == sorted(original_positions)
     assert neuro_plot["layout"]["yaxis"]["tickfont"]["color"] == "rgba(0,0,0,0)"
 
     neuro_heatmap = _plotly_specs_by_type(app, "heatmap")[1]
+    assert neuro_heatmap["data"][0]["x"] == colored_condition_order
     heatmap_annotations = neuro_heatmap["layout"]["annotations"]
     assert {annotation["text"] for annotation in heatmap_annotations} == set(
         neuro_heatmap["data"][0]["x"]

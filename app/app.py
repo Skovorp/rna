@@ -866,8 +866,39 @@ def category_label_colors(
     return result
 
 
-def grouped_median(long: pd.DataFrame, field: str) -> pd.DataFrame:
-    order = [value for value in long[field].dropna().astype(str).unique() if value]
+def category_order_by_group(
+    long: pd.DataFrame,
+    category_field: str,
+    color_field: str | None,
+) -> list[str]:
+    """Group categories by selected metadata, preserving original order within groups."""
+    categories = long[category_field].fillna("Unspecified").astype(str)
+    original_order = categories.drop_duplicates().tolist()
+    if not color_field:
+        return original_order
+
+    color_values = long[color_field].fillna("").astype(str).replace("", "Unspecified")
+    group_order = color_values.drop_duplicates().tolist()
+    group_rank = {value: index for index, value in enumerate(group_order)}
+    original_rank = {value: index for index, value in enumerate(original_order)}
+
+    def category_group_rank(category: str) -> int:
+        groups = color_values.loc[categories.eq(category)].drop_duplicates().tolist()
+        return min((group_rank[group] for group in groups), default=len(group_rank))
+
+    return sorted(
+        original_order,
+        key=lambda category: (category_group_rank(category), original_rank[category]),
+    )
+
+
+def grouped_median(
+    long: pd.DataFrame,
+    field: str,
+    order: list[str] | None = None,
+) -> pd.DataFrame:
+    if order is None:
+        order = [value for value in long[field].dropna().astype(str).unique() if value]
     grouped = long.groupby(["gene", field], as_index=False, sort=False)["tpm"].median()
     grouped[field] = pd.Categorical(grouped[field], categories=order, ordered=True)
     return grouped.sort_values([field, "gene"])
@@ -917,23 +948,17 @@ def replicate_figure(
     long: pd.DataFrame,
     field: str,
     field_label: str,
-    sort_by_expression: bool = False,
     show_medians: bool = True,
     show_guides: bool = True,
     x_scale: str = "Log base 2",
     category_colors: dict[str, str] | None = None,
+    condition_order: list[str] | None = None,
 ) -> go.Figure:
     plot = long.copy()
     plot["axis_tpm"] = tpm_axis_position(plot["tpm"], x_scale)
     plot[field] = plot[field].fillna("Unspecified").astype(str)
-    condition_order = plot[field].drop_duplicates().tolist()
-    if sort_by_expression:
-        condition_order = (
-            plot.groupby(field, sort=False)["tpm"]
-            .median()
-            .sort_values(ascending=False, kind="stable")
-            .index.tolist()
-        )
+    if condition_order is None:
+        condition_order = plot[field].drop_duplicates().tolist()
     gene_count = plot["gene"].nunique()
     gene_names = plot["gene"].drop_duplicates().astype(str).tolist()
     gene_color_map = {
@@ -1452,8 +1477,13 @@ def navigate_home() -> None:
 
 
 navigation_items = ["Home", "Genes", "Families", "Differential expression", "Clusters"]
+requested_mode = st.query_params.get("page", "Home")
+if isinstance(requested_mode, list):
+    requested_mode = requested_mode[-1]
+if requested_mode not in navigation_items:
+    requested_mode = "Home"
 if "site_navigation" not in st.session_state:
-    st.session_state["site_navigation"] = "Home"
+    st.session_state["site_navigation"] = requested_mode
 with st.container(key="site_nav"):
     brand_column, navigation_column = st.columns([1.35, 4.65], vertical_alignment="center")
     with brand_column:
@@ -1470,6 +1500,8 @@ with st.container(key="site_nav"):
             label_visibility="collapsed",
             width="stretch",
         )
+if mode in navigation_items and st.query_params.get("page") != mode:
+    st.query_params["page"] = mode
 
 if mode == "Home":
     render_home()
@@ -1502,19 +1534,13 @@ elif mode == "Genes":
             format_func=lambda key: datasets[key].label,
             help="Choose one or more RNA-seq datasets.",
         )
-        scale_column, sort_column, median_column, guide_column = st.columns(4)
+        scale_column, median_column, guide_column = st.columns(3)
         with scale_column:
             x_axis_scale = st.selectbox(
                 "TPM scale",
                 GENE_X_SCALES,
                 index=1,
                 help="Controls both the point-plot x-axes and comparison-heatmap color scales. Log scales keep zero values visible using TPM + 1, while ticks and tooltips show the original TPM values.",
-            )
-        with sort_column:
-            sort_conditions = st.toggle(
-                "Sort conditions by expression",
-                value=False,
-                help="Show the highest median TPM condition first within each study plot.",
             )
         with median_column:
             show_medians = st.toggle(
@@ -1611,21 +1637,26 @@ elif mode == "Genes":
                     field,
                     label_color_field,
                 )
+                condition_order = category_order_by_group(
+                    filtered_long,
+                    field,
+                    label_color_field,
+                )
                 st.plotly_chart(
                     replicate_figure(
                         filtered_long,
                         field,
                         field_label,
-                        sort_conditions,
-                        show_medians,
-                        show_guides,
-                        x_axis_scale,
-                        label_colors,
+                        show_medians=show_medians,
+                        show_guides=show_guides,
+                        x_scale=x_axis_scale,
+                        category_colors=label_colors,
+                        condition_order=condition_order,
                     ),
                     width="stretch",
                     key=f"gene_plot_combined_{key}",
                 )
-                grouped = grouped_median(filtered_long, field)
+                grouped = grouped_median(filtered_long, field, condition_order)
                 st.plotly_chart(
                     heatmap_figure(
                         grouped,
