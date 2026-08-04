@@ -49,10 +49,9 @@ def _plotly_specs_by_type(app, chart_type):
 
 def _scatter_genes(plot):
     return {
-        str(row[1])
+        str(trace["name"])
         for trace in plot["data"]
         if trace["type"] == "box"
-        for row in trace.get("customdata", [])
     }
 
 
@@ -208,7 +207,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     )
     assert "Expression across selected genes" in info_html
     assert "sample filters" in info_html
-    assert "optional sample-group coloring" in info_html
+    assert "optional condition-label coloring" in info_html
+    assert "Point colors identify genes" in info_html
     assert "its heatmap" in info_html
     assert "Expression heatmaps" not in info_html
     assert 'class="section-info-tooltip"' in info_html
@@ -230,7 +230,9 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert len(filter_widgets) == 4
     assert all(widget.value == [] for widget in filter_widgets)
     color_widgets = [
-        widget for widget in app.selectbox if str(widget.key).startswith("gene_color_")
+        widget
+        for widget in app.selectbox
+        if str(widget.key).startswith("gene_label_color_")
     ]
     assert len(color_widgets) == 2
     assert all(widget.value is None for widget in color_widgets)
@@ -304,13 +306,13 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     assert [guide["y0"] for guide in guides] == condition_order
     assert all(guide["line"]["dash"] == "dot" for guide in guides)
     assert all(guide["layer"] == "below" for guide in guides)
-    assert plot["layout"]["showlegend"] is False
-    sample_trace_colors = {
+    gene_trace_colors = {
         trace["marker"]["color"]
         for trace in plot["data"]
         if trace["type"] == "box"
     }
-    assert len(sample_trace_colors) == 1
+    assert _scatter_genes(plot) == {"Ir25a", "Orco"}
+    assert len(gene_trace_colors) == 2
 
     axis_scale.set_value("Log base 10").run()
     base10_plot = _plotly_specs_by_type(app, "box")[1]
@@ -385,7 +387,7 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
         if trace["type"] != "box":
             continue
         for condition, customdata in zip(trace["y"], trace["customdata"]):
-            values_by_condition.setdefault(condition, []).append(customdata[2])
+            values_by_condition.setdefault(condition, []).append(customdata[1])
     expected_order = sorted(
         values_by_condition,
         key=lambda condition: median(values_by_condition[condition]),
@@ -461,23 +463,54 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
     ]
     assert all(value.endswith("/33") for value in ovary_summary["Samples ≥1 TPM"])
 
+    neuro_plot_before_coloring = _plotly_specs_by_type(app, "box")[1]
+    point_colors_before = {
+        trace["name"]: trace["marker"]["color"]
+        for trace in neuro_plot_before_coloring["data"]
+        if trace["type"] == "box"
+    }
     neuro_color = next(
-        widget for widget in app.selectbox if widget.key == "gene_color_neuro_ru"
+        widget
+        for widget in app.selectbox
+        if widget.key == "gene_label_color_neuro_ru"
     )
     neuro_color.set_value("sex").run()
     assert not app.exception
     neuro_plot = _plotly_specs_by_type(app, "box")[1]
-    sample_traces = [trace for trace in neuro_plot["data"] if trace["type"] == "box"]
-    assert {trace["name"] for trace in sample_traces} == {"female", "male"}
-    assert len({trace["marker"]["color"] for trace in sample_traces}) == 2
-    assert neuro_plot["layout"]["showlegend"] is True
-    assert neuro_plot["layout"]["legend"]["title"]["text"] == "Sex"
+    point_colors_after = {
+        trace["name"]: trace["marker"]["color"]
+        for trace in neuro_plot["data"]
+        if trace["type"] == "box"
+    }
+    assert point_colors_after == point_colors_before
+    scatter_annotations = neuro_plot["layout"]["annotations"]
+    assert {annotation["text"] for annotation in scatter_annotations} == set(
+        neuro_plot["layout"]["yaxis"]["categoryarray"]
+    )
+    assert len({annotation["font"]["color"] for annotation in scatter_annotations}) == 2
+    assert neuro_plot["layout"]["yaxis"]["tickfont"]["color"] == "rgba(0,0,0,0)"
+
+    neuro_heatmap = _plotly_specs_by_type(app, "heatmap")[1]
+    heatmap_annotations = neuro_heatmap["layout"]["annotations"]
+    assert {annotation["text"] for annotation in heatmap_annotations} == set(
+        neuro_heatmap["data"][0]["x"]
+    )
+    assert {
+        annotation["text"]: annotation["font"]["color"]
+        for annotation in heatmap_annotations
+    } == {
+        annotation["text"]: annotation["font"]["color"]
+        for annotation in scatter_annotations
+    }
+    assert neuro_heatmap["layout"]["xaxis"]["tickfont"]["color"] == "rgba(0,0,0,0)"
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     studies.set_value(["elife", "neuro_ru", "midgut"]).run()
     assert not app.exception
     assert next(
-        widget for widget in app.selectbox if widget.key == "gene_color_midgut"
+        widget
+        for widget in app.selectbox
+        if widget.key == "gene_label_color_midgut"
     ).value is None
     assert {
         widget.key

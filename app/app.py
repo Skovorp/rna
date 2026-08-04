@@ -78,7 +78,6 @@ GENE_COLOR_VALUES = (
     "#f43f5e",
 )
 
-DEFAULT_SAMPLE_COLOR = "#3b82f6"
 SAMPLE_GROUP_COLOR_SEQUENCE = px.colors.qualitative.Set2 + px.colors.qualitative.Pastel
 
 GENE_FAMILY_COLOR_NAMES = {
@@ -823,12 +822,12 @@ def render_gene_sample_controls(dataset) -> tuple[dict[str, list[str]], str | No
             )
     with columns[-1]:
         color_field = st.selectbox(
-            "Color samples by",
+            "Color condition labels by",
             options=[None, *labels],
             index=0,
-            key=f"gene_color_{dataset.key}",
+            key=f"gene_label_color_{dataset.key}",
             format_func=lambda field: "None" if field is None else labels[field],
-            help="None draws every sample in the same color.",
+            help="None leaves every condition label in the default text color. Point colors always identify genes.",
         )
     return filters, color_field, labels.get(color_field)
 
@@ -843,6 +842,28 @@ def filter_expression_samples(
         values = filtered[field].fillna("").astype(str).replace("", "Unspecified")
         filtered = filtered.loc[values.isin(selected_values)].copy()
     return filtered
+
+
+def category_label_colors(
+    long: pd.DataFrame,
+    category_field: str,
+    color_field: str | None,
+) -> dict[str, str]:
+    """Map plot categories to colors from one biological metadata field."""
+    if not color_field:
+        return {}
+    color_values = long[color_field].fillna("").astype(str).replace("", "Unspecified")
+    color_order = color_values.drop_duplicates().tolist()
+    color_map = {
+        value: SAMPLE_GROUP_COLOR_SEQUENCE[index % len(SAMPLE_GROUP_COLOR_SEQUENCE)]
+        for index, value in enumerate(color_order)
+    }
+    categories = long[category_field].fillna("Unspecified").astype(str)
+    result: dict[str, str] = {}
+    for category in categories.drop_duplicates():
+        groups = color_values.loc[categories.eq(category)].drop_duplicates().tolist()
+        result[category] = color_map[groups[0]] if len(groups) == 1 else "#9aa8a5"
+    return result
 
 
 def grouped_median(long: pd.DataFrame, field: str) -> pd.DataFrame:
@@ -900,16 +921,11 @@ def replicate_figure(
     show_medians: bool = True,
     show_guides: bool = True,
     x_scale: str = "Log base 2",
-    color_field: str | None = None,
-    color_label: str | None = None,
+    category_colors: dict[str, str] | None = None,
 ) -> go.Figure:
     plot = long.copy()
     plot["axis_tpm"] = tpm_axis_position(plot["tpm"], x_scale)
     plot[field] = plot[field].fillna("Unspecified").astype(str)
-    if color_field:
-        plot[color_field] = (
-            plot[color_field].fillna("").astype(str).replace("", "Unspecified")
-        )
     condition_order = plot[field].drop_duplicates().tolist()
     if sort_by_expression:
         condition_order = (
@@ -918,55 +934,45 @@ def replicate_figure(
             .sort_values(ascending=False, kind="stable")
             .index.tolist()
         )
-    hover_data = {
-        "sample": True,
-        "gene": True,
-        "tpm": ":.3f",
-        "axis_tpm": False,
+    gene_count = plot["gene"].nunique()
+    gene_names = plot["gene"].drop_duplicates().astype(str).tolist()
+    gene_color_map = {
+        gene_name: GENE_COLOR_VALUES[gene_color_index(gene_name)]
+        for gene_name in gene_names
     }
     figure = px.strip(
         plot,
         x="axis_tpm",
         y=field,
-        color=color_field,
+        color="gene",
         orientation="h",
-        hover_data=hover_data,
+        hover_data={"sample": True, "tpm": ":.3f", "axis_tpm": False},
         labels={
             field: field_label,
             "axis_tpm": "TPM",
             "tpm": "TPM",
             "sample": "Sample",
             "gene": "Gene",
-            **({color_field: color_label} if color_field and color_label else {}),
         },
         category_orders={field: condition_order},
-        color_discrete_sequence=SAMPLE_GROUP_COLOR_SEQUENCE,
+        color_discrete_map=gene_color_map,
     )
-    if not color_field:
-        figure.update_traces(marker={"color": DEFAULT_SAMPLE_COLOR})
-    median_fields = ["gene", field]
-    if color_field and color_field not in median_fields:
-        median_fields.append(color_field)
+    if gene_count == 1:
+        figure.update_traces(marker={"color": gene_color_map[gene_names[0]]})
     medians = (
-        plot.groupby(median_fields, as_index=False, sort=False)["tpm"]
+        plot.groupby(["gene", field], as_index=False, sort=False)["tpm"]
         .median()
     )
     medians["axis_tpm"] = tpm_axis_position(medians["tpm"], x_scale)
     if show_medians:
-        group_colors = {
+        trace_colors = {
             str(trace.name): trace.marker.color
             for trace in figure.data
             if getattr(trace, "marker", None) is not None
         }
+        if gene_count == 1:
+            trace_colors[gene_names[0]] = gene_color_map[gene_names[0]]
         for gene_name, gene_medians in medians.groupby("gene", sort=False):
-            median_colors = (
-                [
-                    group_colors.get(str(value), DEFAULT_SAMPLE_COLOR)
-                    for value in gene_medians[color_field]
-                ]
-                if color_field
-                else DEFAULT_SAMPLE_COLOR
-            )
             figure.add_trace(
                 go.Scatter(
                     x=gene_medians["axis_tpm"],
@@ -978,7 +984,7 @@ def replicate_figure(
                     marker={
                         "symbol": "diamond",
                         "size": 11,
-                        "color": median_colors,
+                        "color": trace_colors.get(str(gene_name), "#f5b85b"),
                         "line": {"color": "#111827", "width": 0.7},
                     },
                     customdata=gene_medians[["gene", "tpm"]].to_numpy(),
@@ -1014,13 +1020,33 @@ def replicate_figure(
             "autorange": "reversed",
             "automargin": True,
         },
-        showlegend=bool(color_field),
         legend={
-            "title": {"text": color_label or ""},
+            "title": {"text": ""},
             "itemclick": False,
             "itemdoubleclick": False,
         },
     )
+    if category_colors:
+        figure.update_yaxes(
+            tickmode="array",
+            tickvals=condition_order,
+            ticktext=condition_order,
+            tickfont={"color": "rgba(0,0,0,0)"},
+        )
+        for condition in condition_order:
+            figure.add_annotation(
+                x=0,
+                xref="paper",
+                xshift=-8,
+                y=condition,
+                yref="y",
+                text=html.escape(str(condition)),
+                showarrow=False,
+                xanchor="right",
+                yanchor="middle",
+                align="right",
+                font={"color": category_colors.get(condition, "#9aa8a5"), "size": 12},
+            )
     return figure
 
 
@@ -1030,6 +1056,7 @@ def heatmap_figure(
     title: str,
     row_zscore: bool,
     value_scale: str = "Log base 2",
+    category_colors: dict[str, str] | None = None,
 ) -> go.Figure:
     matrix = grouped.pivot(index="gene", columns=field, values="tpm").fillna(0.0)
     transformed = tpm_axis_position(matrix, value_scale)
@@ -1085,13 +1112,37 @@ def heatmap_figure(
             hovertemplate=hovertemplate,
         )
     )
+    bottom_margin = 125 if category_colors else 60
     figure.update_layout(
         title=title,
         height=max(390, min(1050, 145 + 23 * len(transformed))),
-        margin={"l": 20, "r": 25, "t": 55, "b": 60},
+        margin={"l": 20, "r": 25, "t": 55, "b": bottom_margin},
         xaxis={"tickangle": -35},
         yaxis={"autorange": "reversed"},
     )
+    if category_colors:
+        categories = [str(value) for value in transformed.columns]
+        figure.update_xaxes(
+            tickmode="array",
+            tickvals=categories,
+            ticktext=categories,
+            tickfont={"color": "rgba(0,0,0,0)"},
+        )
+        for category in categories:
+            figure.add_annotation(
+                x=category,
+                xref="x",
+                y=0,
+                yref="paper",
+                yshift=-10,
+                text=html.escape(category),
+                textangle=-35,
+                showarrow=False,
+                xanchor="right",
+                yanchor="top",
+                align="right",
+                font={"color": category_colors.get(category, "#9aa8a5"), "size": 12},
+            )
     return figure
 
 
@@ -1532,7 +1583,7 @@ elif mode == "Genes":
         if resolved_for_comparison:
             section_title_with_info(
                 "Expression across selected genes",
-                "Each study has sample filters, optional sample-group coloring, a replicate plot, and its heatmap. Diamonds show each gene's group median.",
+                "Each study has sample filters, optional condition-label coloring, a replicate plot, and its heatmap. Point colors identify genes; diamonds show each gene's group median.",
             )
             for key in selected_keys:
                 combined_genes = resolved_for_comparison.get(key)
@@ -1542,7 +1593,7 @@ elif mode == "Genes":
                 field, field_label = default_grouping(dataset)
                 long = expression_long(dataset, combined_genes)
                 st.markdown(f"### {dataset.label}")
-                filters, color_field, color_label = render_gene_sample_controls(dataset)
+                filters, label_color_field, _ = render_gene_sample_controls(dataset)
                 filtered_long = filter_expression_samples(long, filters)
                 filtered_sample_count = filtered_long["sample"].nunique()
                 if any(filters.values()):
@@ -1554,6 +1605,11 @@ elif mode == "Genes":
                 if filtered_long.empty:
                     st.warning("No samples match these filters.")
                     continue
+                label_colors = category_label_colors(
+                    filtered_long,
+                    field,
+                    label_color_field,
+                )
                 st.plotly_chart(
                     replicate_figure(
                         filtered_long,
@@ -1563,8 +1619,7 @@ elif mode == "Genes":
                         show_medians,
                         show_guides,
                         x_axis_scale,
-                        color_field,
-                        color_label,
+                        label_colors,
                     ),
                     width="stretch",
                     key=f"gene_plot_combined_{key}",
@@ -1577,6 +1632,7 @@ elif mode == "Genes":
                         "",
                         row_zscore=False,
                         value_scale=x_axis_scale,
+                        category_colors=label_colors,
                     ),
                     width="stretch",
                     key=f"gene_comparison_heatmap_{key}",
