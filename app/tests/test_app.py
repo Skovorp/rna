@@ -43,10 +43,29 @@ def _matched_gene_editor(app):
     matches = [
         element
         for element in app.dataframe
-        if set(element.value.columns) == MATCHED_GENE_COLUMNS
+        if MATCHED_GENE_COLUMNS <= set(element.value.columns)
+        and any(
+            str(column).startswith("Mean TPM · ")
+            for column in element.value.columns
+        )
     ]
     assert len(matches) == 1
     return matches[0]
+
+
+def _mean_tpm_columns(frame):
+    return [
+        column for column in frame.columns if str(column).startswith("Mean TPM · ")
+    ]
+
+
+def _family_gene_tables(app):
+    return [
+        element.value
+        for element in app.dataframe
+        if {"Gene", "Stable ID", "Mean TPM", "Top context"}
+        <= set(element.value.columns)
+    ]
 
 
 def _set_matched_gene_enabled(app, gene, enabled):
@@ -137,7 +156,20 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert ".st-key-gene_setup_panel" in source
     matched_genes = _matched_gene_editor(app).value
     assert matched_genes["Include"].all()
-    assert matched_genes["Gene"].tolist() == ["Ir25a", "Orco"]
+    assert set(matched_genes["Gene"]) == {"Ir25a", "Orco"}
+    mean_tpm_columns = _mean_tpm_columns(matched_genes)
+    assert len(mean_tpm_columns) == 2
+    assert matched_genes[mean_tpm_columns[0]].dropna().is_monotonic_decreasing
+    for mean_tpm_column in mean_tpm_columns:
+        study_label = mean_tpm_column.removeprefix("Mean TPM · ")
+        study_values = raw_tables[0][raw_tables[0]["Study"] == study_label]
+        raw_mean_tpm = study_values.groupby("Gene")["TPM"].mean()
+        for _, matched_gene in matched_genes.iterrows():
+            gene = matched_gene["Gene"]
+            if gene in raw_mean_tpm:
+                assert abs(matched_gene[mean_tpm_column] - raw_mean_tpm[gene]) < 1e-12
+            else:
+                assert matched_gene[mean_tpm_column] != matched_gene[mean_tpm_column]
     assert any(button.label == "Turn all on" for button in app.button)
     assert any(button.label == "Turn all off" for button in app.button)
     info_html = " ".join(
@@ -398,6 +430,11 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     assert "ir7a" in warnings
     assert "Neurotranscriptome · updated AaegL.RU" in warnings
     matched_genes = _matched_gene_editor(app).value
+    assert len(_mean_tpm_columns(matched_genes)) == 2
+    assert any(
+        matched_genes[column].isna().all()
+        for column in _mean_tpm_columns(matched_genes)
+    )
     assert matched_genes["Alternative names"].item() == "No alternative names found"
 
     query.set_value("definitely_not_a_gene").run()
@@ -468,7 +505,7 @@ def test_gene_input_normalizes_and_color_codes_submitted_tokens(monkeypatch):
     assert "Gray means no matching gene was detected" in token_html
 
 
-def test_family_mode_defaults_to_all_and_ranks_top_n_by_mean_tpm(monkeypatch):
+def test_family_mode_shows_all_enabled_genes_ranked_by_mean_tpm(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     _select_page(app, "Families")
@@ -485,30 +522,22 @@ def test_family_mode_defaults_to_all_and_ranks_top_n_by_mean_tpm(monkeypatch):
     matched_genes = _matched_gene_editor(app).value
     assert len(matched_genes) > 10
     assert matched_genes["Include"].all()
-    gene_count = next(
-        slider
-        for slider in app.select_slider
-        if slider.label == "Genes in each heatmap"
+    mean_tpm_columns = _mean_tpm_columns(matched_genes)
+    assert len(mean_tpm_columns) == 2
+    assert matched_genes[mean_tpm_columns[0]].dropna().is_monotonic_decreasing
+    assert all(
+        slider.label != "Genes in each heatmap" for slider in app.select_slider
     )
     coverage = next(
         frame.value
         for frame in app.dataframe
         if "Family genes" in frame.value.columns
     )
-    assert gene_count.value == int(coverage["Family genes"].max())
-    assert gene_count.options[-1] == f"All ({gene_count.value})"
-    assert "ranked by mean TPM across all biological samples" in gene_count.help
-    assert "Selecting N shows exactly the N highest-ranked genes" in gene_count.help
-    assert "Heatmap cells still show the median TPM" in gene_count.help
     assert all(
         widget.label != "Exploratory detection threshold (TPM)"
         for widget in app.number_input
     )
-    all_gene_tables = [
-        frame.value
-        for frame in app.dataframe
-        if "Mean TPM" in frame.value.columns
-    ][::2]
+    all_gene_tables = _family_gene_tables(app)
     assert [len(table) for table in all_gene_tables] == coverage[
         "Family genes"
     ].tolist()
@@ -519,21 +548,13 @@ def test_family_mode_defaults_to_all_and_ranks_top_n_by_mean_tpm(monkeypatch):
     )
     assert "z-scores" in zscore_toggle.help
 
-    gene_count.set_value(10).run()
-    assert not app.exception
-    displayed_tables = [
-        frame.value
-        for frame in app.dataframe
-        if "Mean TPM" in frame.value.columns
-    ][::2]
     heatmaps = [
         _plotly_spec(app, index)
         for index in range(len(app.get("plotly_chart")))
         if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
     ]
-    assert len(displayed_tables) == len(heatmaps) == 2
-    for table, heatmap in zip(displayed_tables, heatmaps):
-        assert len(table) == 10
+    assert len(all_gene_tables) == len(heatmaps) == 2
+    for table, heatmap in zip(all_gene_tables, heatmaps):
         assert table["Mean TPM"].is_monotonic_decreasing
         assert heatmap["data"][0]["y"] == table["Gene"].tolist()
 
@@ -561,36 +582,19 @@ def test_custom_family_reuses_gene_editor_and_shows_all_matches(monkeypatch):
     assert "Ir25a" in token_html
     assert "Orco" in token_html
     assert token_html.count("gene-token-found") == 2
-    gene_count = next(
-        slider
-        for slider in app.select_slider
-        if slider.label == "Genes in each heatmap"
+    assert all(
+        slider.label != "Genes in each heatmap" for slider in app.select_slider
     )
-    assert gene_count.value == 2
-    assert gene_count.options[-1] == "All (2)"
-    displayed_tables = [
-        frame.value
-        for frame in app.dataframe
-        if "Mean TPM" in frame.value.columns
-    ][::2]
+    displayed_tables = _family_gene_tables(app)
     assert displayed_tables
     assert all(len(table) == 2 for table in displayed_tables)
     matched_genes = _matched_gene_editor(app).value
-    assert matched_genes["Gene"].tolist() == ["Ir25a", "Orco"]
+    assert set(matched_genes["Gene"]) == {"Ir25a", "Orco"}
+    assert len(_mean_tpm_columns(matched_genes)) == 2
 
     _set_matched_gene_enabled(app, "Ir25a", False)
     assert not app.exception
-    gene_count = next(
-        slider
-        for slider in app.select_slider
-        if slider.label == "Genes in each heatmap"
-    )
-    assert gene_count.value == 1
-    displayed_tables = [
-        frame.value
-        for frame in app.dataframe
-        if "Mean TPM" in frame.value.columns
-    ][::2]
+    displayed_tables = _family_gene_tables(app)
     assert displayed_tables
     assert all(table["Gene"].tolist() == ["Orco"] for table in displayed_tables)
     source = APP.read_text()
@@ -609,11 +613,7 @@ def test_predefined_family_matched_table_toggle_filters_family(monkeypatch):
     _set_matched_gene_enabled(app, disabled_gene, False)
 
     assert not app.exception
-    displayed_tables = [
-        frame.value
-        for frame in app.dataframe
-        if "Mean TPM" in frame.value.columns
-    ][::2]
+    displayed_tables = _family_gene_tables(app)
     assert displayed_tables
     assert all(disabled_gene not in table["Gene"].tolist() for table in displayed_tables)
 

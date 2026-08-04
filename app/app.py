@@ -456,10 +456,30 @@ def matched_gene_entries(
     return list(entries.values())
 
 
+def mean_expression_by_study(
+    per_study: dict[str, pd.DataFrame],
+    selected_study_keys: list[str],
+) -> dict[str, dict[str, float]]:
+    """Return one mean-TPM mapping per selected study."""
+    means_by_study: dict[str, dict[str, float]] = {}
+    for study_key in selected_study_keys:
+        matches = per_study.get(study_key)
+        if matches is None or matches.empty:
+            means_by_study[study_key] = {}
+            continue
+        long = expression_long(datasets[study_key], matches)
+        means_by_study[study_key] = {
+            str(gene_name).casefold(): float(mean_tpm)
+            for gene_name, mean_tpm in long.groupby("gene")["tpm"].mean().items()
+        }
+    return means_by_study
+
+
 def render_matched_gene_table(
     entries: list[dict[str, object]],
     selected_study_count: int,
     state_key: str,
+    mean_tpm_by_study: dict[str, dict[str, float]],
 ) -> set[str]:
     if not entries:
         return set()
@@ -481,24 +501,41 @@ def render_matched_gene_table(
             enabled_by_gene.update(dict.fromkeys(entry_keys, False))
             st.session_state[revision_key] += 1
 
+    mean_columns = {
+        study_key: f"Mean TPM · {datasets[study_key].label}"
+        for study_key in mean_tpm_by_study
+    }
     rows: list[dict[str, object]] = []
     for entry in entries:
         display_name = str(entry["display_name"])
+        display_key = display_name.casefold()
         families = list(entry["families"].values())
         aliases = sorted(entry["aliases"].values(), key=str.casefold)
         found_count = len(entry["study_keys"])
-        rows.append(
-            {
-                "Include": bool(enabled_by_gene[display_name.casefold()]),
-                "Gene": display_name,
-                "Family": "/".join(families),
-                "Alternative names": (
-                    ", ".join(aliases) if aliases else "No alternative names found"
-                ),
-                "Study coverage": f"{found_count}/{selected_study_count} studies",
-            }
-        )
+        row: dict[str, object] = {
+            "Include": bool(enabled_by_gene[display_key]),
+            "Gene": display_name,
+            "Family": "/".join(families),
+            "Alternative names": (
+                ", ".join(aliases) if aliases else "No alternative names found"
+            ),
+            "Study coverage": f"{found_count}/{selected_study_count} studies",
+        }
+        for study_key, column_name in mean_columns.items():
+            row[column_name] = mean_tpm_by_study[study_key].get(display_key, np.nan)
+        rows.append(row)
 
+    first_mean_column = next(iter(mean_columns.values()))
+    rows.sort(
+        key=lambda row: (
+            pd.isna(row[first_mean_column]),
+            -float(row[first_mean_column])
+            if not pd.isna(row[first_mean_column])
+            else 0.0,
+            str(row["Gene"]).casefold(),
+        )
+    )
+    entry_keys = [str(row["Gene"]).casefold() for row in rows]
     st.markdown(
         f'<div class="matched-genes-title">Matched genes · {len(entries)}</div>',
         unsafe_allow_html=True,
@@ -513,7 +550,13 @@ def render_matched_gene_table(
         width="stretch",
         height=min(38 + 35 * len(table), 318),
         row_height=35,
-        disabled=["Gene", "Family", "Alternative names", "Study coverage"],
+        disabled=[
+            "Gene",
+            "Family",
+            *mean_columns.values(),
+            "Alternative names",
+            "Study coverage",
+        ],
         column_config={
             "Include": st.column_config.CheckboxColumn(
                 "Include",
@@ -522,6 +565,14 @@ def render_matched_gene_table(
             ),
             "Gene": st.column_config.TextColumn(width="small"),
             "Family": st.column_config.TextColumn(width="small"),
+            **{
+                column_name: st.column_config.NumberColumn(
+                    format="%.2f",
+                    help=f"Mean TPM across every biological sample in {datasets[study_key].label}.",
+                    width="small",
+                )
+                for study_key, column_name in mean_columns.items()
+            },
             "Alternative names": st.column_config.TextColumn(width="large"),
             "Study coverage": st.column_config.TextColumn(width="small"),
         },
@@ -648,15 +699,6 @@ def resolve_queries(dataset, queries: list[str]) -> pd.DataFrame:
     if not matches:
         return dataset.genes.iloc[0:0].copy()
     return pd.concat(matches, ignore_index=True).drop_duplicates("row_id")
-
-
-def gene_count_options(maximum: int) -> list[int]:
-    """Return slider stops whose final option always includes every gene."""
-    if maximum <= 0:
-        return [0]
-    if maximum < 10:
-        return list(range(1, maximum + 1))
-    return list(range(10, maximum, 5)) + [maximum]
 
 
 def cluster_gene_count_options(maximum: int) -> list[int]:
@@ -1225,6 +1267,7 @@ elif mode == "Genes":
                 matched_gene_entries(all_resolved_for_comparison),
                 len(selected_keys),
                 "gene_matched_gene_selection",
+                mean_expression_by_study(all_resolved_for_comparison, selected_keys),
             )
             resolved_for_comparison = filter_matched_genes(
                 all_resolved_for_comparison,
@@ -1457,6 +1500,7 @@ elif mode == "Families":
                 matched_family_entries,
                 len(family_keys),
                 f"family_matched_gene_selection_{family_selection_id}",
+                mean_expression_by_study(all_members_by_study, family_keys),
             )
         filtered_family_members = filter_matched_genes(
             all_members_by_study,
@@ -1466,43 +1510,12 @@ elif mode == "Families":
             key: filtered_family_members.get(key, members.iloc[0:0].copy())
             for key, members in all_members_by_study.items()
         }
-        maximum_family_genes = max(
-            (members["display_name"].nunique() for members in members_by_study.values()),
-            default=0,
-        )
-
         threshold = 1.0
-        count_column, pattern_column = st.columns(2)
-        with count_column:
-            if maximum_family_genes:
-                count_options = gene_count_options(maximum_family_genes)
-                top_n = st.select_slider(
-                    "Genes in each heatmap",
-                    options=count_options,
-                    value=maximum_family_genes,
-                    format_func=lambda value: (
-                        f"All ({maximum_family_genes})"
-                        if value == maximum_family_genes
-                        else str(value)
-                    ),
-                    help="For each study, genes are ranked by mean TPM across all biological samples, the standard summary for overall expression. Conditions with more replicates therefore contribute more samples. Selecting N shows exactly the N highest-ranked genes; All shows every matched gene. Heatmap cells still show the median TPM within each condition.",
-                )
-            else:
-                top_n = 0
-                st.select_slider(
-                    "Genes in each heatmap",
-                    options=[0],
-                    value=0,
-                    format_func=lambda _: "All (0)",
-                    disabled=True,
-                    help="Add or turn on genes to enable this control.",
-                )
-        with pattern_column:
-            row_zscore = st.toggle(
-                "Show relative pattern within each gene",
-                value=True,
-                help="Convert each gene's log₂(TPM + 1) values to z-scores across conditions. Positive means above that gene's average; negative means below it.",
-            )
+        row_zscore = st.toggle(
+            "Show relative pattern within each gene",
+            value=True,
+            help="Convert each gene's log₂(TPM + 1) values to z-scores across conditions. Positive means above that gene's average; negative means below it.",
+        )
 
     if custom_family and family_queries:
         for query in family_queries:
@@ -1530,7 +1543,6 @@ elif mode == "Families":
             family_gene_count = members["display_name"].nunique()
             field, _ = default_grouping(dataset)
             long = expression_long(dataset, members)
-            group_medians = grouped_median(long, field)
             mean_expression = (
                 long.groupby("gene", as_index=False)["tpm"].mean().rename(
                     columns={"tpm": "mean_tpm"}
@@ -1562,10 +1574,8 @@ elif mode == "Families":
                 ascending=[False, True],
             )
 
-            selected_names = ranking["gene"].head(top_n).tolist()
-            selected_members = members[members["display_name"].isin(selected_names)]
-            selected_long = expression_long(dataset, selected_members)
-            selected_grouped = grouped_median(selected_long, field)
+            selected_names = ranking["gene"].tolist()
+            selected_grouped = grouped_median(long, field)
             selected_grouped["gene"] = pd.Categorical(
                 selected_grouped["gene"],
                 categories=selected_names,
@@ -1604,15 +1614,14 @@ elif mode == "Families":
                 ["Gene", "Stable ID", "Mean TPM", detection_column, "Top context"]
             ]
             st.dataframe(
-                concise.head(top_n),
+                concise,
                 hide_index=True,
                 width="stretch",
                 column_config={
                     "Mean TPM": st.column_config.NumberColumn(format="%.2f")
                 },
             )
-            with st.expander("Complete family table & download"):
-                st.dataframe(concise, hide_index=True, width="stretch", height=340)
+            with st.expander("Download family matrix"):
                 download_tsv(
                     "Download complete family matrix",
                     matrix_for_genes(dataset, members),
