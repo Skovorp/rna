@@ -1,0 +1,234 @@
+{
+  "pipeline": "nf-core/differentialabundance",
+  "pipeline_version": "2.0.0",
+  "method": "DESeq2",
+  "dataset_key": "midgut",
+  "contrast_count": 28,
+  "rows_per_contrast": 15646,
+  "results": [
+    {
+      "contrast_id": "female_3hBF_vs_female_NBF",
+      "rows": 15646,
+      "source_bytes": 1462342,
+      "source_sha256": "e1e6ac059f3a8f73c2873d148e645bd12e50c05f2bd7365c5e21167de6db8773",
+      "bundle_bytes": 644426,
+      "bundle_sha256": "e564d06758a21613164f967ce5e5758a28a0b04eb5b72df7fba28871508a5bf4"
+    },
+    {
+      "contrast_id": "female_6hBF_vs_female_NBF",
+      "rows": 15646,
+      "source_bytes": 1474023,
+      "source_sha256": "66aab42abb9bc849c1a2b5429556127213f4e7187b0b1688e92202d723d06bf9",
+      "bundle_bytes": 650968,
+      "bundle_sha256": "46272458e64949c03be338ff36628e26a2d9a13240758323cd41aae10a4e2507"
+    },
+    {
+      "contrast_id": "female_12hBF_vs_female_NBF",
+      "rows": 15646,
+      "source_bytes": 1468693,
+      "source_sha256": "c86d0214123272994d198980b129cd647fa1c911072197789c6db2508f6a58d8",
+      "bundle_bytes": 648269,
+      "bundle_sha256": "fb4a997f1d7ccf3ee1cfe0e59de27d634fef631ffdc511740cfc30e041bf9a26"
+    },
+    {
+      "contrast_id": "female_24hBF_vs_female_NBF",
+      "rows": 15646,
+      "source_bytes": 1470037,
+      "source_sha256": "3c12fe396285103891939dde08b463496e0812089b7bfd22f0e8348c8bc9499a",
+      "bundle_bytes": 650118,
+      "bundle_sha256": "30d551d30572a2a652f747ebae7cce41108ae93a0848fc15139b9107b7afef92"
+    },
+    {
+      "contrast_id": "female_48hBF_vs_female_NBF",
+      "rows": 15646,
+      "source_bytes": 1473109,
+      "source_sha256": "108d81bda2a430ad74a8e565b668ada3e0c553a04554066efc62c197931fb12e",
+      "bundle_bytes": 649023,
+      "bundle_sha256": "79dae799bfe16da1d36f23efb26626422c555a3fbea7da140c4514804eace023"
+    },
+    {
+      "contrast_id": "female_72hBF_vs_female_NBF",
+      "rows": 15646,
+      "source_bytes": 1460821,
+      "source_sha256": "170a6bf9567042c6fa87563ffd4f0cd8456e4296c5c5d35d928de7b1afd7b0c6",
+      "bundle_bytes": 638348,
+      "bundle_sha256": "d28c29ff08a2d896edc6529d2c64559f8c65d85482d1b56611c2a72d1a6db195"
+    },
+    {
+      "contrast_id": "male_midgut_vs_female_NBF",
+      "rows": 15646,
+      "source_bytes": 1488829,
+      "source_sha256": "90d13d83cbe803f6a7864d82b984a4ec4bb9b2f7df171deb1928fa6fb3c6fa9d",
+      "bundle_bytes": 658813,
+      "bundle_sha256": "9ab0982f124e05e05a21ac2c293eeb8c6b753464bf4956c4becea3cbff600a02"
+    },
+    {
+      "contrast_id": "female_6hBF_vs_female_3hBF",
+      "rows": 15646,
+      "source_bytes": 1450097,
+      "source_sha256": "c314cc3608537bbfd6c1690b0cadbe8cee1df223b0a5c073cc2f01643aa9dc41",
+      "bundle_bytes": 632826,
+      "bundle_sha256": "a58d6cc6dfc1d77198b09f3ce0eebe568e3136a2c0292c873c6d76b07bb490ad"
+    },
+    {
+      "contrast_id": "female_12hBF_vs_female_3hBF",
+      "rows": 15646,
+      "source_bytes": 1462890,
+      "source_sha256": "245e327a8ebf42ca649436a07f7c40acacc08a906563a7c7def4bb2e36de4e32",
+      "bundle_bytes": 645108,
+      "bundle_sha256": "caa2da41e96bf9d8bd425eb69a47c4f448f48f973574116a5a5091f64cf0edcc"
+    },
+    {
+      "contrast_id": "female_24hBF_vs_female_3hBF",
+      "rows": 15646,
+      "source_bytes": 1470205,
+      "source_sha256": "2d1c9d4ef5528cac2bd9e4770d532739fed0e78e9b63f2674b9d9abf98d6794c",
+      "bundle_bytes": 652191,
+      "bundle_sha256": "3b01f6eff10f811089ff64f373d55923346e186432e856d4ef7a30e73f7e5f1b"
+    },
+    {
+      "contrast_id": "female_48hBF_vs_female_3hBF",
+      "rows": 15646,
+      "source_bytes": 1475493,
+      "source_sha256": "168854a36ce3a979f7a8c3403c434914368d7456ef3516683b4aab7e16635b34",
+      "bundle_bytes": 654141,
+      "bundle_sha256": "02e88ee2c0fbd7f1935d29834b51a5d4f2acef991ff533b61c154e5d9374fee0"
+    },
+    {
+      "contrast_id": "female_72hBF_vs_female_3hBF",
+      "rows": 15646,
+      "source_bytes": 1474984,
+      "source_sha256": "1448b4c3d937e161da46b12fcc0e8a73f520876d54705a840bf84a164c867036",
+      "bundle_bytes": 651499,
+      "bundle_sha256": "6f2445c7e4edaa4472ab8ba0ffa2a7bc1a20e553519c9e12195d79f8a4993809"
+    },
+    {
+      "contrast_id": "male_midgut_vs_female_3hBF",
+      "rows": 15646,
+      "source_bytes": 1495567,
+      "source_sha256": "72c493dfeacdf9593f514a93860d2a160e4eac57ad403428409bda3320aab93d",
+      "bundle_bytes": 665104,
+      "bundle_sha256": "e3327a7ca8f030a1a62fc11563aad7f53bb628d3289335b3833ac059aec76ed7"
+    },
+    {
+      "contrast_id": "female_12hBF_vs_female_6hBF",
+      "rows": 15646,
+      "source_bytes": 1464136,
+      "source_sha256": "f3da74ed6913fbfa172d5ba49afcada9e975c31194dd3c2f6e62ac4ed281e1ab",
+      "bundle_bytes": 642925,
+      "bundle_sha256": "ba2f1eb11dfb6487403e74608afdcf9086c09a4486617fb3f4ba0598e2567b76"
+    },
+    {
+      "contrast_id": "female_24hBF_vs_female_6hBF",
+      "rows": 15646,
+      "source_bytes": 1472232,
+      "source_sha256": "f513c73bd1dd0e4f9dfabdc16510ee9e3f8dcb9f1fb59cca40d80deca26c80bf",
+      "bundle_bytes": 651717,
+      "bundle_sha256": "365afbed355b09083e1386ae31db91aaa492910bdf48eb49461979c7bf8035d8"
+    },
+    {
+      "contrast_id": "female_48hBF_vs_female_6hBF",
+      "rows": 15646,
+      "source_bytes": 1482645,
+      "source_sha256": "091b6e49e7a7c883f828c5b8f227048586181a5e4b31d1a6e5524dd8b7239ee0",
+      "bundle_bytes": 657397,
+      "bundle_sha256": "3665ae8959786dfbdae7127440aa94d8a492891cfd43ad4ae44dc93ee797506f"
+    },
+    {
+      "contrast_id": "female_72hBF_vs_female_6hBF",
+      "rows": 15646,
+      "source_bytes": 1478929,
+      "source_sha256": "9967cb2a4a9c5f5e0339ded477f65d810017acdf374485ab8ee30f7a6a3243ef",
+      "bundle_bytes": 653226,
+      "bundle_sha256": "d1de85963bc4d1c2e74d2a9871119eff750c4c0b5c6d9dfb6f948e4828e4f045"
+    },
+    {
+      "contrast_id": "male_midgut_vs_female_6hBF",
+      "rows": 15646,
+      "source_bytes": 1502450,
+      "source_sha256": "5eaf77dedc2acda2b1f5058b2d03b0acfdabbe1337ca1c89b567ddc20a951dd7",
+      "bundle_bytes": 667989,
+      "bundle_sha256": "3cc79dcaa784312f958d00e3b0c46f7b464be3f3f939299a89c4022cc57cebda"
+    },
+    {
+      "contrast_id": "female_24hBF_vs_female_12hBF",
+      "rows": 15646,
+      "source_bytes": 1466754,
+      "source_sha256": "3d9728996e877393b954064ee8fdf367881432b586e4da7dba9649313ac58573",
+      "bundle_bytes": 644247,
+      "bundle_sha256": "4b2592c58a1366ab525eafd5b9216f042718b4e6188c0f6e2a78add8a084b9cc"
+    },
+    {
+      "contrast_id": "female_48hBF_vs_female_12hBF",
+      "rows": 15646,
+      "source_bytes": 1475158,
+      "source_sha256": "2bab45e334320586cc981d68ac04714f2e15b5cb3ba0bf1d14e67152ba398576",
+      "bundle_bytes": 653220,
+      "bundle_sha256": "427af9110ec76de6e3a1d0ffe45357144843efd1c0192cb951aa639eed9cdffc"
+    },
+    {
+      "contrast_id": "female_72hBF_vs_female_12hBF",
+      "rows": 15646,
+      "source_bytes": 1480913,
+      "source_sha256": "a527a8f37fc75dff9417f31f78883924140ecd793e59e441547f58c5cad40ef2",
+      "bundle_bytes": 654904,
+      "bundle_sha256": "c9b8fe11081e1b2884998465f8eee1c817b37ba74a32f74dad4375edd532ede1"
+    },
+    {
+      "contrast_id": "male_midgut_vs_female_12hBF",
+      "rows": 15646,
+      "source_bytes": 1499052,
+      "source_sha256": "c28071fe0695e2e1a1935973cf12cde31c9b6ec7c858f77a3a5b856b0e1c02d7",
+      "bundle_bytes": 666081,
+      "bundle_sha256": "5e340f7d019852cf1f587369945af25c6a1f8966ba28c51616b5ac91ee6eca2b"
+    },
+    {
+      "contrast_id": "female_48hBF_vs_female_24hBF",
+      "rows": 15646,
+      "source_bytes": 1467820,
+      "source_sha256": "447cdcadd49b3ef18fdc77af2debc3de628207ee2cbe8e85aa3b9650fa676298",
+      "bundle_bytes": 645235,
+      "bundle_sha256": "b97d956e47419b1e192beed1b06610574fd3460a203b1533ad0ded5c8f27d7dc"
+    },
+    {
+      "contrast_id": "female_72hBF_vs_female_24hBF",
+      "rows": 15646,
+      "source_bytes": 1485693,
+      "source_sha256": "3d9bb8eb690d43cfc9febf7181f9476ec923c0dcd45457d5b7f4b52192fdda04",
+      "bundle_bytes": 658378,
+      "bundle_sha256": "95fade29531ec5b08f564139ae6cab5b6b2d00a68b96778a410a76e439acefc4"
+    },
+    {
+      "contrast_id": "male_midgut_vs_female_24hBF",
+      "rows": 15646,
+      "source_bytes": 1492890,
+      "source_sha256": "656bdf80b76fe394847dbebb0872b5cfab1d2bb5ee4e3dfa14cc9d1c12f47aee",
+      "bundle_bytes": 661140,
+      "bundle_sha256": "8ac0fe77e07190552b16ec629cc452848d1fde9a2e973e01a450f43b3ca15c58"
+    },
+    {
+      "contrast_id": "female_72hBF_vs_female_48hBF",
+      "rows": 15646,
+      "source_bytes": 1482651,
+      "source_sha256": "d2f25c433269cbd6cbffc22b02e842d88c1dcd4ccb89bb97be7b7a1b547ca701",
+      "bundle_bytes": 656065,
+      "bundle_sha256": "d7bb406dd4eefc5cda9f433c96cecd64654c7b01e3dea4fd6ba945bef7a39f41"
+    },
+    {
+      "contrast_id": "male_midgut_vs_female_48hBF",
+      "rows": 15646,
+      "source_bytes": 1490264,
+      "source_sha256": "10a1a30291ff79622426710dc1e9daaa980e18a26f8ed75f0a3170d474abbfae",
+      "bundle_bytes": 657502,
+      "bundle_sha256": "71e61d1dc3b378d325725420d7dd5747f1cfca0cf55ae4f5f58d13ebc4f0f7ed"
+    },
+    {
+      "contrast_id": "male_midgut_vs_female_72hBF",
+      "rows": 15646,
+      "source_bytes": 1498327,
+      "source_sha256": "808bf65f85d732741586a26769b1f5b1ba46aa0a41d6a85ff118d16b21369379",
+      "bundle_bytes": 663649,
+      "bundle_sha256": "99081939adf3a6148f099c80d2c1892cf34dda07ac42ee64b5a213946d58eda2"
+    }
+  ]
+}

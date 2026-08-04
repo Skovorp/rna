@@ -33,7 +33,7 @@ from expression_explorer.differential import (
 
 APP_DIR = Path(__file__).resolve().parent
 EXPRESSION_DIR = APP_DIR.parent / "expression"
-DATA_SCHEMA_VERSION = "2026-08-04-midgut-deseq2-v1"
+DATA_SCHEMA_VERSION = "2026-08-04-all-pairs-deseq2-v2"
 
 FAMILIES = {
     "IR · Ionotropic receptors": "Ionotropic receptors (IR)",

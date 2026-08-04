@@ -49,6 +49,23 @@ def test_dataset_dimensions_and_sample_metadata():
         "Male · non-blood-fed",
     ]
 
+    elife = datasets["elife"]
+    assert elife.samples["condition"].nunique() == 11
+    assert elife.samples.groupby("condition").size().eq(3).all()
+    assert elife.samples["condition"].drop_duplicates().tolist() == [
+        "female_NBF",
+        "female_3hBF",
+        "female_6hBF",
+        "female_12hBF",
+        "female_24hBF",
+        "female_48hBF",
+        "female_72hBF",
+        "female_96hBF",
+        "female_6dBF_retained",
+        "female_6dBF_laid",
+        "female_13dBF",
+    ]
+
 
 def test_ir25a_resolves_in_every_dataset():
     datasets = load_datasets(EXPRESSION_DIR)

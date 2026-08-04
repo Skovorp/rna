@@ -35,6 +35,20 @@ CONDITION_LABELS = {
     "male": "Male",
 }
 
+ELIFE_CONDITION_IDS = {
+    "Non-blood-fed": "female_NBF",
+    "3 hours post-blood-meal": "female_3hBF",
+    "6 hours post-blood-meal": "female_6hBF",
+    "12 hours post-blood-meal": "female_12hBF",
+    "24 hours (1 day) post-blood-meal": "female_24hBF",
+    "48 hours (2 days) post-blood-meal": "female_48hBF",
+    "72 hours (3 days) post-blood-meal": "female_72hBF",
+    "96 hours (4 days) post-blood-meal": "female_96hBF",
+    "6 days post-blood-meal (eggs retained)": "female_6dBF_retained",
+    "6 days post-blood-meal (eggs laid <5 hours prior)": "female_6dBF_laid",
+    "13 days post-blood-meal (eggs laid >1 week prior)": "female_13dBF",
+}
+
 PAPER_FAMILY_LABELS = {
     "IR": "Ionotropic receptors (IR)",
     "OR": "Odorant receptors (OR)",
@@ -166,7 +180,14 @@ def _load_bmc_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFrame
 def _load_elife_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFrame:
     samples = pd.read_csv(path, sep="\t", dtype=str).fillna("")
     samples["sample"] = samples["sample"].astype(str)
-    samples["condition"] = samples["reproductive_state"]
+    samples["condition"] = samples["reproductive_state"].map(ELIFE_CONDITION_IDS)
+    if samples["condition"].isna().any():
+        unknown = sorted(
+            samples.loc[
+                samples["condition"].isna(), "reproductive_state"
+            ].unique()
+        )
+        raise ValueError(f"Unknown eLife reproductive states: {unknown}")
     samples["condition_label"] = samples["reproductive_state"]
     samples["tissue"] = "ovary"
     samples["sex"] = "female"

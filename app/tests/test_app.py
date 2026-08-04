@@ -780,6 +780,11 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     _select_page(app, "Differential expression")
 
+    study = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Study"
+    )
+    study.set_value("midgut").run()
+
     assert not app.exception, [exception.message for exception in app.exception]
     assert ".st-key-differential_setup_panel" in APP.read_text()
     result_tables = [frame.value for frame in app.dataframe if "FDR" in frame.value.columns]
@@ -827,7 +832,7 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
         for selectbox in app.selectbox
         if selectbox.label == "Contrast · target vs reference"
     )
-    assert len(contrasts.options) == 7
+    assert len(contrasts.options) == 28
     fdr_threshold = next(
         widget for widget in app.number_input if widget.label == "FDR threshold"
     )
@@ -843,6 +848,30 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
         button.label == "Download all differential-expression results"
         for button in app.download_button
     )
+
+
+def test_ovary_differential_expression_has_every_pair(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Differential expression")
+
+    study = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Study"
+    )
+    study.set_value("elife").run()
+
+    assert not app.exception, [exception.message for exception in app.exception]
+    contrasts = next(
+        selectbox
+        for selectbox in app.selectbox
+        if selectbox.label == "Contrast · target vs reference"
+    )
+    assert len(contrasts.options) == 55
+    result_tables = [
+        frame.value for frame in app.dataframe if "FDR" in frame.value.columns
+    ]
+    assert len(result_tables) == 1
+    assert len(result_tables[0]) == 17_660
 
 
 def test_neurotranscriptome_differential_expression_is_not_available(monkeypatch):

@@ -1,3 +1,4 @@
+from itertools import combinations
 from pathlib import Path
 
 import numpy as np
@@ -14,12 +15,13 @@ from expression_explorer.differential import (
 EXPRESSION_DIR = Path(__file__).resolve().parents[2] / "expression"
 
 
-def test_midgut_differential_manifest_has_seven_nfcore_contrasts():
+def test_manifests_cover_every_midgut_and_ovary_pair():
     datasets = load_datasets(EXPRESSION_DIR)
     contrasts = load_differential_contrasts(EXPRESSION_DIR)
 
-    assert set(contrasts) == {"midgut"}
-    assert len(contrasts["midgut"]) == 7
+    assert set(contrasts) == {"midgut", "elife"}
+    assert len(contrasts["midgut"]) == 28
+    assert len(contrasts["elife"]) == 55
     first = contrasts["midgut"][0]
     assert first.method == "DESeq2"
     assert first.reference == "female_NBF"
@@ -28,6 +30,26 @@ def test_midgut_differential_manifest_has_seven_nfcore_contrasts():
     assert contrast_label(datasets["midgut"], first) == (
         "Female · 3 h post-blood-meal vs Female · non-blood-fed"
     )
+    ovary_first = contrasts["elife"][0]
+    assert contrast_sample_counts(datasets["elife"], ovary_first) == (3, 3)
+    assert contrast_label(datasets["elife"], ovary_first) == (
+        "3 hours post-blood-meal vs Non-blood-fed"
+    )
+
+    for dataset_key in ("midgut", "elife"):
+        conditions = (
+            datasets[dataset_key].samples["condition"].drop_duplicates().tolist()
+        )
+        expected_pairs = set(combinations(conditions, 2))
+        actual_pairs = {
+            (contrast.reference, contrast.target)
+            for contrast in contrasts[dataset_key]
+        }
+        assert actual_pairs == expected_pairs
+        assert all(
+            contrast_sample_counts(datasets[dataset_key], contrast) == (3, 3)
+            for contrast in contrasts[dataset_key]
+        )
 
 
 def test_differential_results_are_loaded_without_recomputing_statistics():
