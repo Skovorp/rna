@@ -26,7 +26,7 @@ class ExpressionDataset:
         return list(self.values.columns)
 
 
-DATASET_ORDER = ("elife", "neuro_ru", "neuro_legacy")
+DATASET_ORDER = ("elife", "neuro_ru", "midgut", "neuro_legacy")
 
 CONDITION_LABELS = {
     "BF": "Blood-fed",
@@ -175,6 +175,44 @@ def _load_elife_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFra
     return samples
 
 
+def _load_midgut_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFrame:
+    samples = pd.read_csv(path, dtype=str).fillna("")
+    condition_labels = {
+        "male_midgut": "Male · non-blood-fed",
+        "female_NBF": "Female · non-blood-fed",
+        "female_3hBF": "Female · 3 h post-blood-meal",
+        "female_6hBF": "Female · 6 h post-blood-meal",
+        "female_12hBF": "Female · 12 h post-blood-meal",
+        "female_24hBF": "Female · 24 h post-blood-meal",
+        "female_48hBF": "Female · 48 h post-blood-meal",
+        "female_72hBF": "Female · 72 h post-blood-meal",
+    }
+    samples["condition_label"] = samples["condition"].map(condition_labels).fillna(
+        samples["condition"]
+    )
+    samples["reproductive_state"] = samples["condition_label"]
+    samples["tissue"] = "midgut"
+    samples["tissue_condition"] = "Midgut · " + samples["condition_label"]
+    condition_order = {
+        "female_NBF": 0,
+        "female_3hBF": 1,
+        "female_6hBF": 2,
+        "female_12hBF": 3,
+        "female_24hBF": 4,
+        "female_48hBF": 5,
+        "female_72hBF": 6,
+        "male_midgut": 7,
+    }
+    samples = samples[samples["sample"].isin(sample_columns)].copy()
+    samples["_condition_order"] = samples["condition"].map(condition_order).fillna(99)
+    samples["_replicate_order"] = pd.to_numeric(samples["replicate"], errors="coerce")
+    samples = samples.sort_values(
+        ["_condition_order", "_replicate_order", "sample"], kind="stable"
+    ).drop(columns=["_condition_order", "_replicate_order"])
+    samples = samples.set_index("sample", drop=False)
+    return samples
+
+
 def _generic_samples(sample_columns: Iterable[str]) -> pd.DataFrame:
     samples = pd.DataFrame({"sample": list(sample_columns)})
     samples["condition"] = ""
@@ -198,6 +236,11 @@ def load_nfcore_dataset(
     path: Path | str,
     key: str,
     symbol_crosswalk: dict[str, str] | None = None,
+    *,
+    label: str | None = None,
+    paper: str = "Local nf-core/rnaseq import",
+    annotation_version: str = "Identifiers from imported matrix",
+    samples: pd.DataFrame | None = None,
 ) -> ExpressionDataset:
     """Load an nf-core/rnaseq merged gene-TPM table.
 
@@ -211,31 +254,55 @@ def load_nfcore_dataset(
     gene_column = frame.columns[0]
     stable_ids = frame[gene_column].map(_clean)
     crosswalk = symbol_crosswalk or {}
+    matrix_symbols = (
+        frame["gene_name"].map(_clean)
+        if "gene_name" in frame.columns
+        else pd.Series([""] * len(frame))
+    )
     symbols = stable_ids.map(crosswalk).fillna("")
-    annotations = pd.DataFrame({"gene_id": stable_ids})
+    symbols = symbols.where(symbols.ne(""), matrix_symbols)
+    annotation_columns = [gene_column]
+    if "gene_name" in frame.columns and "gene_name" != gene_column:
+        annotation_columns.append("gene_name")
+    annotations = frame[annotation_columns].fillna("")
     genes = _finalize_genes(
         annotations,
         stable_ids,
         pd.Series([""] * len(frame)),
         symbols,
     )
-    values = frame.drop(columns=[gene_column]).apply(pd.to_numeric, errors="coerce")
+    values = frame.drop(columns=annotation_columns).apply(pd.to_numeric, errors="coerce")
     if values.isna().all(axis=None):
         raise ValueError(f"No numeric TPM values found in {path}")
     values = values.fillna(0.0)
     values.index = np.arange(len(values), dtype=int)
-    label = path.name
-    for suffix in (".gz", ".tsv"):
-        if label.endswith(suffix):
-            label = label[: -len(suffix)]
+    if label is None:
+        label = path.name
+        for suffix in (".gz", ".tsv"):
+            if label.endswith(suffix):
+                label = label[: -len(suffix)]
+        label = f"nf-core · {label}"
+    if samples is None:
+        samples = _generic_samples(values.columns)
+    else:
+        matrix_samples = set(values.columns)
+        metadata_samples = set(samples.index)
+        if matrix_samples != metadata_samples:
+            missing_metadata = sorted(matrix_samples - metadata_samples)
+            missing_values = sorted(metadata_samples - matrix_samples)
+            raise ValueError(
+                "TPM/sample metadata mismatch: "
+                f"missing metadata={missing_metadata}, missing TPM={missing_values}"
+            )
+        values = values.loc[:, samples.index]
     return ExpressionDataset(
         key=key,
-        label=f"nf-core · {label}",
-        paper="Local nf-core/rnaseq import",
-        annotation_version="Identifiers from imported matrix",
+        label=label,
+        paper=paper,
+        annotation_version=annotation_version,
         genes=genes,
         values=values,
-        samples=_generic_samples(values.columns),
+        samples=samples,
     )
 
 
@@ -293,6 +360,26 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
         expression_dir / "elife_80489_samples.tsv", elife_values.columns
     )
 
+    midgut_path = expression_dir / "midgut_nadav_shai_gene_tpm.tsv.gz"
+    midgut_columns = pd.read_csv(
+        midgut_path, sep="\t", compression="gzip", nrows=0
+    ).columns
+    midgut_sample_columns = [
+        column for column in midgut_columns if column not in {"gene_id", "gene_name"}
+    ]
+    midgut_samples = _load_midgut_samples(
+        expression_dir / "midgut_nadav_shai_samples.csv", midgut_sample_columns
+    )
+    midgut = load_nfcore_dataset(
+        midgut_path,
+        "midgut",
+        crosswalk,
+        label="Midgut · blood-meal time course",
+        paper="Nadav Shai · Vosshall lab midgut RNA-seq",
+        annotation_version="AaegL5 · VectorBase 58 + Jové et al. 2019",
+        samples=midgut_samples,
+    )
+
     datasets = {
         "elife": ExpressionDataset(
             key="elife",
@@ -321,6 +408,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
             values=legacy_values,
             samples=legacy_samples,
         ),
+        "midgut": midgut,
     }
 
     import_dir = expression_dir / "imports"

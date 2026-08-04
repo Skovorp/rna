@@ -33,7 +33,7 @@ st.markdown(
 )
 
 st.info(
-    "Both RNA-seq studies in this atlas sampled adult mosquitoes. Egg, larva, and pupa are included below for orientation, but they are not expression conditions in these matrices."
+    "All RNA-seq studies in this atlas sampled adult mosquitoes. Egg, larva, and pupa are included below for orientation, but they are not expression conditions in these matrices."
 )
 
 st.image(
@@ -126,6 +126,10 @@ with abdomen:
             "Female reproductive organs in which eggs develop and can be retained. The drought study measured ovaries only."
         )
         st.markdown(
+            "**🧪 Midgut**  \n"
+            "The digestive organ where a blood meal is processed. The midgut time course follows expression from non-blood-fed females through 72 hours after feeding."
+        )
+        st.markdown(
             "**🧪 Abdominal tip**  \n"
             "The final three abdominal segments. The study dissection included genitalia and the female ovipositor."
         )
@@ -174,6 +178,7 @@ st.markdown(
     "The drought-resilience study follows adult female ovaries before and after a blood meal. "
     "Every label is elapsed time after that meal; **PBM** means **post-blood-meal**."
 )
+
 st.code(
     "Non-blood-fed → 3 h → 6 h → 12 h → 24 h → 48 h → 72 h → 96 h\n"
     "                                      ↘ day 6: eggs retained\n"
@@ -189,6 +194,16 @@ st.markdown(
 | **6 days PBM · eggs laid <5 hours prior** | Females had very recently laid their eggs; ovaries were sampled within five hours afterward. |
 | **13 days PBM · eggs laid >1 week prior** | A later post-egg-laying ovary state, more than a week after laying. |
 """
+)
+
+st.markdown("## Midgut blood-meal timeline")
+st.markdown(
+    "The midgut dataset contains three biological replicates at each female timepoint, plus three non-blood-fed male midgut samples."
+)
+st.code(
+    "Female non-blood-fed → 3 h → 6 h → 12 h → 24 h → 48 h → 72 h\n"
+    "Male non-blood-fed",
+    language=None,
 )
 
 st.markdown("## Quick vocabulary")

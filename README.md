@@ -1,6 +1,6 @@
 # Aedes RNA Atlas
 
-Small Streamlit prototype for exploring published *Aedes aegypti* RNA-seq TPM matrices.
+Small Streamlit prototype for exploring *Aedes aegypti* RNA-seq TPM matrices.
 
 ## What it does
 
@@ -24,7 +24,7 @@ Open `http://127.0.0.1:8501`.
 ## Repository layout
 
 - `app/` — Streamlit app, data layer, and tests.
-- `expression/` — published TPM matrices and compact metadata used by the app.
+- `expression/` — published and lab-generated TPM matrices plus compact metadata used by the app.
 - `deploy/` — Pi systemd service and one-minute pull/update timer.
 - `docs/` — prototype redirect for `rna.getferal.ai`.
 - `DATA_SOURCES.md` — paper and dataset attribution.

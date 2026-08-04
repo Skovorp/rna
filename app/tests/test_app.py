@@ -127,7 +127,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "Group median TPM" not in captions
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
-    assert len(studies.options) == 2
+    assert len(studies.options) == 3
+    assert "Midgut · blood-meal time course" in studies.options
     assert all("legacy" not in option.casefold() for option in studies.options)
     assert studies.value == ["elife", "neuro_ru"]
 

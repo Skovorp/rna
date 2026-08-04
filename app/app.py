@@ -26,7 +26,7 @@ from expression_explorer.data import (
 
 APP_DIR = Path(__file__).resolve().parent
 EXPRESSION_DIR = APP_DIR.parent / "expression"
-DATA_SCHEMA_VERSION = "2026-07-22-simple-ui-v3"
+DATA_SCHEMA_VERSION = "2026-08-04-midgut-v1"
 
 FAMILIES = {
     "IR · Ionotropic receptors": "Ionotropic receptors (IR)",
@@ -649,6 +649,8 @@ def default_grouping(dataset) -> tuple[str, str]:
         return "reproductive_state", "Reproductive state"
     if dataset.key.startswith("neuro_"):
         return "tissue_condition", "Tissue + condition"
+    if dataset.key == "midgut":
+        return "condition_label", "Sex + blood-meal time"
     return "sample", "Sample"
 
 
@@ -1040,7 +1042,7 @@ def render_home() -> None:
         """
         # Aedes RNA Atlas
 
-        This site brings together published *Aedes aegypti* RNA-seq expression data
+        This site brings together *Aedes aegypti* RNA-seq expression data
         across tissues, feeding conditions, and reproductive states.
 
         Use the menu above to:
@@ -1054,6 +1056,7 @@ def render_home() -> None:
 
         - [Venkataraman et al., eLife 2023](https://doi.org/10.7554/eLife.80489) — ovary expression across reproductive and drought-resilience states.
         - [Matthews et al., BMC Genomics 2016](https://doi.org/10.1186/s12864-015-2239-0) — female and male tissues across feeding and reproductive conditions.
+        - **Nadav Shai · Vosshall lab midgut RNA-seq** — female midgut from non-blood-fed through 72 hours post-blood-meal, plus non-blood-fed male midgut.
 
         TPM is descriptive normalized abundance. Condition-comparison statistics are
         exploratory; publication-grade differential expression should use raw counts
@@ -1115,7 +1118,7 @@ elif mode == "Genes":
             default=default_selected_keys,
             key="gene_studies",
             format_func=lambda key: datasets[key].label,
-            help="Choose one or more published experiments.",
+            help="Choose one or more RNA-seq datasets.",
         )
         scale_column, sort_column, median_column, guide_column = st.columns(4)
         with scale_column:

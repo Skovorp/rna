@@ -25,9 +25,25 @@ def test_dataset_dimensions_and_sample_metadata():
     assert datasets["elife"].values.shape == (18_473, 33)
     assert datasets["neuro_ru"].values.shape == (16_176, 122)
     assert datasets["neuro_legacy"].values.shape == (17_478, 122)
+    assert datasets["midgut"].values.shape == (18_943, 24)
     for dataset in datasets.values():
         assert dataset.samples.index.tolist() == dataset.sample_columns
         assert dataset.samples["sample"].notna().all()
+
+    midgut = datasets["midgut"]
+    assert midgut.samples["tissue"].eq("midgut").all()
+    assert midgut.samples["condition_label"].nunique() == 8
+    assert not midgut.samples["condition_label"].eq("Unspecified").any()
+    assert midgut.samples["condition_label"].drop_duplicates().tolist() == [
+        "Female · non-blood-fed",
+        "Female · 3 h post-blood-meal",
+        "Female · 6 h post-blood-meal",
+        "Female · 12 h post-blood-meal",
+        "Female · 24 h post-blood-meal",
+        "Female · 48 h post-blood-meal",
+        "Female · 72 h post-blood-meal",
+        "Male · non-blood-fed",
+    ]
 
 
 def test_ir25a_resolves_in_every_dataset():
@@ -70,9 +86,9 @@ def test_paper_orthology_annotations_are_available():
 def test_nfcore_merged_gene_tpm_import(tmp_path):
     matrix = tmp_path / "salmon.merged.gene_tpm.tsv"
     matrix.write_text(
-        "gene_id\tsample_a\tsample_b\n"
-        "AAEL005776\t12.5\t30.0\n"
-        "AAEL009813\t2.0\t4.0\n"
+        "gene_id\tgene_name\tsample_a\tsample_b\n"
+        "AAEL005776\tOrco\t12.5\t30.0\n"
+        "AAEL009813\tIr25a\t2.0\t4.0\n"
     )
     dataset = load_nfcore_dataset(
         matrix,

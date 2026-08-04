@@ -1,6 +1,6 @@
 # Aedes RNA Atlas
 
-Local Streamlit UI for exploring the published TPM matrices from the two mosquito papers in this workspace.
+Local Streamlit UI for exploring the TPM matrices from two mosquito papers and the Vosshall lab midgut time course in this workspace.
 
 ## Start
 
