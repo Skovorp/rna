@@ -39,6 +39,23 @@ def _plotly_spec(app, index=0):
     return json.loads(app.get("plotly_chart")[index].proto.spec)
 
 
+def _plotly_specs_by_type(app, chart_type):
+    return [
+        _plotly_spec(app, index)
+        for index in range(len(app.get("plotly_chart")))
+        if _plotly_spec(app, index)["data"][0]["type"] == chart_type
+    ]
+
+
+def _scatter_genes(plot):
+    return {
+        str(row[1])
+        for trace in plot["data"]
+        if trace["type"] == "box"
+        for row in trace.get("customdata", [])
+    }
+
+
 def _matched_gene_editor(app):
     matches = [
         element
@@ -190,9 +207,10 @@ def test_default_app_renders_without_exceptions(monkeypatch):
         if "section-title-with-info" in element.value
     )
     assert "Expression across selected genes" in info_html
-    assert "One replicate plot per study" in info_html
-    assert "Expression heatmaps" in info_html
-    assert "One heatmap per study" in info_html
+    assert "sample filters" in info_html
+    assert "optional sample-group coloring" in info_html
+    assert "its heatmap" in info_html
+    assert "Expression heatmaps" not in info_html
     assert 'class="section-info-tooltip"' in info_html
     assert 'tabindex="0"' in info_html
     captions = " ".join(element.value for element in app.caption)
@@ -205,6 +223,17 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "Midgut · blood-meal time course" in studies.options
     assert all("legacy" not in option.casefold() for option in studies.options)
     assert studies.value == ["elife", "neuro_ru"]
+
+    filter_widgets = [
+        widget for widget in app.multiselect if str(widget.key).startswith("gene_filter_")
+    ]
+    assert len(filter_widgets) == 4
+    assert all(widget.value == [] for widget in filter_widgets)
+    color_widgets = [
+        widget for widget in app.selectbox if str(widget.key).startswith("gene_color_")
+    ]
+    assert len(color_widgets) == 2
+    assert all(widget.value is None for widget in color_widgets)
 
     widget_types = (
         "button",
@@ -275,18 +304,21 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     assert [guide["y0"] for guide in guides] == condition_order
     assert all(guide["line"]["dash"] == "dot" for guide in guides)
     assert all(guide["layer"] == "below" for guide in guides)
+    assert plot["layout"]["showlegend"] is False
+    sample_trace_colors = {
+        trace["marker"]["color"]
+        for trace in plot["data"]
+        if trace["type"] == "box"
+    }
+    assert len(sample_trace_colors) == 1
 
     axis_scale.set_value("Log base 10").run()
-    base10_plot = _plotly_spec(app, 1)
+    base10_plot = _plotly_specs_by_type(app, "box")[1]
     assert base10_plot["layout"]["xaxis"]["title"]["text"] == "TPM (log₁₀ scale)"
     assert {"0", "1", "10", "100"} <= set(
         base10_plot["layout"]["xaxis"]["ticktext"]
     )
-    base10_heatmaps = [
-        _plotly_spec(app, index)
-        for index in range(len(app.get("plotly_chart")))
-        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
-    ]
+    base10_heatmaps = _plotly_specs_by_type(app, "heatmap")
     assert base10_heatmaps
     assert all(
         heatmap["data"][0]["colorbar"]["title"]["text"]
@@ -307,11 +339,7 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     linear_plot = _plotly_spec(app)
     assert linear_plot["layout"]["xaxis"]["title"]["text"] == "TPM (linear scale)"
     assert "ticktext" not in linear_plot["layout"]["xaxis"]
-    linear_heatmaps = [
-        _plotly_spec(app, index)
-        for index in range(len(app.get("plotly_chart")))
-        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
-    ]
+    linear_heatmaps = _plotly_specs_by_type(app, "heatmap")
     assert all(
         heatmap["data"][0]["colorbar"]["title"]["text"]
         == "Median TPM<br>(linear scale)"
@@ -357,7 +385,7 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
         if trace["type"] != "box":
             continue
         for condition, customdata in zip(trace["y"], trace["customdata"]):
-            values_by_condition.setdefault(condition, []).append(customdata[1])
+            values_by_condition.setdefault(condition, []).append(customdata[2])
     expected_order = sorted(
         values_by_condition,
         key=lambda condition: median(values_by_condition[condition]),
@@ -368,31 +396,98 @@ def test_gene_plots_are_horizontal_and_sortable(monkeypatch):
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     studies.set_value(["elife", "neuro_ru"]).run()
     assert not app.exception
-    study_plots = [
-        _plotly_spec(app, index)
-        for index in range(len(app.get("plotly_chart")))
-        if _plotly_spec(app, index)["data"][0]["type"] == "box"
-    ]
+    study_plots = _plotly_specs_by_type(app, "box")
     assert len(study_plots) == 2
     assert all(plot["data"][0]["orientation"] == "h" for plot in study_plots)
-    comparison_heatmaps = [
-        _plotly_spec(app, index)
-        for index in range(len(app.get("plotly_chart")))
-        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
-    ]
+    comparison_heatmaps = _plotly_specs_by_type(app, "heatmap")
     assert len(comparison_heatmaps) == 2
+    assert [
+        _plotly_spec(app, index)["data"][0]["type"]
+        for index in range(len(app.get("plotly_chart")))
+    ] == ["box", "heatmap", "box", "heatmap"]
 
     query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
     query.set_value("Ir25a Orco Ir7a").run()
     assert not app.exception
-    three_gene_plots = [
-        _plotly_spec(app, index)
-        for index in range(len(app.get("plotly_chart")))
-        if _plotly_spec(app, index)["data"][0]["type"] == "box"
-    ]
+    three_gene_plots = _plotly_specs_by_type(app, "box")
     assert len(three_gene_plots) == 2
-    assert sum(trace["type"] == "box" for trace in three_gene_plots[0]["data"]) == 3
-    assert sum(trace["type"] == "box" for trace in three_gene_plots[1]["data"]) == 2
+    assert _scatter_genes(three_gene_plots[0]) == {"Ir25a", "Orco", "Ir7a"}
+    assert _scatter_genes(three_gene_plots[1]) == {"Ir25a", "Orco"}
+
+
+def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Genes")
+
+    raw_before = next(
+        frame.value
+        for frame in app.dataframe
+        if {"Gene", "Sample", "TPM"} <= set(frame.value.columns)
+    )
+    sample_counts_before = raw_before.groupby("Study")["Sample"].nunique().to_dict()
+
+    ovary_filter = next(
+        widget
+        for widget in app.multiselect
+        if widget.key == "gene_filter_elife_reproductive_state"
+    )
+    ovary_filter.set_value(["Non-blood-fed"]).run()
+    assert not app.exception
+
+    chart_types = [
+        _plotly_spec(app, index)["data"][0]["type"]
+        for index in range(len(app.get("plotly_chart")))
+    ]
+    assert chart_types == ["box", "heatmap", "box", "heatmap"]
+    ovary_plot = _plotly_specs_by_type(app, "box")[0]
+    ovary_heatmap = _plotly_specs_by_type(app, "heatmap")[0]
+    assert ovary_plot["layout"]["yaxis"]["categoryarray"] == ["Non-blood-fed"]
+    assert ovary_heatmap["data"][0]["x"] == ["Non-blood-fed"]
+
+    raw_after = next(
+        frame.value
+        for frame in app.dataframe
+        if {"Gene", "Sample", "TPM"} <= set(frame.value.columns)
+    )
+    assert raw_after.groupby("Study")["Sample"].nunique().to_dict() == sample_counts_before
+    summary = next(
+        frame.value
+        for frame in app.dataframe
+        if "Samples ≥1 TPM" in frame.value.columns
+    )
+    ovary_summary = summary[
+        summary["Study"] == "Drought resilience · ovary time course"
+    ]
+    assert all(value.endswith("/33") for value in ovary_summary["Samples ≥1 TPM"])
+
+    neuro_color = next(
+        widget for widget in app.selectbox if widget.key == "gene_color_neuro_ru"
+    )
+    neuro_color.set_value("sex").run()
+    assert not app.exception
+    neuro_plot = _plotly_specs_by_type(app, "box")[1]
+    sample_traces = [trace for trace in neuro_plot["data"] if trace["type"] == "box"]
+    assert {trace["name"] for trace in sample_traces} == {"female", "male"}
+    assert len({trace["marker"]["color"] for trace in sample_traces}) == 2
+    assert neuro_plot["layout"]["showlegend"] is True
+    assert neuro_plot["layout"]["legend"]["title"]["text"] == "Sex"
+
+    studies = next(widget for widget in app.multiselect if widget.label == "Studies")
+    studies.set_value(["elife", "neuro_ru", "midgut"]).run()
+    assert not app.exception
+    assert next(
+        widget for widget in app.selectbox if widget.key == "gene_color_midgut"
+    ).value is None
+    assert {
+        widget.key
+        for widget in app.multiselect
+        if str(widget.key).startswith("gene_filter_midgut_")
+    } == {
+        "gene_filter_midgut_sex",
+        "gene_filter_midgut_timepoint",
+        "gene_filter_midgut_condition_label",
+    }
 
 
 def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
@@ -416,21 +511,10 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     assert "AaegOr7" in aliases
     assert "Or7" in aliases
     assert "gene14494" in aliases
-    single_gene_plots = [
-        _plotly_spec(app, index)
-        for index in range(len(app.get("plotly_chart")))
-        if _plotly_spec(app, index)["data"][0]["type"] == "box"
-    ]
+    single_gene_plots = _plotly_specs_by_type(app, "box")
     assert len(single_gene_plots) == 2
-    assert all(
-        any(trace.get("name") == "Orco" for trace in plot["data"])
-        for plot in single_gene_plots
-    )
-    single_gene_heatmaps = [
-        _plotly_spec(app, index)
-        for index in range(len(app.get("plotly_chart")))
-        if _plotly_spec(app, index)["data"][0]["type"] == "heatmap"
-    ]
+    assert all(_scatter_genes(plot) == {"Orco"} for plot in single_gene_plots)
+    single_gene_heatmaps = _plotly_specs_by_type(app, "heatmap")
     assert len(single_gene_heatmaps) == 2
 
     query.set_value("Ir7a").run()
@@ -476,8 +560,12 @@ def test_gene_matched_table_toggle_filters_every_result(monkeypatch):
     )
     assert set(raw["Gene"]) == {"Orco"}
     assert all(
-        all(trace.get("name") != "Ir25a" for trace in _plotly_spec(app, index)["data"])
-        for index in range(len(app.get("plotly_chart")))
+        "Ir25a" not in _scatter_genes(plot)
+        for plot in _plotly_specs_by_type(app, "box")
+    )
+    assert all(
+        "Ir25a" not in heatmap["data"][0]["y"]
+        for heatmap in _plotly_specs_by_type(app, "heatmap")
     )
     assert any(
         caption.value == "1 of 2 matched genes included in the results below."

@@ -78,6 +78,9 @@ GENE_COLOR_VALUES = (
     "#f43f5e",
 )
 
+DEFAULT_SAMPLE_COLOR = "#3b82f6"
+SAMPLE_GROUP_COLOR_SEQUENCE = px.colors.qualitative.Set2 + px.colors.qualitative.Pastel
+
 GENE_FAMILY_COLOR_NAMES = {
     "IR": "purple",
     "OR": "emerald",
@@ -771,6 +774,77 @@ def default_grouping(dataset) -> tuple[str, str]:
     return "sample", "Sample"
 
 
+def sample_groupings(dataset) -> list[tuple[str, str]]:
+    """Return the biological sample metadata exposed for filtering and color."""
+    configured = {
+        "elife": [
+            ("reproductive_state", "Reproductive state / time"),
+        ],
+        "neuro_ru": [
+            ("sex", "Sex"),
+            ("tissue", "Anatomy"),
+            ("condition_label", "Feeding / reproductive state"),
+        ],
+        "midgut": [
+            ("sex", "Sex"),
+            ("timepoint", "Blood-meal time"),
+            ("condition_label", "Sex + blood-meal time"),
+        ],
+    }.get(dataset.key, [])
+    return [
+        (field, label)
+        for field, label in configured
+        if field in dataset.samples.columns
+        and dataset.samples[field].fillna("").astype(str).nunique() > 1
+    ]
+
+
+def sample_group_values(dataset, field: str) -> list[str]:
+    values = dataset.samples[field].fillna("").astype(str).replace("", "Unspecified")
+    return values.drop_duplicates().tolist()
+
+
+def render_gene_sample_controls(dataset) -> tuple[dict[str, list[str]], str | None, str | None]:
+    groupings = sample_groupings(dataset)
+    if not groupings:
+        return {}, None, None
+
+    filters: dict[str, list[str]] = {}
+    labels = dict(groupings)
+    columns = st.columns(len(groupings) + 1)
+    for column, (field, label) in zip(columns, groupings):
+        with column:
+            filters[field] = st.multiselect(
+                f"Filter · {label}",
+                options=sample_group_values(dataset, field),
+                default=[],
+                key=f"gene_filter_{dataset.key}_{field}",
+                help="Leave empty to include every value in this group.",
+            )
+    with columns[-1]:
+        color_field = st.selectbox(
+            "Color samples by",
+            options=[None, *labels],
+            index=0,
+            key=f"gene_color_{dataset.key}",
+            format_func=lambda field: "None" if field is None else labels[field],
+            help="None draws every sample in the same color.",
+        )
+    return filters, color_field, labels.get(color_field)
+
+
+def filter_expression_samples(
+    long: pd.DataFrame, filters: dict[str, list[str]]
+) -> pd.DataFrame:
+    filtered = long.copy()
+    for field, selected_values in filters.items():
+        if not selected_values:
+            continue
+        values = filtered[field].fillna("").astype(str).replace("", "Unspecified")
+        filtered = filtered.loc[values.isin(selected_values)].copy()
+    return filtered
+
+
 def grouped_median(long: pd.DataFrame, field: str) -> pd.DataFrame:
     order = [value for value in long[field].dropna().astype(str).unique() if value]
     grouped = long.groupby(["gene", field], as_index=False, sort=False)["tpm"].median()
@@ -826,10 +900,16 @@ def replicate_figure(
     show_medians: bool = True,
     show_guides: bool = True,
     x_scale: str = "Log base 2",
+    color_field: str | None = None,
+    color_label: str | None = None,
 ) -> go.Figure:
     plot = long.copy()
     plot["axis_tpm"] = tpm_axis_position(plot["tpm"], x_scale)
     plot[field] = plot[field].fillna("Unspecified").astype(str)
+    if color_field:
+        plot[color_field] = (
+            plot[color_field].fillna("").astype(str).replace("", "Unspecified")
+        )
     condition_order = plot[field].drop_duplicates().tolist()
     if sort_by_expression:
         condition_order = (
@@ -838,45 +918,55 @@ def replicate_figure(
             .sort_values(ascending=False, kind="stable")
             .index.tolist()
         )
-    gene_count = plot["gene"].nunique()
-    gene_names = plot["gene"].drop_duplicates().astype(str).tolist()
-    gene_color_map = {
-        gene_name: GENE_COLOR_VALUES[gene_color_index(gene_name)]
-        for gene_name in gene_names
+    hover_data = {
+        "sample": True,
+        "gene": True,
+        "tpm": ":.3f",
+        "axis_tpm": False,
     }
     figure = px.strip(
         plot,
         x="axis_tpm",
         y=field,
-        color="gene",
+        color=color_field,
         orientation="h",
-        hover_data={"sample": True, "tpm": ":.3f", "axis_tpm": False},
+        hover_data=hover_data,
         labels={
             field: field_label,
             "axis_tpm": "TPM",
             "tpm": "TPM",
             "sample": "Sample",
             "gene": "Gene",
+            **({color_field: color_label} if color_field and color_label else {}),
         },
         category_orders={field: condition_order},
-        color_discrete_map=gene_color_map,
+        color_discrete_sequence=SAMPLE_GROUP_COLOR_SEQUENCE,
     )
-    if gene_count == 1:
-        figure.update_traces(marker={"color": gene_color_map[gene_names[0]]})
+    if not color_field:
+        figure.update_traces(marker={"color": DEFAULT_SAMPLE_COLOR})
+    median_fields = ["gene", field]
+    if color_field and color_field not in median_fields:
+        median_fields.append(color_field)
     medians = (
-        plot.groupby(["gene", field], as_index=False, sort=False)["tpm"]
+        plot.groupby(median_fields, as_index=False, sort=False)["tpm"]
         .median()
     )
     medians["axis_tpm"] = tpm_axis_position(medians["tpm"], x_scale)
     if show_medians:
-        trace_colors = {
+        group_colors = {
             str(trace.name): trace.marker.color
             for trace in figure.data
             if getattr(trace, "marker", None) is not None
         }
-        if gene_count == 1:
-            trace_colors[gene_names[0]] = gene_color_map[gene_names[0]]
         for gene_name, gene_medians in medians.groupby("gene", sort=False):
+            median_colors = (
+                [
+                    group_colors.get(str(value), DEFAULT_SAMPLE_COLOR)
+                    for value in gene_medians[color_field]
+                ]
+                if color_field
+                else DEFAULT_SAMPLE_COLOR
+            )
             figure.add_trace(
                 go.Scatter(
                     x=gene_medians["axis_tpm"],
@@ -888,7 +978,7 @@ def replicate_figure(
                     marker={
                         "symbol": "diamond",
                         "size": 11,
-                        "color": trace_colors.get(str(gene_name), "#f5b85b"),
+                        "color": median_colors,
                         "line": {"color": "#111827", "width": 0.7},
                     },
                     customdata=gene_medians[["gene", "tpm"]].to_numpy(),
@@ -924,7 +1014,12 @@ def replicate_figure(
             "autorange": "reversed",
             "automargin": True,
         },
-        legend={"title": {"text": ""}, "itemclick": False, "itemdoubleclick": False},
+        showlegend=bool(color_field),
+        legend={
+            "title": {"text": color_label or ""},
+            "itemclick": False,
+            "itemdoubleclick": False,
+        },
     )
     return figure
 
@@ -1437,7 +1532,7 @@ elif mode == "Genes":
         if resolved_for_comparison:
             section_title_with_info(
                 "Expression across selected genes",
-                "One replicate plot per study. Colors identify genes; diamonds show each gene's group median.",
+                "Each study has sample filters, optional sample-group coloring, a replicate plot, and its heatmap. Diamonds show each gene's group median.",
             )
             for key in selected_keys:
                 combined_genes = resolved_for_comparison.get(key)
@@ -1446,19 +1541,45 @@ elif mode == "Genes":
                 dataset = datasets[key]
                 field, field_label = default_grouping(dataset)
                 long = expression_long(dataset, combined_genes)
-                st.markdown(f"**{dataset.label}**")
+                st.markdown(f"### {dataset.label}")
+                filters, color_field, color_label = render_gene_sample_controls(dataset)
+                filtered_long = filter_expression_samples(long, filters)
+                filtered_sample_count = filtered_long["sample"].nunique()
+                if any(filters.values()):
+                    st.caption(
+                        f"Showing {filtered_sample_count} of {len(dataset.sample_columns)} samples."
+                    )
+                else:
+                    st.caption(f"Showing all {len(dataset.sample_columns)} samples.")
+                if filtered_long.empty:
+                    st.warning("No samples match these filters.")
+                    continue
                 st.plotly_chart(
                     replicate_figure(
-                        long,
+                        filtered_long,
                         field,
                         field_label,
                         sort_conditions,
                         show_medians,
                         show_guides,
                         x_axis_scale,
+                        color_field,
+                        color_label,
                     ),
                     width="stretch",
                     key=f"gene_plot_combined_{key}",
+                )
+                grouped = grouped_median(filtered_long, field)
+                st.plotly_chart(
+                    heatmap_figure(
+                        grouped,
+                        field,
+                        "",
+                        row_zscore=False,
+                        value_scale=x_axis_scale,
+                    ),
+                    width="stretch",
+                    key=f"gene_comparison_heatmap_{key}",
                 )
 
         for query, per_study in resolved_queries:
@@ -1556,37 +1677,6 @@ elif mode == "Genes":
                     "selected_genes_expression.tsv",
                     "gene_download_combined",
                 )
-
-        if selected_keys and resolved_for_comparison:
-            comparisons = []
-            for comparison_key in selected_keys:
-                comparison_genes = resolved_for_comparison.get(comparison_key)
-                if comparison_genes is None or comparison_genes.empty:
-                    continue
-                dataset = datasets[comparison_key]
-                field, _ = default_grouping(dataset)
-                long = expression_long(dataset, comparison_genes)
-                grouped = grouped_median(long, field)
-                comparisons.append((comparison_key, dataset, field, grouped))
-
-            if comparisons:
-                section_title_with_info(
-                    "Expression heatmaps",
-                    "One heatmap per study. The selected TPM scale also controls the colorbars. Colors are scaled within each panel; compare patterns rather than color intensity across papers.",
-                )
-                for comparison_key, dataset, field, grouped in comparisons:
-                    st.markdown(f"**{dataset.label}**")
-                    st.plotly_chart(
-                        heatmap_figure(
-                            grouped,
-                            field,
-                            "",
-                            row_zscore=False,
-                            value_scale=x_axis_scale,
-                        ),
-                        width="stretch",
-                        key=f"gene_comparison_heatmap_{comparison_key}",
-                    )
 
 elif mode == "Families":
     page_heading(
