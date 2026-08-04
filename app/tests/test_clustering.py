@@ -50,6 +50,20 @@ def test_pca_embedding_is_sample_aligned_and_reproducible():
     assert "80 most-variable genes" in details
 
 
+def test_pca_can_use_all_genes():
+    dataset = synthetic_dataset()
+    dataset.values.iloc[0] = 1.0
+
+    embedding, _, _, details = sample_embedding(
+        dataset,
+        "PCA",
+        len(dataset.values),
+    )
+
+    assert np.isfinite(embedding[["x", "y"]]).all(axis=None)
+    assert "120 genes (all)" in details
+
+
 def test_nonlinear_embeddings_return_two_finite_coordinates():
     dataset = synthetic_dataset()
     for method in ("UMAP", "t-SNE"):

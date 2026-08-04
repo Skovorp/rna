@@ -4,11 +4,11 @@ Small Streamlit prototype for exploring *Aedes aegypti* RNA-seq TPM matrices.
 
 ## What it does
 
-- Search individual genes and aliases such as `Ir25a`, `Orco`, `AaegOr7`, and `AAEL005776`.
+- Search individual genes and aliases such as `Ir25a`, `Orco`, `AaegOr7`, and `AAEL005776`, then toggle resolved matches in or out of every result.
 - Compare expression across tissues, conditions, and ovary reproductive states.
 - Compare every gene between two conditions with a positive-TPM MA plot using readable base-10 axes for average TPM and the exact A/B fold ratio. A configurable FDR threshold colors significant genes gold above a gray background, with TPM summaries, Welch p-values, and Benjamini–Hochberg FDR.
-- Explore IR, OR, GR, and OBP gene families with replicate-aware plots and heatmaps.
-- Map biological samples with PCA, UMAP, or t-SNE using the most-variable expression genes.
+- Explore IR, OR, GR, and OBP gene families with replicate-aware plots and heatmaps, including per-gene toggles for predefined and custom families.
+- Map biological samples with PCA, UMAP, or t-SNE using all expression genes by default or a smaller most-variable subset.
 - Inspect available paper annotations, orthologs, aliases, and raw per-sample TPM values.
 
 ## Run locally

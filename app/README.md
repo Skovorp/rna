@@ -15,10 +15,10 @@ Open `http://localhost:8501`.
 ## Main workflows
 
 - **Home:** understand the atlas, the available studies, and the four analysis workflows before opening an explorer.
-- **Genes:** search symbols, `AAEL...` IDs, internal IDs, or aliases; compare panels such as `Ir25a, Orco`; inspect replicate points, group medians, paper annotations, and raw values.
-- **Families:** filter to annotated IR, OR, GR, or OBP genes, or enter a custom gene set with the Genes-page token editor; rank individual genes by mean TPM across all samples; show all genes by default or select the top N; optionally use within-gene z-scores to emphasize relative patterns; export the complete family matrix. This is not a family-level statistical test.
+- **Genes:** search symbols, `AAEL...` IDs, internal IDs, or aliases; compare panels such as `Ir25a, Orco`; toggle individual matched genes on or off; inspect replicate points, group medians, paper annotations, and raw values.
+- **Families:** filter to annotated IR, OR, GR, or OBP genes, or enter a custom gene set with the Genes-page token editor; toggle any matched family member on or off; rank individual genes by mean TPM across all samples; show all included genes by default or select the top N; optionally use within-gene z-scores to emphasize relative patterns; export the complete family matrix. This is not a family-level statistical test.
 - **Compare conditions:** compare every gene between two conditions in one study; view an MA plot with readable base-10 axes for average TPM and the exact A/B fold ratio. A configurable FDR threshold colors significant genes gold and draws them above gray nonsignificant genes. The table retains TPM summaries, raw Welch p-values, and Benjamini–Hochberg FDR. Genes with zero mean TPM in either condition remain in the table but are omitted from the plot because their ratio is undefined.
-- **Clusters:** select one study and map biological samples with PCA, UMAP, or t-SNE using standardized values from the most-variable log-transformed TPM genes; color points by available sample metadata.
+- **Clusters:** select one study and map biological samples with PCA, UMAP, or t-SNE using standardized values from all log-transformed TPM genes by default, or choose a smaller most-variable subset; color points by available sample metadata.
 
 The primary workflows are available from the persistent menu at the top of every page. The Streamlit sidebar and developer toolbar are hidden from the interface.
 

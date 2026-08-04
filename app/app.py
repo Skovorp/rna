@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import html
 from pathlib import Path
 import re
@@ -221,38 +222,11 @@ st.markdown(
         border-radius: .75rem;
         background: rgba(148, 163, 184, .09);
     }
-    .matched-genes-panel {
-        margin: .6rem 0 1.2rem;
-        border: 1px solid rgba(148, 163, 184, .22);
-        border-radius: .75rem;
-        overflow: hidden;
-    }
     .matched-genes-title {
-        padding: .55rem .75rem;
-        border-bottom: 1px solid rgba(148, 163, 184, .18);
-        background: rgba(148, 163, 184, .08);
+        margin-top: .35rem;
         font-size: .82rem;
         font-weight: 750;
     }
-    .matched-genes-scroll {
-        max-height: 15rem;
-        overflow-y: auto;
-        overscroll-behavior: contain;
-    }
-    .matched-gene-row {
-        display: grid;
-        grid-template-columns: minmax(8rem, 1fr) minmax(14rem, 3fr) auto;
-        gap: .75rem;
-        align-items: center;
-        padding: .5rem .7rem;
-        border-bottom: 1px solid rgba(148, 163, 184, .12);
-        border-left: 4px solid;
-        font-size: .78rem;
-    }
-    .matched-gene-row:last-child { border-bottom: 0; }
-    .matched-gene-name { display: flex; align-items: center; gap: .4rem; font-weight: 750; }
-    .matched-gene-aliases { color: #9aa8a5; overflow-wrap: anywhere; }
-    .matched-gene-coverage { color: #9aa8a5; white-space: nowrap; }
     .section-title-with-info {
         display: flex;
         align-items: center;
@@ -302,7 +276,6 @@ st.markdown(
     }
     @media (max-width: 800px) {
         .st-key-site_nav [data-testid="stHorizontalBlock"] { gap: .35rem; }
-        .matched-gene-row { grid-template-columns: 1fr; gap: .25rem; }
     }
     [data-testid="stExpander"] { border-color: rgba(128,128,128,.18); }
     </style>
@@ -483,39 +456,109 @@ def matched_gene_entries(
     return list(entries.values())
 
 
-def render_matched_gene_list(
+def render_matched_gene_table(
     entries: list[dict[str, object]],
     selected_study_count: int,
-) -> None:
+    state_key: str,
+) -> set[str]:
     if not entries:
-        return
-    rows = []
+        return set()
+
+    enabled_by_gene = st.session_state.setdefault(state_key, {})
+    entry_keys = [str(entry["display_name"]).casefold() for entry in entries]
+    for entry_key in entry_keys:
+        enabled_by_gene.setdefault(entry_key, True)
+
+    revision_key = f"{state_key}_revision"
+    st.session_state.setdefault(revision_key, 0)
+    all_on_column, all_off_column, _ = st.columns([1, 1, 5])
+    with all_on_column:
+        if st.button("Turn all on", key=f"{state_key}_all_on", width="stretch"):
+            enabled_by_gene.update(dict.fromkeys(entry_keys, True))
+            st.session_state[revision_key] += 1
+    with all_off_column:
+        if st.button("Turn all off", key=f"{state_key}_all_off", width="stretch"):
+            enabled_by_gene.update(dict.fromkeys(entry_keys, False))
+            st.session_state[revision_key] += 1
+
+    rows: list[dict[str, object]] = []
     for entry in entries:
         display_name = str(entry["display_name"])
         families = list(entry["families"].values())
-        family = "/".join(families)
-        family_key = family if family in GENE_FAMILY_COLOR_NAMES else "mixed"
         aliases = sorted(entry["aliases"].values(), key=str.casefold)
-        alias_text = ", ".join(aliases) if aliases else "No alternative names found"
         found_count = len(entry["study_keys"])
-        color = GENE_COLOR_VALUES[gene_color_index(display_name)]
         rows.append(
-            f'<div class="matched-gene-row" style="border-left-color:{color}">'
-            '<div class="matched-gene-name">'
-            f"<span>{html.escape(display_name)}</span>"
-            f'<span class="gene-token-family gene-family-{family_key.casefold()}">'
-            f"{html.escape(family)}</span></div>"
-            f'<div class="matched-gene-aliases">{html.escape(alias_text)}</div>'
-            f'<div class="matched-gene-coverage">{found_count}/{selected_study_count} studies</div>'
-            "</div>"
+            {
+                "Include": bool(enabled_by_gene[display_name.casefold()]),
+                "Gene": display_name,
+                "Family": "/".join(families),
+                "Alternative names": (
+                    ", ".join(aliases) if aliases else "No alternative names found"
+                ),
+                "Study coverage": f"{found_count}/{selected_study_count} studies",
+            }
         )
+
     st.markdown(
-        '<div class="matched-genes-panel">'
-        f'<div class="matched-genes-title">Matched genes · {len(entries)}</div>'
-        f'<div class="matched-genes-scroll">{"".join(rows)}</div>'
-        "</div>",
+        f'<div class="matched-genes-title">Matched genes · {len(entries)}</div>',
         unsafe_allow_html=True,
     )
+    table = pd.DataFrame(rows)
+    row_fingerprint = hashlib.sha1(
+        "\n".join(entry_keys).encode("utf-8")
+    ).hexdigest()[:12]
+    edited = st.data_editor(
+        table,
+        hide_index=True,
+        width="stretch",
+        height=min(38 + 35 * len(table), 318),
+        row_height=35,
+        disabled=["Gene", "Family", "Alternative names", "Study coverage"],
+        column_config={
+            "Include": st.column_config.CheckboxColumn(
+                "Include",
+                help="Turn a gene off to remove it from every result below.",
+                width="small",
+            ),
+            "Gene": st.column_config.TextColumn(width="small"),
+            "Family": st.column_config.TextColumn(width="small"),
+            "Alternative names": st.column_config.TextColumn(width="large"),
+            "Study coverage": st.column_config.TextColumn(width="small"),
+        },
+        key=(
+            f"{state_key}_editor_{row_fingerprint}_"
+            f"{st.session_state[revision_key]}"
+        ),
+    )
+    enabled_by_gene.update(
+        {
+            str(row.Gene).casefold(): bool(row.Include)
+            for row in edited.itertuples(index=False)
+        }
+    )
+    enabled_count = sum(enabled_by_gene[entry_key] for entry_key in entry_keys)
+    st.caption(
+        f"{enabled_count} of {len(entries)} matched genes included in the results below."
+    )
+    return {
+        entry_key
+        for entry_key in entry_keys
+        if enabled_by_gene[entry_key]
+    }
+
+
+def filter_matched_genes(
+    per_study: dict[str, pd.DataFrame],
+    enabled_gene_keys: set[str],
+) -> dict[str, pd.DataFrame]:
+    filtered: dict[str, pd.DataFrame] = {}
+    for study_key, matches in per_study.items():
+        included = matches[
+            matches["display_name"].astype(str).str.casefold().isin(enabled_gene_keys)
+        ]
+        if not included.empty:
+            filtered[study_key] = included
+    return filtered
 
 
 def install_gene_editor_behavior(editor_key: str, input_key: str) -> None:
@@ -614,6 +657,12 @@ def gene_count_options(maximum: int) -> list[int]:
     if maximum < 10:
         return list(range(1, maximum + 1))
     return list(range(10, maximum, 5)) + [maximum]
+
+
+def cluster_gene_count_options(maximum: int) -> list[int]:
+    """Return useful clustering gene-count stops followed by the complete set."""
+    standard_options = (250, 500, 1_000, 2_000, 5_000, 10_000)
+    return [value for value in standard_options if value < maximum] + [maximum]
 
 
 def alternative_names_by_gene(
@@ -1151,7 +1200,7 @@ elif mode == "Genes":
     elif not selected_keys:
         st.info("Choose at least one study.")
     else:
-        resolved_for_comparison: dict[str, pd.DataFrame] = {}
+        all_resolved_for_comparison: dict[str, pd.DataFrame] = {}
         resolved_queries: list[tuple[str, dict[str, pd.DataFrame]]] = []
         combined_summaries: list[pd.DataFrame] = []
         combined_raw_rows: list[pd.DataFrame] = []
@@ -1162,18 +1211,24 @@ elif mode == "Genes":
                 matches = resolve_one(datasets[key], query)
                 if not matches.empty:
                     per_study[key] = matches.drop_duplicates("row_id")
-                    prior = resolved_for_comparison.get(key)
-                    resolved_for_comparison[key] = (
+                    prior = all_resolved_for_comparison.get(key)
+                    all_resolved_for_comparison[key] = (
                         per_study[key]
                         if prior is None
                         else pd.concat([prior, per_study[key]], ignore_index=True).drop_duplicates("row_id")
                     )
             resolved_queries.append((query, per_study))
 
-        if resolved_for_comparison:
-            render_matched_gene_list(
-                matched_gene_entries(resolved_for_comparison),
+        resolved_for_comparison: dict[str, pd.DataFrame] = {}
+        if all_resolved_for_comparison:
+            enabled_gene_keys = render_matched_gene_table(
+                matched_gene_entries(all_resolved_for_comparison),
                 len(selected_keys),
+                "gene_matched_gene_selection",
+            )
+            resolved_for_comparison = filter_matched_genes(
+                all_resolved_for_comparison,
+                enabled_gene_keys,
             )
 
         for query, per_study in resolved_queries:
@@ -1188,6 +1243,9 @@ elif mode == "Genes":
                     st.warning(
                         f"Gene not found: `{query}` is not present in {datasets[key].label}."
                     )
+
+        if all_resolved_for_comparison and not resolved_for_comparison:
+            st.info("Turn on at least one matched gene to show expression results.")
 
         if resolved_for_comparison:
             section_title_with_info(
@@ -1221,6 +1279,14 @@ elif mode == "Genes":
                 continue
 
             for key, matches in per_study.items():
+                matches = matches[
+                    matches["display_name"]
+                    .astype(str)
+                    .str.casefold()
+                    .isin(enabled_gene_keys)
+                ]
+                if matches.empty:
+                    continue
                 dataset = datasets[key]
                 summary = gene_statistics(dataset, matches)
                 summary.insert(0, "Study", dataset.label)
@@ -1371,13 +1437,34 @@ elif mode == "Families":
             if custom_family
             else []
         )
-        members_by_study = {
+        all_members_by_study = {
             key: (
                 resolve_queries(datasets[key], family_queries)
                 if custom_family
                 else family_members(datasets[key], family_name)
             )
             for key in family_keys
+        }
+        matched_family_entries = matched_gene_entries(all_members_by_study)
+        enabled_family_gene_keys: set[str] = set()
+        if matched_family_entries:
+            family_selection_id = (
+                "custom"
+                if custom_family
+                else family_label.split(" · ", maxsplit=1)[0].casefold()
+            )
+            enabled_family_gene_keys = render_matched_gene_table(
+                matched_family_entries,
+                len(family_keys),
+                f"family_matched_gene_selection_{family_selection_id}",
+            )
+        filtered_family_members = filter_matched_genes(
+            all_members_by_study,
+            enabled_family_gene_keys,
+        )
+        members_by_study = {
+            key: filtered_family_members.get(key, members.iloc[0:0].copy())
+            for key, members in all_members_by_study.items()
         }
         maximum_family_genes = max(
             (members["display_name"].nunique() for members in members_by_study.values()),
@@ -1408,7 +1495,7 @@ elif mode == "Families":
                     value=0,
                     format_func=lambda _: "All (0)",
                     disabled=True,
-                    help="Add genes to the custom family to enable this control.",
+                    help="Add or turn on genes to enable this control.",
                 )
         with pattern_column:
             row_zscore = st.toggle(
@@ -1418,15 +1505,6 @@ elif mode == "Families":
             )
 
     if custom_family and family_queries:
-        matched_custom_genes = {
-            key: members
-            for key, members in members_by_study.items()
-            if not members.empty
-        }
-        render_matched_gene_list(
-            matched_gene_entries(matched_custom_genes),
-            len(family_keys),
-        )
         for query in family_queries:
             for key in family_keys:
                 if resolve_one(datasets[key], query).empty:
@@ -1438,6 +1516,8 @@ elif mode == "Families":
         st.info("Choose at least one study.")
     elif custom_family and not family_queries:
         st.info("Enter genes or identifiers to create a custom family.")
+    elif matched_family_entries and not enabled_family_gene_keys:
+        st.info("Turn on at least one matched gene to show family results.")
     else:
         coverage = []
         family_data: dict[str, tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, str]] = {}
@@ -1792,13 +1872,17 @@ else:
                 key="cluster_color",
             )
         with genes_column:
-            variable_genes = st.slider(
-                "Most-variable genes",
-                min_value=250,
-                max_value=5_000,
-                value=2_000,
-                step=250,
-                help="Genes are ranked by variance after log-transforming TPM. Constant genes are excluded.",
+            available_cluster_genes = len(cluster_dataset.values)
+            variable_genes = st.select_slider(
+                "Genes used",
+                options=cluster_gene_count_options(available_cluster_genes),
+                value=available_cluster_genes,
+                format_func=lambda value: (
+                    f"All ({available_cluster_genes:,})"
+                    if value == available_cluster_genes
+                    else f"{value:,} most variable"
+                ),
+                help="All genes are used by default. Smaller choices keep the genes with the highest variance after log-transforming TPM.",
             )
 
     try:

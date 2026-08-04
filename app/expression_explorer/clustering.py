@@ -19,7 +19,7 @@ def sample_embedding(
     method: str,
     variable_genes: int = 2_000,
 ) -> tuple[pd.DataFrame, str, str, str]:
-    """Embed biological samples using the most variable log-TPM genes."""
+    """Embed biological samples using all or the most variable log-TPM genes."""
     if method not in METHODS:
         raise ValueError(f"Unknown clustering method: {method}")
     if len(dataset.sample_columns) < 3:
@@ -30,8 +30,20 @@ def sample_embedding(
     variable = np.flatnonzero(variances > 0)
     if len(variable) < 2:
         raise ValueError("At least two variable genes are required for clustering.")
-    keep = variable[np.argsort(variances[variable], kind="stable")[-variable_genes:]]
+    use_all_genes = variable_genes >= sample_by_gene.shape[1]
+    keep = (
+        np.arange(sample_by_gene.shape[1])
+        if use_all_genes
+        else variable[
+            np.argsort(variances[variable], kind="stable")[-variable_genes:]
+        ]
+    )
     scaled = StandardScaler().fit_transform(sample_by_gene[:, keep])
+    gene_details = (
+        f"{len(keep):,} genes (all)"
+        if use_all_genes
+        else f"{len(keep):,} most-variable genes"
+    )
 
     if method == "PCA":
         model = PCA(n_components=2, random_state=42)
@@ -39,7 +51,7 @@ def sample_embedding(
         explained = model.explained_variance_ratio_ * 100
         x_label = f"PC1 ({explained[0]:.1f}%)"
         y_label = f"PC2 ({explained[1]:.1f}%)"
-        details = f"{len(keep):,} most-variable genes · PC1 + PC2 explain {explained.sum():.1f}%"
+        details = f"{gene_details} · PC1 + PC2 explain {explained.sum():.1f}%"
     elif method == "UMAP":
         from umap import UMAP
 
@@ -54,7 +66,7 @@ def sample_embedding(
         ).fit_transform(scaled)
         x_label = "UMAP 1"
         y_label = "UMAP 2"
-        details = f"{len(keep):,} most-variable genes · {neighbors} neighbors"
+        details = f"{gene_details} · {neighbors} neighbors"
     else:
         perplexity = min(30.0, max(2.0, (len(dataset.sample_columns) - 1) / 3.0))
         coordinates = TSNE(
@@ -66,7 +78,7 @@ def sample_embedding(
         ).fit_transform(scaled)
         x_label = "t-SNE 1"
         y_label = "t-SNE 2"
-        details = f"{len(keep):,} most-variable genes · perplexity {perplexity:g}"
+        details = f"{gene_details} · perplexity {perplexity:g}"
 
     metadata = (
         dataset.samples.set_index("sample", drop=False)

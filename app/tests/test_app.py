@@ -7,6 +7,13 @@ from streamlit.testing.v1 import AppTest
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
 NAVIGATION_ITEMS = ["Home", "Genes", "Families", "Compare conditions", "Clusters"]
+MATCHED_GENE_COLUMNS = {
+    "Include",
+    "Gene",
+    "Family",
+    "Alternative names",
+    "Study coverage",
+}
 
 
 def _widgets_with_options(app, expected_options):
@@ -30,6 +37,27 @@ def _rendered_gene_names(app):
 
 def _plotly_spec(app, index=0):
     return json.loads(app.get("plotly_chart")[index].proto.spec)
+
+
+def _matched_gene_editor(app):
+    matches = [
+        element
+        for element in app.dataframe
+        if set(element.value.columns) == MATCHED_GENE_COLUMNS
+    ]
+    assert len(matches) == 1
+    return matches[0]
+
+
+def _set_matched_gene_enabled(app, gene, enabled):
+    editor = _matched_gene_editor(app)
+    row_index = editor.value.index[editor.value["Gene"] == gene].item()
+    app.session_state[editor.key] = {
+        "edited_rows": {int(row_index): {"Include": enabled}},
+        "deleted_rows": [],
+        "added_rows": [],
+    }
+    return app.run()
 
 
 def _select_page(app, page):
@@ -107,9 +135,11 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     ]
     assert len(raw_tables) == 1
     assert ".st-key-gene_setup_panel" in source
-    assert ".matched-genes-scroll" in source
-    assert "max-height: 15rem" in source
-    assert "overflow-y: auto" in source
+    matched_genes = _matched_gene_editor(app).value
+    assert matched_genes["Include"].all()
+    assert matched_genes["Gene"].tolist() == ["Ir25a", "Orco"]
+    assert any(button.label == "Turn all on" for button in app.button)
+    assert any(button.label == "Turn all off" for button in app.button)
     info_html = " ".join(
         element.value
         for element in app.markdown
@@ -329,16 +359,19 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
 
     query.set_value("Orco").run()
     assert not app.exception
-    matched_html = next(
+    matched_title = next(
         element.value
         for element in app.markdown
-        if '<div class="matched-genes-panel"' in element.value
+        if '<div class="matched-genes-title"' in element.value
     )
-    assert "Matched genes · 1" in matched_html
-    assert "AAEL005776" in matched_html
-    assert "AaegOr7" in matched_html
-    assert "Or7" in matched_html
-    assert "gene14494" in matched_html
+    assert "Matched genes · 1" in matched_title
+    matched_genes = _matched_gene_editor(app).value
+    assert matched_genes["Gene"].tolist() == ["Orco"]
+    aliases = matched_genes["Alternative names"].item()
+    assert "AAEL005776" in aliases
+    assert "AaegOr7" in aliases
+    assert "Or7" in aliases
+    assert "gene14494" in aliases
     single_gene_plots = [
         _plotly_spec(app, index)
         for index in range(len(app.get("plotly_chart")))
@@ -364,18 +397,43 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     assert "Gene not found:" in warnings
     assert "ir7a" in warnings
     assert "Neurotranscriptome · updated AaegL.RU" in warnings
-    matched_html = next(
-        element.value
-        for element in app.markdown
-        if '<div class="matched-genes-panel"' in element.value
-    )
-    assert "No alternative names found" in matched_html
+    matched_genes = _matched_gene_editor(app).value
+    assert matched_genes["Alternative names"].item() == "No alternative names found"
 
     query.set_value("definitely_not_a_gene").run()
     assert not app.exception
     warnings = [element.value for element in app.warning]
     assert len(warnings) == 2
     assert all("Gene not found:" in warning for warning in warnings)
+
+
+def test_gene_matched_table_toggle_filters_every_result(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Genes")
+
+    _set_matched_gene_enabled(app, "Ir25a", False)
+    assert not app.exception
+    summary = next(
+        frame.value
+        for frame in app.dataframe
+        if "Samples ≥1 TPM" in frame.value.columns
+    )
+    assert set(summary["Gene"]) == {"Orco"}
+    raw = next(
+        frame.value
+        for frame in app.dataframe
+        if {"Gene", "Sample", "TPM"} <= set(frame.value.columns)
+    )
+    assert set(raw["Gene"]) == {"Orco"}
+    assert all(
+        all(trace.get("name") != "Ir25a" for trace in _plotly_spec(app, index)["data"])
+        for index in range(len(app.get("plotly_chart")))
+    )
+    assert any(
+        caption.value == "1 of 2 matched genes included in the results below."
+        for caption in app.caption
+    )
 
 
 def test_gene_input_normalizes_and_color_codes_submitted_tokens(monkeypatch):
@@ -424,6 +482,9 @@ def test_family_mode_defaults_to_all_and_ranks_top_n_by_mean_tpm(monkeypatch):
         selectbox for selectbox in app.selectbox if selectbox.label == "Gene family"
     )
     assert family_selector.options[-1] == "Custom family"
+    matched_genes = _matched_gene_editor(app).value
+    assert len(matched_genes) > 10
+    assert matched_genes["Include"].all()
     gene_count = next(
         slider
         for slider in app.select_slider
@@ -514,8 +575,47 @@ def test_custom_family_reuses_gene_editor_and_shows_all_matches(monkeypatch):
     ][::2]
     assert displayed_tables
     assert all(len(table) == 2 for table in displayed_tables)
+    matched_genes = _matched_gene_editor(app).value
+    assert matched_genes["Gene"].tolist() == ["Ir25a", "Orco"]
+
+    _set_matched_gene_enabled(app, "Ir25a", False)
+    assert not app.exception
+    gene_count = next(
+        slider
+        for slider in app.select_slider
+        if slider.label == "Genes in each heatmap"
+    )
+    assert gene_count.value == 1
+    displayed_tables = [
+        frame.value
+        for frame in app.dataframe
+        if "Mean TPM" in frame.value.columns
+    ][::2]
+    assert displayed_tables
+    assert all(table["Gene"].tolist() == ["Orco"] for table in displayed_tables)
     source = APP.read_text()
     assert ".st-key-family_query_editor" in source
+
+
+def test_predefined_family_matched_table_toggle_filters_family(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Families")
+
+    matched_genes = _matched_gene_editor(app).value
+    disabled_gene = matched_genes.loc[
+        matched_genes["Study coverage"] == "2/2 studies", "Gene"
+    ].iloc[0]
+    _set_matched_gene_enabled(app, disabled_gene, False)
+
+    assert not app.exception
+    displayed_tables = [
+        frame.value
+        for frame in app.dataframe
+        if "Mean TPM" in frame.value.columns
+    ][::2]
+    assert displayed_tables
+    assert all(disabled_gene not in table["Gene"].tolist() for table in displayed_tables)
 
 
 def test_condition_comparison_uses_fdr(monkeypatch):
@@ -589,7 +689,11 @@ def test_cluster_mode_renders_sample_pca(monkeypatch):
     method = _widgets_with_options(app, ["PCA", "UMAP", "t-SNE"])
     assert len(method) == 1
     assert method[0].value == "PCA"
-    assert any(slider.label == "Most-variable genes" for slider in app.slider)
+    genes_used = next(
+        slider for slider in app.select_slider if slider.label == "Genes used"
+    )
+    assert genes_used.options[-1] == f"All ({genes_used.value:,})"
+    assert "All genes are used by default" in genes_used.help
 
     plot = _plotly_spec(app)
     assert all(trace["type"] == "scatter" for trace in plot["data"])
@@ -605,7 +709,15 @@ def test_cluster_mode_renders_sample_pca(monkeypatch):
         for element in app.markdown
         if "Cluster map" in element.value and "section-info-icon" in element.value
     )
-    assert "PCA · 2,000 most-variable genes" in info_html
+    assert f"PCA · {genes_used.value:,} genes (all)" in info_html
     assert "TPM was transformed as log₂(TPM + 1)" in info_html
     assert "PCA preserves broad linear variation" in info_html
     assert "UMAP and t-SNE emphasize local neighborhoods" in info_html
+
+    genes_used.set_value(2_000).run()
+    reduced_info_html = next(
+        element.value
+        for element in app.markdown
+        if "Cluster map" in element.value and "section-info-icon" in element.value
+    )
+    assert "PCA · 2,000 most-variable genes" in reduced_info_html
