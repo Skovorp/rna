@@ -101,11 +101,23 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "# Aedes RNA Atlas" in home_html
     assert "Use the menu above to:" in home_html
     assert "## Data sources" in home_html
+    assert "## Reference, annotation, and provenance" in home_html
+    assert "VectorBase-68_AaegyptiLVP_AGWG_Genome.fasta" in home_html
+    assert "AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf" in home_html
+    assert "Salmon 1.10.3" in home_html
+    assert "skip_alignment: true" in home_html
+    assert "published matrix" in home_html
+    assert "## Exact nf-core commands" in home_html
     assert 'class="home-hero"' not in home_html
     assert 'class="home-card-grid"' not in home_html
     assert 'class="home-metrics"' not in home_html
 
     source = APP.read_text()
+    assert "nextflow run nf-core/rnaseq" in source
+    assert "nextflow run nf-core/differentialabundance" in source
+    assert '"pseudo_aligner": "salmon"' in source
+    assert '"seed": 20260804' in source
+    assert "female_72hBF_vs_NBF,condition,female_NBF,female_72hBF" in source
     assert '[data-testid="stSidebar"]' in source
     assert '[data-testid="stSidebarCollapsedControl"]' in source
     assert '[data-testid="stToolbar"]' in source

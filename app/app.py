@@ -1170,9 +1170,133 @@ def render_home() -> None:
         - [Matthews et al., BMC Genomics 2016](https://doi.org/10.1186/s12864-015-2239-0) — female and male tissues across feeding and reproductive conditions.
         - **Nadav Shai · Vosshall lab midgut RNA-seq** — female midgut from non-blood-fed through 72 hours post-blood-meal, plus non-blood-fed male midgut.
 
+        ## Reference, annotation, and provenance
+
+        Our raw-FASTQ analyses use one shared *Aedes aegypti* reference pair:
+
+        - **Genome FASTA:** `VectorBase-68_AaegyptiLVP_AGWG_Genome.fasta`
+          (AaegL5 / AaegLVP_AGWG; SHA-256
+          `fd96bcf4d05fa54b0dc4edeebaf077ab6206c35bda1faa150a392dfdcd0545ec`).
+        - **Gene annotation GTF:**
+          `AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf`
+          (VectorBase 58 with Jové et al. 2019 gene names; SHA-256
+          `0bf20c3fae7f8788e44b56fdbc1e81f5dd502da8c4350d5e4c8757a048a74580`).
+
+        The midgut run used Trim Galore followed by **Salmon 1.10.3
+        pseudoalignment and quantification**. It did not create genomic BAM
+        alignments: the recorded nf-core setting was `skip_alignment: true`
+        with `pseudo_aligner: salmon`.
+
+        | Dataset | What this site currently displays | Processing provenance |
+        |---|---|---|
+        | Venkataraman et al. 2023 · ovary (`PRJNA796320`) | Published TPM matrix from the study supplement | We independently reprocessed its FASTQs with Salmon 2.4.1 against the same FASTA/GTF pair, but those new values are not yet substituted for the displayed published matrix. |
+        | Matthews et al. 2016 · neurotranscriptome (`PRJNA236239`) | Published `AaegL.RU` TPM matrix from the study supplement | The displayed values retain the authors' annotation. Our raw-FASTQ reprocessing is tracked separately and is not presented as complete here. |
+        | Nadav Shai · midgut | Our Salmon gene-level TPM matrix and our seven DESeq2 contrasts | We ran nf-core/rnaseq 3.26.0 and nf-core/differentialabundance 2.0.0 ourselves from the raw paired-end FASTQs using the reference pair above. |
+
         TPM is descriptive normalized abundance. Differential-expression statistics
         are displayed only when precomputed count-aware nf-core results are available.
+
+        ## Exact nf-core commands
+
+        These are the original commands and worker paths preserved from the
+        completed midgut run. Nextflow was pinned to 25.10.7. The referenced
+        parameter files are reproduced directly below each command.
         """,
+    )
+
+    st.markdown("### RNA-seq quantification · nf-core/rnaseq 3.26.0")
+    st.code(
+        """export PATH="/opt/conda/bin:/usr/local/bin:$PATH"
+export NXF_HOME=/rna/.nextflow
+export NXF_VER=25.10.7
+export NXF_CONDA_CACHEDIR=/rna/conda
+export NXF_TEMP=/rna/tmp
+export NXF_OPTS='-Xms1g -Xmx8g'
+
+PROJECT_ROOT=/rna/project/nadav_shai
+WORK_ROOT=/rna/work/nadav_shai_nfcore
+
+nextflow run nf-core/rnaseq \\
+    -r 3.26.0 \\
+    -profile mamba \\
+    -c "$PROJECT_ROOT/vast.config" \\
+    -params-file "$PROJECT_ROOT/nfcore-params.json" \\
+    -work-dir "$WORK_ROOT" \\
+    -resume""",
+        language="bash",
+    )
+    with st.expander("Exact nf-core/rnaseq parameter file"):
+        st.code(
+            """{
+  "input": "/rna/project/nadav_shai/samplesheet.csv",
+  "fasta": "/rna/input/Nadav_Shai_Midgut_RNAseq/VectorBase-63_AaegyptiLVP_AGWG_Genome/VectorBase-68_AaegyptiLVP_AGWG_Genome.fasta",
+  "gtf": "/rna/reference/AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf",
+  "pseudo_aligner": "salmon",
+  "skip_alignment": true,
+  "save_reference": true,
+  "max_cpus": 28,
+  "max_memory": "170.GB",
+  "max_time": "72.h",
+  "outdir": "/rna/results/nadav_shai_nfcore"
+}""",
+            language="json",
+        )
+
+    st.markdown(
+        "### Differential expression · nf-core/differentialabundance 2.0.0"
+    )
+    st.code(
+        """export PATH="/opt/conda/bin:/usr/local/bin:$PATH"
+export NXF_HOME=/rna/.nextflow
+export NXF_VER=25.10.7
+export NXF_CONDA_CACHEDIR=/rna/conda
+export NXF_TEMP=/rna/tmp
+export NXF_OPTS='-Xms1g -Xmx8g'
+
+PROJECT_ROOT=/rna/project/nadav_shai
+WORK_ROOT=/rna/work/nadav_shai_differential
+
+nextflow run nf-core/differentialabundance \\
+    -r 2.0.0 \\
+    -profile rnaseq,mamba \\
+    -c "$PROJECT_ROOT/vast.config" \\
+    -params-file "$PROJECT_ROOT/differential-params.json" \\
+    -work-dir "$WORK_ROOT" \\
+    -resume""",
+        language="bash",
+    )
+    with st.expander("Exact differential-expression parameters and contrasts"):
+        st.markdown("**`differential-params.json`**")
+        st.code(
+            """{
+  "study_name": "nadav_shai_midgut_rnaseq",
+  "study_type": "rnaseq",
+  "input": "/rna/project/nadav_shai/observations.csv",
+  "contrasts": "/rna/project/nadav_shai/contrasts.csv",
+  "matrix": "/rna/results/nadav_shai_nfcore/salmon/salmon.merged.gene_counts.tsv",
+  "feature_length_matrix": "/rna/results/nadav_shai_nfcore/salmon/salmon.merged.gene_lengths.tsv",
+  "gtf": "/rna/reference/AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf",
+  "seed": 20260804,
+  "outdir": "/rna/results/nadav_shai_differential"
+}""",
+            language="json",
+        )
+        st.markdown("**`contrasts.csv`**")
+        st.code(
+            """id,variable,reference,target
+female_3hBF_vs_NBF,condition,female_NBF,female_3hBF
+female_6hBF_vs_NBF,condition,female_NBF,female_6hBF
+female_12hBF_vs_NBF,condition,female_NBF,female_12hBF
+female_24hBF_vs_NBF,condition,female_NBF,female_24hBF
+female_48hBF_vs_NBF,condition,female_NBF,female_48hBF
+female_72hBF_vs_NBF,condition,female_NBF,female_72hBF
+male_vs_female_NBF,condition,female_NBF,male_midgut""",
+            language="text",
+        )
+
+    st.caption(
+        "Recorded software: Salmon 1.10.3; nf-core/rnaseq 3.26.0; "
+        "nf-core/differentialabundance 2.0.0; DESeq2 1.34.0; Nextflow 25.10.7."
     )
 
 
