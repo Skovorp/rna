@@ -6,7 +6,7 @@ from streamlit.testing.v1 import AppTest
 
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
-NAVIGATION_ITEMS = ["Home", "Genes", "Families", "Compare conditions", "Clusters"]
+NAVIGATION_ITEMS = ["Home", "Genes", "Families", "Differential expression", "Clusters"]
 MATCHED_GENE_COLUMNS = {
     "Include",
     "Gene",
@@ -618,26 +618,26 @@ def test_predefined_family_matched_table_toggle_filters_family(monkeypatch):
     assert all(disabled_gene not in table["Gene"].tolist() for table in displayed_tables)
 
 
-def test_condition_comparison_uses_fdr(monkeypatch):
+def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
-    _select_page(app, "Compare conditions")
+    _select_page(app, "Differential expression")
 
     assert not app.exception, [exception.message for exception in app.exception]
-    assert ".st-key-condition_setup_panel" in APP.read_text()
+    assert ".st-key-differential_setup_panel" in APP.read_text()
     result_tables = [frame.value for frame in app.dataframe if "FDR" in frame.value.columns]
     assert len(result_tables) == 1
     assert {
         "Gene",
-        "Mean TPM (A)",
-        "Mean TPM (B)",
-        "Average TPM",
-        "TPM ratio (A / B)",
+        "DESeq2 base mean",
+        "Log₂ fold change",
+        "Fold change (target / reference)",
+        "Log₂ fold-change SE",
         "Raw p-value",
         "FDR",
         "FDR < 0.05",
     } <= set(result_tables[0].columns)
-    assert len(result_tables[0]) > 10_000
+    assert len(result_tables[0]) == 15_646
 
     plot = _plotly_spec(app)
     assert [trace["name"] for trace in plot["data"]] == [
@@ -649,22 +649,28 @@ def test_condition_comparison_uses_fdr(monkeypatch):
         {"color": "#66706f", "opacity": 1.0, "size": 3},
         {"color": "#f5b85b", "opacity": 1.0, "size": 3},
     ]
-    assert plot["layout"]["xaxis"]["title"]["text"] == "Average TPM (logarithmic scale)"
+    assert plot["layout"]["xaxis"]["title"]["text"] == "DESeq2 base mean (logarithmic scale)"
     assert plot["layout"]["xaxis"]["type"] == "log"
     assert plot["layout"]["xaxis"]["range"][0] < plot["layout"]["xaxis"]["range"][1]
     assert {"1", "10", "100", "1,000"} <= set(plot["layout"]["xaxis"]["ticktext"])
     assert (
         plot["layout"]["yaxis"]["title"]["text"]
-        == "TPM ratio A / B (logarithmic scale)"
+        == "Log₂ fold change · target / reference"
     )
-    assert plot["layout"]["yaxis"]["type"] == "log"
     assert plot["layout"]["yaxis"]["range"][0] == -plot["layout"]["yaxis"]["range"][1]
-    assert {"0.1×", "1×", "10×"} <= set(plot["layout"]["yaxis"]["ticktext"])
-    assert plot["layout"]["shapes"][0]["y0"] == 1
-    assert plot["layout"]["shapes"][0]["y1"] == 1
+    assert plot["layout"]["shapes"][0]["y0"] == 0
+    assert plot["layout"]["shapes"][0]["y1"] == 0
     captions = " ".join(element.value for element in app.caption)
-    assert "A/B ratio is undefined" in captions
+    assert "nf-core/differentialabundance 2.0.0" in captions
+    assert "Salmon gene-level counts" in captions
     assert "Significant genes are gold and drawn last" in captions
+    assert "Welch" not in captions
+    contrasts = next(
+        selectbox
+        for selectbox in app.selectbox
+        if selectbox.label == "Contrast · target vs reference"
+    )
+    assert len(contrasts.options) == 7
     fdr_threshold = next(
         widget for widget in app.number_input if widget.label == "FDR threshold"
     )
@@ -676,7 +682,32 @@ def test_condition_comparison_uses_fdr(monkeypatch):
         "FDR ≥ 0.1",
         "FDR < 0.1",
     ]
-    assert any(button.label == "Download all comparison results" for button in app.download_button)
+    assert any(
+        button.label == "Download all differential-expression results"
+        for button in app.download_button
+    )
+
+
+def test_neurotranscriptome_differential_expression_is_not_available(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Differential expression")
+
+    study = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Study"
+    )
+    study.set_value("neuro_ru").run()
+
+    assert not app.exception, [exception.message for exception in app.exception]
+    rendered_text = " ".join(
+        element.value for element in [*app.markdown, *app.info]
+    )
+    assert "NOT AVAILABLE" in rendered_text
+    assert "does not compute differential-expression statistics from TPM" in rendered_text
+    assert not any(
+        selectbox.label == "Contrast · target vs reference"
+        for selectbox in app.selectbox
+    )
 
 
 def test_cluster_mode_renders_sample_pca(monkeypatch):

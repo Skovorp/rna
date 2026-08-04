@@ -7,4 +7,4 @@ The repository includes processed TPM expression matrices and metadata from two 
 
 It also includes the Nadav Shai / Vosshall lab midgut RNA-seq dataset: 24 paired-end biological libraries spanning non-blood-fed male midgut and female midgut at non-blood-fed, 3, 6, 12, 24, 48, and 72 hours post-blood-meal. The bundled TPM matrix was generated with `nf-core/rnaseq` 3.26.0 and Salmon against the AaegL5 VectorBase 58 + Jové et al. 2019 annotation.
 
-The files under `expression/` contain faithful tabular extracts of the published supplementary tables and the validated gene-level Salmon matrix for the midgut dataset. TPM values are descriptive normalized abundance, not raw read counts.
+The files under `expression/` contain faithful tabular extracts of the published supplementary tables, the validated gene-level Salmon matrix for the midgut dataset, and seven DESeq2 contrasts produced by `nf-core/differentialabundance` 2.0.0. TPM values are descriptive normalized abundance, not raw read counts; the app displays differential-expression statistics only from the precomputed count-aware pipeline outputs.

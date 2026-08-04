@@ -13,7 +13,6 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from expression_explorer.clustering import METHODS, sample_embedding
-from expression_explorer.comparison import compare_conditions
 from expression_explorer.data import (
     DATASET_ORDER,
     expression_long,
@@ -23,11 +22,18 @@ from expression_explorer.data import (
     matrix_for_genes,
     search_genes,
 )
+from expression_explorer.differential import (
+    condition_label,
+    contrast_label,
+    contrast_sample_counts,
+    load_differential_contrasts,
+    load_differential_results,
+)
 
 
 APP_DIR = Path(__file__).resolve().parent
 EXPRESSION_DIR = APP_DIR.parent / "expression"
-DATA_SCHEMA_VERSION = "2026-08-04-midgut-v1"
+DATA_SCHEMA_VERSION = "2026-08-04-midgut-deseq2-v1"
 
 FAMILIES = {
     "IR · Ionotropic receptors": "Ionotropic receptors (IR)",
@@ -214,7 +220,7 @@ st.markdown(
     }
     .st-key-gene_setup_panel,
     .st-key-family_setup_panel,
-    .st-key-condition_setup_panel,
+    .st-key-differential_setup_panel,
     .st-key-cluster_setup_panel {
         margin: .7rem 0 1rem;
         padding: .9rem 1rem .7rem;
@@ -295,6 +301,11 @@ ordered_dataset_keys = [key for key in DATASET_ORDER if key in datasets] + sorte
     key for key in datasets if key not in DATASET_ORDER
 )
 study_keys = [key for key in ordered_dataset_keys if key != "neuro_legacy"]
+differential_contrasts = load_differential_contrasts(EXPRESSION_DIR)
+differential_study_keys = sorted(
+    study_keys,
+    key=lambda key: (key not in differential_contrasts, study_keys.index(key)),
+)
 
 
 @st.cache_data(show_spinner="Computing sample map…")
@@ -306,6 +317,21 @@ def cluster_embedding_cached(
 ):
     dataset = datasets_resource(schema_version)[dataset_key]
     return sample_embedding(dataset, method, variable_genes)
+
+
+@st.cache_data(show_spinner="Loading differential-expression results…")
+def differential_results_cached(
+    schema_version: str,
+    dataset_key: str,
+    contrast_id: str,
+):
+    dataset = datasets_resource(schema_version)[dataset_key]
+    contrast = next(
+        contrast
+        for contrast in differential_contrasts[dataset_key]
+        if contrast.contrast_id == contrast_id
+    )
+    return load_differential_results(dataset, contrast)
 
 
 def parse_queries(raw: str) -> list[str]:
@@ -974,19 +1000,19 @@ def heatmap_figure(
     return figure
 
 
-def ma_ratio_log_range(results: pd.DataFrame) -> list[float]:
-    finite_ratios = results.loc[
-        results["ma_plot_eligible"], "log10_ratio_a_over_b"
+def differential_log2_fold_change_range(results: pd.DataFrame) -> list[float]:
+    fold_changes = results.loc[
+        results["ma_plot_eligible"], "log2_fold_change"
     ].dropna()
-    if finite_ratios.empty:
-        return [-1.0, 1.0]
-    limit = max(1.0, float(np.ceil(finite_ratios.abs().quantile(0.995))))
+    if fold_changes.empty:
+        return [-2.0, 2.0]
+    limit = max(2.0, float(np.ceil(fold_changes.abs().quantile(0.995))))
     return [-limit, limit]
 
 
-def ma_abundance_range(results: pd.DataFrame) -> list[float]:
+def differential_abundance_range(results: pd.DataFrame) -> list[float]:
     finite_abundance = results.loc[
-        results["ma_plot_eligible"], "average_tpm"
+        results["ma_plot_eligible"], "base_mean"
     ].dropna()
     if finite_abundance.empty:
         return [-1.0, 1.0]
@@ -1008,12 +1034,11 @@ def base10_ticks(log_range: list[float], suffix: str = "") -> tuple[list[float],
     return values, labels
 
 
-def ma_figure(results: pd.DataFrame, fdr_threshold: float) -> go.Figure:
+def differential_ma_figure(results: pd.DataFrame, fdr_threshold: float) -> go.Figure:
     plotted = results[results["ma_plot_eligible"]].copy()
-    ratio_range = ma_ratio_log_range(results)
-    abundance_range = ma_abundance_range(results)
+    fold_change_range = differential_log2_fold_change_range(results)
+    abundance_range = differential_abundance_range(results)
     abundance_ticks, abundance_labels = base10_ticks(abundance_range)
-    ratio_ticks, ratio_labels = base10_ticks(ratio_range, "×")
     plotted["passes_fdr"] = plotted["fdr"] < fdr_threshold
     figure = go.Figure()
     for passes_fdr, label, color in (
@@ -1023,8 +1048,8 @@ def ma_figure(results: pd.DataFrame, fdr_threshold: float) -> go.Figure:
         subset = plotted[plotted["passes_fdr"].eq(passes_fdr)]
         figure.add_trace(
             go.Scattergl(
-                x=subset["average_tpm"],
-                y=subset["tpm_ratio_a_over_b"],
+                x=subset["base_mean"],
+                y=subset["log2_fold_change"],
                 mode="markers",
                 name=label,
                 marker={"size": 3, "color": color, "opacity": 1.0},
@@ -1032,32 +1057,32 @@ def ma_figure(results: pd.DataFrame, fdr_threshold: float) -> go.Figure:
                     [
                         "gene",
                         "stable_id",
-                        "mean_tpm_a",
-                        "mean_tpm_b",
-                        "average_tpm",
+                        "base_mean",
+                        "fold_change",
+                        "lfc_se",
                         "fdr",
                     ]
                 ].to_numpy(),
                 hovertemplate=(
                     "<b>%{customdata[0]}</b><br>"
                     "Stable ID: %{customdata[1]}<br>"
-                    "Mean TPM (A): %{customdata[2]:.3f}<br>"
-                    "Mean TPM (B): %{customdata[3]:.3f}<br>"
-                    "Average TPM: %{customdata[4]:.3f}<br>"
-                    "TPM ratio (A / B): %{y:.3f}×<br>"
+                    "DESeq2 base mean: %{customdata[2]:.3f}<br>"
+                    "Log₂ fold change: %{y:.3f}<br>"
+                    "Fold change (target / reference): %{customdata[3]:.3f}×<br>"
+                    "Log₂ fold-change SE: %{customdata[4]:.3f}<br>"
                     "FDR: %{customdata[5]:.3g}<extra></extra>"
                 ),
             )
         )
     figure.add_hline(
-        y=1,
+        y=0,
         line={"color": "rgba(148,163,184,.38)", "dash": "dot", "width": 1},
     )
     figure.update_layout(
         height=510,
         margin={"l": 25, "r": 25, "t": 35, "b": 55},
         xaxis={
-            "title": "Average TPM (logarithmic scale)",
+            "title": "DESeq2 base mean (logarithmic scale)",
             "type": "log",
             "range": abundance_range,
             "tickmode": "array",
@@ -1065,12 +1090,8 @@ def ma_figure(results: pd.DataFrame, fdr_threshold: float) -> go.Figure:
             "ticktext": abundance_labels,
         },
         yaxis={
-            "title": "TPM ratio A / B (logarithmic scale)",
-            "type": "log",
-            "range": ratio_range,
-            "tickmode": "array",
-            "tickvals": ratio_ticks,
-            "ticktext": ratio_labels,
+            "title": "Log₂ fold change · target / reference",
+            "range": fold_change_range,
             "zeroline": False,
         },
         legend={"title": {"text": ""}},
@@ -1140,7 +1161,7 @@ def render_home() -> None:
 
         - **Genes** — search gene symbols and historical identifiers, then compare expression across studies.
         - **Families** — examine IR, OR, GR, and OBP family members.
-        - **Compare conditions** — screen genome-wide expression differences between two groups.
+        - **Differential expression** — browse precomputed DESeq2 contrasts from nf-core/differentialabundance.
         - **Clusters** — inspect relationships between biological samples using PCA, UMAP, or t-SNE.
 
         ## Data sources
@@ -1149,9 +1170,8 @@ def render_home() -> None:
         - [Matthews et al., BMC Genomics 2016](https://doi.org/10.1186/s12864-015-2239-0) — female and male tissues across feeding and reproductive conditions.
         - **Nadav Shai · Vosshall lab midgut RNA-seq** — female midgut from non-blood-fed through 72 hours post-blood-meal, plus non-blood-fed male midgut.
 
-        TPM is descriptive normalized abundance. Condition-comparison statistics are
-        exploratory; publication-grade differential expression should use raw counts
-        with a count-aware model.
+        TPM is descriptive normalized abundance. Differential-expression statistics
+        are displayed only when precomputed count-aware nf-core results are available.
         """,
     )
 
@@ -1160,7 +1180,7 @@ def navigate_home() -> None:
     st.session_state["site_navigation"] = "Home"
 
 
-navigation_items = ["Home", "Genes", "Families", "Compare conditions", "Clusters"]
+navigation_items = ["Home", "Genes", "Families", "Differential expression", "Clusters"]
 if "site_navigation" not in st.session_state:
     st.session_state["site_navigation"] = "Home"
 with st.container(key="site_nav"):
@@ -1629,105 +1649,123 @@ elif mode == "Families":
                     f"family_download_{key}",
                 )
 
-elif mode == "Compare conditions":
+elif mode == "Differential expression":
     page_heading(
-        "Compare conditions",
-        "Screen every measured gene for expression differences between two biological groups.",
+        "Differential expression",
+        "Browse count-aware DESeq2 contrasts produced by nf-core/differentialabundance.",
     )
     st.caption(
-        "This is an MA plot: right means higher average TPM. A ratio of 1× means equal expression; above 1× means higher in A; below 1× means higher in B."
+        "The MA plot shows mean normalized count on the horizontal axis and target-versus-reference log₂ fold change on the vertical axis."
     )
-    with st.container(key="condition_setup_panel"):
+    with st.container(key="differential_setup_panel"):
         comparison_key = st.selectbox(
             "Study",
-            options=study_keys,
-            format_func=lambda key: datasets[key].label,
+            options=differential_study_keys,
+            format_func=lambda key: (
+                datasets[key].label
+                if key in differential_contrasts
+                else f"{datasets[key].label} — NOT AVAILABLE"
+            ),
+            key="differential_study",
         )
         comparison_dataset = datasets[comparison_key]
-        comparison_field, _ = default_grouping(comparison_dataset)
-        comparison_groups = [
-            value
-            for value in comparison_dataset.samples[comparison_field]
-            .fillna("")
-            .astype(str)
-            .drop_duplicates()
-            if value
-        ]
-        default_b_name = (
-            "6 days post-blood-meal (eggs retained)"
-            if comparison_key == "elife"
-            else "Antenna · Non-blood-fed / sugar-fed"
-        )
-        default_b_index = (
-            comparison_groups.index(default_b_name)
-            if default_b_name in comparison_groups
-            else min(1, len(comparison_groups) - 1)
-        )
-        condition_a_column, condition_b_column = st.columns(2)
-        with condition_a_column:
-            condition_a = st.selectbox("Condition A", comparison_groups, index=0)
-        with condition_b_column:
-            condition_b = st.selectbox(
-                "Condition B", comparison_groups, index=default_b_index
+        available_contrasts = differential_contrasts.get(comparison_key, [])
+        if available_contrasts:
+            selected_contrast_id = st.selectbox(
+                "Contrast · target vs reference",
+                options=[contrast.contrast_id for contrast in available_contrasts],
+                format_func=lambda contrast_id: contrast_label(
+                    comparison_dataset,
+                    next(
+                        contrast
+                        for contrast in available_contrasts
+                        if contrast.contrast_id == contrast_id
+                    ),
+                ),
+                key="differential_contrast",
             )
-        fdr_threshold = st.number_input(
-            "FDR threshold",
-            min_value=0.001,
-            max_value=1.0,
-            value=0.05,
-            step=0.01,
-            format="%.3f",
-            help="Controls which genes are colored gold, the significant-gene count, and the pass/fail table column.",
-        )
-        filter_text = st.text_input(
-            "Filter results by gene or Stable ID",
-            placeholder="e.g. Ir25a or AAEL005776",
-        ).strip()
+            selected_contrast = next(
+                contrast
+                for contrast in available_contrasts
+                if contrast.contrast_id == selected_contrast_id
+            )
+            fdr_threshold = st.number_input(
+                "FDR threshold",
+                min_value=0.001,
+                max_value=1.0,
+                value=0.05,
+                step=0.01,
+                format="%.3f",
+                help="Controls which genes are colored gold, the significant-gene count, and the pass/fail table column.",
+            )
+            filter_text = st.text_input(
+                "Filter results by gene or Stable ID",
+                placeholder="e.g. Ir25a or AAEL005776",
+            ).strip()
 
-    if condition_a == condition_b:
-        st.info("Choose two different conditions.")
+    if not available_contrasts:
+        st.subheader("NOT AVAILABLE")
+        st.info(
+            "NOT AVAILABLE — this study has no bundled "
+            "nf-core/differentialabundance results. The atlas does not compute "
+            "differential-expression statistics from TPM values."
+        )
     else:
         try:
-            comparison_results, samples_a, samples_b = compare_conditions(
-                comparison_dataset,
-                comparison_field,
-                condition_a,
-                condition_b,
+            comparison_results = differential_results_cached(
+                DATA_SCHEMA_VERSION,
+                comparison_key,
+                selected_contrast.contrast_id,
             )
         except ValueError as exc:
             st.warning(str(exc))
         else:
+            target_label = condition_label(
+                comparison_dataset,
+                selected_contrast.variable,
+                selected_contrast.target,
+            )
+            reference_label = condition_label(
+                comparison_dataset,
+                selected_contrast.variable,
+                selected_contrast.reference,
+            )
+            target_samples, reference_samples = contrast_sample_counts(
+                comparison_dataset, selected_contrast
+            )
             plotted_results = comparison_results[comparison_results["ma_plot_eligible"]]
             significant_count = int((plotted_results["fdr"] < fdr_threshold).sum())
             omitted_count = len(comparison_results) - len(plotted_results)
-            ratio_range = ma_ratio_log_range(comparison_results)
-            abundance_range = ma_abundance_range(comparison_results)
+            fold_change_range = differential_log2_fold_change_range(comparison_results)
+            abundance_range = differential_abundance_range(comparison_results)
             off_scale_count = int(
                 (
-                    (plotted_results["log10_ratio_a_over_b"] < ratio_range[0])
-                    | (plotted_results["log10_ratio_a_over_b"] > ratio_range[1])
+                    (plotted_results["log2_fold_change"] < fold_change_range[0])
+                    | (plotted_results["log2_fold_change"] > fold_change_range[1])
                 ).sum()
             )
             low_abundance_off_scale = int(
-                (np.log10(plotted_results["average_tpm"]) < abundance_range[0]).sum()
+                (np.log10(plotted_results["base_mean"]) < abundance_range[0]).sum()
             )
-            sample_a_metric, sample_b_metric, significant_metric = st.columns(3)
-            sample_a_metric.metric("Samples in A", samples_a)
-            sample_b_metric.metric("Samples in B", samples_b)
+            target_metric, reference_metric, significant_metric = st.columns(3)
+            target_metric.metric("Target samples", target_samples, help=target_label)
+            reference_metric.metric(
+                "Reference samples", reference_samples, help=reference_label
+            )
             significant_metric.metric(f"Colored genes · FDR < {fdr_threshold:g}", significant_count)
             st.plotly_chart(
-                ma_figure(comparison_results, fdr_threshold),
+                differential_ma_figure(comparison_results, fdr_threshold),
                 width="stretch",
-                key=f"condition_comparison_{comparison_key}",
+                key=f"differential_{comparison_key}_{selected_contrast.contrast_id}",
             )
             st.caption(
-                f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero mean TPM in A or B are omitted because their A/B ratio is undefined. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme ratios; use Plotly zoom to inspect them."
+                f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero or unavailable DESeq2 base mean / fold change are omitted. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme fold changes; use Plotly zoom to inspect them."
             )
             st.caption(
                 "Gray genes do not pass the selected FDR threshold. Significant genes are gold and drawn last, so gray points cannot cover them. All markers are fully opaque."
             )
             st.caption(
-                "Welch's t-test is run on log-transformed replicate TPM; FDR is Benjamini–Hochberg correction across all genes. This is exploratory because TPM-based tests do not model RNA-seq count dispersion. Use raw counts with DESeq2 or edgeR for publication-grade differential expression."
+                f"Precomputed by nf-core/differentialabundance 2.0.0 with DESeq2 from Salmon gene-level counts. Positive log₂ fold change means higher in {target_label}; negative means higher in {reference_label}."
             )
 
             displayed_results = comparison_results
@@ -1745,12 +1783,10 @@ elif mode == "Compare conditions":
                 columns={
                     "gene": "Gene",
                     "stable_id": "Stable ID",
-                    "mean_tpm_a": "Mean TPM (A)",
-                    "mean_tpm_b": "Mean TPM (B)",
-                    "average_tpm": "Average TPM",
-                    "median_tpm_a": "Median TPM (A)",
-                    "median_tpm_b": "Median TPM (B)",
-                    "tpm_ratio_a_over_b": "TPM ratio (A / B)",
+                    "base_mean": "DESeq2 base mean",
+                    "log2_fold_change": "Log₂ fold change",
+                    "fold_change": "Fold change (target / reference)",
+                    "lfc_se": "Log₂ fold-change SE",
                     "p_value": "Raw p-value",
                     "fdr": "FDR",
                     "passes_fdr": threshold_column,
@@ -1759,12 +1795,10 @@ elif mode == "Compare conditions":
                 [
                     "Gene",
                     "Stable ID",
-                    "Mean TPM (A)",
-                    "Mean TPM (B)",
-                    "Average TPM",
-                    "Median TPM (A)",
-                    "Median TPM (B)",
-                    "TPM ratio (A / B)",
+                    "DESeq2 base mean",
+                    "Log₂ fold change",
+                    "Fold change (target / reference)",
+                    "Log₂ fold-change SE",
                     "Raw p-value",
                     "FDR",
                     threshold_column,
@@ -1776,12 +1810,10 @@ elif mode == "Compare conditions":
                 width="stretch",
                 height=620,
                 column_config={
-                    "Mean TPM (A)": st.column_config.NumberColumn(format="%.3f"),
-                    "Mean TPM (B)": st.column_config.NumberColumn(format="%.3f"),
-                    "Average TPM": st.column_config.NumberColumn(format="%.3f"),
-                    "Median TPM (A)": st.column_config.NumberColumn(format="%.3f"),
-                    "Median TPM (B)": st.column_config.NumberColumn(format="%.3f"),
-                    "TPM ratio (A / B)": st.column_config.NumberColumn(format="%.3f"),
+                    "DESeq2 base mean": st.column_config.NumberColumn(format="%.3f"),
+                    "Log₂ fold change": st.column_config.NumberColumn(format="%.3f"),
+                    "Fold change (target / reference)": st.column_config.NumberColumn(format="%.3f"),
+                    "Log₂ fold-change SE": st.column_config.NumberColumn(format="%.3f"),
                     "Raw p-value": st.column_config.NumberColumn(format="%.3e"),
                     "FDR": st.column_config.NumberColumn(format="%.3e"),
                 },
@@ -1794,12 +1826,10 @@ elif mode == "Compare conditions":
                 columns={
                     "gene": "Gene",
                     "stable_id": "Stable ID",
-                    "mean_tpm_a": "Mean TPM (A)",
-                    "mean_tpm_b": "Mean TPM (B)",
-                    "average_tpm": "Average TPM",
-                    "median_tpm_a": "Median TPM (A)",
-                    "median_tpm_b": "Median TPM (B)",
-                    "tpm_ratio_a_over_b": "TPM ratio (A / B)",
+                    "base_mean": "DESeq2 base mean",
+                    "log2_fold_change": "Log₂ fold change",
+                    "fold_change": "Fold change (target / reference)",
+                    "lfc_se": "Log₂ fold-change SE",
                     "p_value": "Raw p-value",
                     "fdr": "FDR",
                     "passes_fdr": threshold_column,
@@ -1808,25 +1838,24 @@ elif mode == "Compare conditions":
                 [
                     "Gene",
                     "Stable ID",
-                    "Mean TPM (A)",
-                    "Mean TPM (B)",
-                    "Average TPM",
-                    "Median TPM (A)",
-                    "Median TPM (B)",
-                    "TPM ratio (A / B)",
+                    "DESeq2 base mean",
+                    "Log₂ fold change",
+                    "Fold change (target / reference)",
+                    "Log₂ fold-change SE",
                     "Raw p-value",
                     "FDR",
                     threshold_column,
                 ]
             ]
-            download_table.insert(0, "Condition B", condition_b)
-            download_table.insert(0, "Condition A", condition_a)
+            download_table.insert(0, "Reference", reference_label)
+            download_table.insert(0, "Target", target_label)
+            download_table.insert(0, "Contrast", selected_contrast.contrast_id)
             download_table.insert(0, "Study", comparison_dataset.label)
             download_tsv(
-                "Download all comparison results",
+                "Download all differential-expression results",
                 download_table,
-                f"{comparison_key}_condition_comparison.tsv",
-                f"condition_comparison_download_{comparison_key}",
+                f"{comparison_key}_{selected_contrast.contrast_id}_deseq2.tsv",
+                f"differential_download_{comparison_key}_{selected_contrast.contrast_id}",
             )
 
 else:
