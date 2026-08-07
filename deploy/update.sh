@@ -17,5 +17,6 @@ source /home/pi-rus/miniforge3/etc/profile.d/conda.sh
 conda activate aedes-rna-atlas
 python -m pip install -r app/requirements.txt
 PYTHONPATH="$ROOT/app" python -m pytest -q app/tests
+cp deploy/aedes-rna-atlas.service ~/.config/systemd/user/
+systemctl --user daemon-reload
 systemctl --user restart aedes-rna-atlas.service
-

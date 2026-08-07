@@ -35,7 +35,10 @@ Open `http://127.0.0.1:8501`.
 
 `aedes-rna-atlas-update.timer` checks `main` every minute, runs tests after a fast-forward pull, and restarts the service only when tests pass.
 
-Public origin: `https://pi-rus.tailc1209.ts.net`.
+Public HTTPS origin: `https://pi-rus.tailc1209.ts.net`.
+
+Rockefeller-network direct origin: `http://129.85.166.55:8501`. The direct origin
+uses the Pi's current DHCP-assigned Ethernet address and may change if its lease changes.
 
 `rna.getferal.ai` is served by GitHub Pages as a redirect to that stable Pi URL. The GoDaddy DNS zone needs a single `rna` CNAME pointing to `skovorp.github.io`.
 
