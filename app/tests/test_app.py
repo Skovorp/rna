@@ -239,6 +239,16 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     ]
     assert len(color_widgets) == 2
     assert all(widget.value is None for widget in color_widgets)
+    atlas_gene = next(widget for widget in app.selectbox if widget.label == "Atlas gene")
+    atlas_view = next(widget for widget in app.selectbox if widget.label == "Atlas view")
+    assert atlas_gene.options == ["Ir25a", "Orco"]
+    assert atlas_view.value == "mosquito/all"
+    assert len(atlas_view.options) == 24
+    assert any(
+        "https://cells.ucsc.edu/?ds=mosquito+all&amp;gene=Ir25a" in element.value
+        or "https://cells.ucsc.edu/?ds=mosquito+all&gene=Ir25a" in element.value
+        for element in app.markdown
+    )
 
     widget_types = (
         "button",
@@ -259,7 +269,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     )
     widget_count = sum(len(getattr(app, widget_type)) for widget_type in widget_types)
     table_count = len(app.dataframe) + len(app.table)
-    assert widget_count + table_count <= 20
+    # Two focused controls choose the embedded Cell Atlas gene and compatible view.
+    assert widget_count + table_count <= 22
 
     logo = next(button for button in app.button if button.label == "🧬 Aedes RNA Atlas")
     logo.click().run()

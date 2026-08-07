@@ -10,4 +10,5 @@ manifests/
 papers/
 raw/
 supplementary/
-scripts/
+scripts/*
+!scripts/update_ucsc_cell_atlas_manifest.py

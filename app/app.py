@@ -29,10 +29,16 @@ from expression_explorer.differential import (
     load_differential_contrasts,
     load_differential_results,
 )
+from expression_explorer.ucsc import (
+    cell_browser_url,
+    find_gene_matches,
+    load_manifest,
+)
 
 
 APP_DIR = Path(__file__).resolve().parent
 EXPRESSION_DIR = APP_DIR.parent / "expression"
+UCSC_MANIFEST = EXPRESSION_DIR / "ucsc_mosquito_cell_atlas_genes.json.gz"
 DATA_SCHEMA_VERSION = "2026-08-04-all-pairs-deseq2-v2"
 
 FAMILIES = {
@@ -299,6 +305,13 @@ def datasets_resource(schema_version: str):
 
 
 datasets = datasets_resource(DATA_SCHEMA_VERSION)
+
+
+@st.cache_resource(show_spinner=False)
+def ucsc_atlas_resource(path: str):
+    return load_manifest(path)
+
+
 ordered_dataset_keys = [key for key in DATASET_ORDER if key in datasets] + sorted(
     key for key in datasets if key not in DATASET_ORDER
 )
@@ -482,6 +495,58 @@ def matched_gene_entries(
             if study_key not in entry["study_keys"]:
                 entry["study_keys"].append(study_key)
     return list(entries.values())
+
+
+def render_ucsc_cell_atlas(
+    entries: list[dict[str, object]], enabled_gene_keys: set[str]
+) -> None:
+    """Embed the UCSC view for one selected gene without reproducing its analysis."""
+    atlas_datasets = ucsc_atlas_resource(str(UCSC_MANIFEST))
+    candidates: dict[str, dict[str, object]] = {}
+    for entry in entries:
+        display_name = str(entry["display_name"])
+        if display_name.casefold() not in enabled_gene_keys:
+            continue
+        aliases = [display_name, *entry["aliases"].values()]
+        matches = find_gene_matches(atlas_datasets, aliases)
+        if matches:
+            candidates[display_name] = {"matches": matches}
+
+    if not candidates:
+        return
+
+    section_title_with_info(
+        "Single-cell context · UCSC Mosquito Cell Atlas",
+        "The embedded UCSC Cell Browser shows the authors' interactive single-nucleus view. This app selects a compatible atlas dataset and gene identifier but does not recompute the atlas analysis.",
+    )
+    control_columns = st.columns([1, 2])
+    with control_columns[0]:
+        selected_gene = st.selectbox(
+            "Atlas gene",
+            options=list(candidates),
+            key="ucsc_atlas_gene",
+        )
+    matches = candidates[selected_gene]["matches"]
+    matches_by_dataset = {match.dataset.name: match for match in matches}
+    with control_columns[1]:
+        selected_dataset = st.selectbox(
+            "Atlas view",
+            options=list(matches_by_dataset),
+            key="ucsc_atlas_dataset",
+            format_func=lambda name: matches_by_dataset[name].dataset.display_label,
+        )
+    selected_match = matches_by_dataset[selected_dataset]
+
+    atlas_url = cell_browser_url(
+        selected_match.dataset.name,
+        selected_match.gene_query,
+    )
+    st.caption(
+        "Goldman et al., Cell 2025. The atlas displays normalized single-nucleus "
+        "expression, not bulk-RNA TPM."
+    )
+    st.markdown(f"[Open this view in a new tab]({atlas_url})")
+    st.iframe(atlas_url, height=760)
 
 
 def mean_expression_by_study(
@@ -1340,6 +1405,7 @@ def render_home() -> None:
         - [Venkataraman et al., eLife 2023](https://doi.org/10.7554/eLife.80489) — ovary expression across reproductive and drought-resilience states.
         - [Matthews et al., BMC Genomics 2016](https://doi.org/10.1186/s12864-015-2239-0) — female and male tissues across feeding and reproductive conditions.
         - **Nadav Shai · Vosshall lab midgut RNA-seq** — female midgut from non-blood-fed through 72 hours post-blood-meal, plus non-blood-fed male midgut.
+        - [Goldman et al., Cell 2025](https://doi.org/10.1016/j.cell.2025.10.008) — embedded UCSC single-nucleus Mosquito Cell Atlas views on the Genes page.
 
         ## Reference, annotation, and provenance
 
@@ -1579,9 +1645,12 @@ elif mode == "Genes":
             resolved_queries.append((query, per_study))
 
         resolved_for_comparison: dict[str, pd.DataFrame] = {}
+        atlas_entries: list[dict[str, object]] = []
+        enabled_gene_keys: set[str] = set()
         if all_resolved_for_comparison:
+            atlas_entries = matched_gene_entries(all_resolved_for_comparison)
             enabled_gene_keys = render_matched_gene_table(
-                matched_gene_entries(all_resolved_for_comparison),
+                atlas_entries,
                 len(selected_keys),
                 "gene_matched_gene_selection",
                 mean_expression_by_study(all_resolved_for_comparison, selected_keys),
@@ -1608,6 +1677,7 @@ elif mode == "Genes":
             st.info("Turn on at least one matched gene to show expression results.")
 
         if resolved_for_comparison:
+            render_ucsc_cell_atlas(atlas_entries, enabled_gene_keys)
             section_title_with_info(
                 "Expression across selected genes",
                 "Each study has sample filters, optional condition-label coloring, a replicate plot, and its heatmap. Point colors identify genes; diamonds show each gene's group median.",
