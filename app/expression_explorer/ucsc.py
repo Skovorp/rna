@@ -24,6 +24,9 @@ class AtlasDataset:
     parent_label: str
     sample_count: int
     aliases: dict[str, tuple[str, ...]]
+    quick_genes: tuple[tuple[str, str], ...]
+    categorical_fields: tuple[tuple[str, str], ...]
+    default_metadata_field: str
 
     @property
     def display_label(self) -> str:
@@ -65,6 +68,15 @@ def load_manifest(path: Path | str) -> list[AtlasDataset]:
                 parent_label=item.get("parent_label", ""),
                 sample_count=int(item["sample_count"]),
                 aliases=aliases,
+                quick_genes=tuple(
+                    (str(quick_gene["gene"]), str(quick_gene.get("label", "")))
+                    for quick_gene in item.get("quick_genes", [])
+                ),
+                categorical_fields=tuple(
+                    (str(field["name"]), str(field.get("label", field["name"])))
+                    for field in item.get("categorical_fields", [])
+                ),
+                default_metadata_field=str(item.get("default_metadata_field", "")),
             )
         )
     return datasets
@@ -96,3 +108,35 @@ def cell_browser_url(dataset_name: str, gene_query: str) -> str:
         }
     )
     return f"{UCSC_CELL_BROWSER}?{query}"
+
+
+def cell_browser_metadata_url(dataset_name: str, metadata_field: str) -> str:
+    """Build a UCSC UMAP URL colored by one metadata field."""
+    query = urlencode(
+        {
+            "ds": dataset_name.replace("/", " "),
+            "meta": metadata_field,
+        }
+    )
+    return f"{UCSC_CELL_BROWSER}?{query}"
+
+
+def cell_browser_expression_url(
+    dataset_name: str,
+    gene_queries: list[str] | tuple[str, ...],
+    metadata_field: str,
+    context_gene: str | None = None,
+) -> str:
+    """Build a UCSC multi-gene dot-plot URL for one atlas view."""
+    parameters = {
+        "ds": dataset_name.replace("/", " "),
+    }
+    if context_gene:
+        parameters["gene"] = context_gene
+    parameters.update(
+        {
+            "exprGene": " ".join(gene_queries),
+            "exprMeta": metadata_field,
+        }
+    )
+    return f"{UCSC_CELL_BROWSER}?{urlencode(parameters)}"
