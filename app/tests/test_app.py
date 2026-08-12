@@ -241,12 +241,35 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert all(widget.value is None for widget in color_widgets)
     atlas_gene = next(widget for widget in app.selectbox if widget.label == "Atlas gene")
     atlas_view = next(widget for widget in app.selectbox if widget.label == "Atlas view")
+    split_umap = next(
+        widget for widget in app.selectbox if widget.label == "Additional UMAP"
+    )
+    expression_view = next(
+        widget for widget in app.selectbox if widget.label == "Expression atlas view"
+    )
+    expression_grouping = next(
+        widget for widget in app.selectbox if widget.label == "Group cells by"
+    )
+    include_dataset_genes = next(
+        widget for widget in app.toggle if widget.label == "Include dataset genes"
+    )
     assert atlas_gene.options == ["Ir25a", "Orco"]
     assert atlas_view.value == "mosquito/all"
     assert len(atlas_view.options) == 24
+    assert split_umap.options == ["None", "sex", "sample"]
+    assert split_umap.value == "None"
+    assert expression_view.value == "mosquito/all"
+    assert len(expression_view.options) == 24
+    assert expression_grouping.value == "annotation"
+    assert include_dataset_genes.value is False
     assert any(
         "https://cells.ucsc.edu/?ds=mosquito+all&amp;gene=Ir25a" in element.value
         or "https://cells.ucsc.edu/?ds=mosquito+all&gene=Ir25a" in element.value
+        for element in app.markdown
+    )
+    assert any(
+        "exprGene=Ir25a+Orco&amp;exprMeta=annotation" in element.value
+        or "exprGene=Ir25a+Orco&exprMeta=annotation" in element.value
         for element in app.markdown
     )
 
@@ -269,8 +292,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     )
     widget_count = sum(len(getattr(app, widget_type)) for widget_type in widget_types)
     table_count = len(app.dataframe) + len(app.table)
-    # Two focused controls choose the embedded Cell Atlas gene and compatible view.
-    assert widget_count + table_count <= 22
+    # UMAP and expression controls stay focused despite embedding two atlas views.
+    assert widget_count + table_count <= 26
 
     logo = next(button for button in app.button if button.label == "🧬 Aedes RNA Atlas")
     logo.click().run()
@@ -288,6 +311,62 @@ def test_url_page_state_restores_genes_after_a_fresh_session(monkeypatch):
     navigation = _widgets_with_options(app, NAVIGATION_ITEMS)
     assert len(navigation) == 1
     assert navigation[0].value == "Genes"
+
+
+def test_gene_atlas_expression_controls_update_the_embed(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Genes")
+
+    grouping = next(
+        widget for widget in app.selectbox if widget.label == "Group cells by"
+    )
+    assert "tissues" in grouping.options
+    grouping.set_value("tissues").run()
+
+    include_dataset_genes = next(
+        widget for widget in app.toggle if widget.label == "Include dataset genes"
+    )
+    include_dataset_genes.set_value(True).run()
+
+    expression_links = [
+        element.value
+        for element in app.markdown
+        if "Open this expression plot in a new tab" in element.value
+    ]
+    assert len(expression_links) == 1
+    assert "exprGene=Ir25a+Orco+AAEL021429" in expression_links[0]
+    assert "exprMeta=tissues" in expression_links[0]
+    captions = " ".join(element.value for element in app.caption)
+    assert "Showing 2 selected genes plus 15 dataset genes" in captions
+
+
+def test_gene_atlas_umap_can_add_sample_metadata_plot_below(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Genes")
+
+    atlas_view = next(widget for widget in app.selectbox if widget.label == "Atlas view")
+    atlas_view.set_value("mosquito/t012").run()
+
+    split_umap = next(
+        widget for widget in app.selectbox if widget.label == "Additional UMAP"
+    )
+    assert split_umap.options == ["None", "sex", "sample"]
+    split_umap.set_value("sample").run()
+
+    split_links = [
+        element.value
+        for element in app.markdown
+        if "Open sample UMAP in a new tab" in element.value
+    ]
+    assert split_links == [
+        "[Open sample UMAP in a new tab](https://cells.ucsc.edu/?ds=mosquito+t012&meta=sample)"
+    ]
+    captions = " ".join(element.value for element in app.caption)
+    assert "Expression · Ir25a" in captions
+    assert "Colored by sample" in captions
+    assert "primary_column, split_column = st.columns(2)" not in APP.read_text()
 
 
 def test_home_has_no_import_controls(monkeypatch):

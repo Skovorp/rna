@@ -80,12 +80,38 @@ def build_manifest() -> dict[str, object]:
     context = ssl_context()
     datasets = leaf_datasets(ROOT_DATASET, context)
 
-    def add_genes(dataset: dict[str, object]) -> dict[str, object]:
-        genes = fetch_json(f"{dataset['name']}/exprMatrix.json", context)
-        return {**dataset, "genes": sorted(genes)}
+    def add_dataset_details(dataset: dict[str, object]) -> dict[str, object]:
+        dataset_name = str(dataset["name"])
+        genes = fetch_json(f"{dataset_name}/exprMatrix.json", context)
+        configuration = fetch_json(f"{dataset_name}/dataset.json", context)
+        categorical_fields = [
+            {
+                "name": field["name"],
+                "label": field.get("label", field["name"]),
+            }
+            for field in configuration.get("metaFields", [])
+            if field.get("type") == "enum"
+        ]
+        quick_genes = [
+            {
+                "gene": quick_gene[0],
+                "label": quick_gene[1] if len(quick_gene) > 1 else "",
+            }
+            for quick_gene in configuration.get("quickGenes", [])
+            if quick_gene
+        ]
+        return {
+            **dataset,
+            "genes": sorted(genes),
+            "quick_genes": quick_genes,
+            "categorical_fields": categorical_fields,
+            "default_metadata_field": configuration.get(
+                "labelField", configuration.get("defColorField", "")
+            ),
+        }
 
     with ThreadPoolExecutor(max_workers=8) as pool:
-        indexed = list(pool.map(add_genes, datasets))
+        indexed = list(pool.map(add_dataset_details, datasets))
 
     indexed.sort(key=lambda item: (item["name"] != "mosquito/all", item["name"]))
     return {

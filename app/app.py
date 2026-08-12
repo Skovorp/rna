@@ -30,6 +30,8 @@ from expression_explorer.differential import (
     load_differential_results,
 )
 from expression_explorer.ucsc import (
+    cell_browser_expression_url,
+    cell_browser_metadata_url,
     cell_browser_url,
     find_gene_matches,
     load_manifest,
@@ -500,7 +502,7 @@ def matched_gene_entries(
 def render_ucsc_cell_atlas(
     entries: list[dict[str, object]], enabled_gene_keys: set[str]
 ) -> None:
-    """Embed the UCSC view for one selected gene without reproducing its analysis."""
+    """Embed UCSC UMAP and multi-gene expression views for selected genes."""
     atlas_datasets = ucsc_atlas_resource(str(UCSC_MANIFEST))
     candidates: dict[str, dict[str, object]] = {}
     for entry in entries:
@@ -510,7 +512,12 @@ def render_ucsc_cell_atlas(
         aliases = [display_name, *entry["aliases"].values()]
         matches = find_gene_matches(atlas_datasets, aliases)
         if matches:
-            candidates[display_name] = {"matches": matches}
+            candidates[display_name] = {
+                "matches": matches,
+                "matches_by_dataset": {
+                    match.dataset.name: match for match in matches
+                },
+            }
 
     if not candidates:
         return
@@ -519,7 +526,7 @@ def render_ucsc_cell_atlas(
         "Single-cell context · UCSC Mosquito Cell Atlas",
         "The embedded UCSC Cell Browser shows the authors' interactive single-nucleus view. This app selects a compatible atlas dataset and gene identifier but does not recompute the atlas analysis.",
     )
-    control_columns = st.columns([1, 2])
+    control_columns = st.columns([1, 2, 1])
     with control_columns[0]:
         selected_gene = st.selectbox(
             "Atlas gene",
@@ -536,6 +543,26 @@ def render_ucsc_cell_atlas(
             format_func=lambda name: matches_by_dataset[name].dataset.display_label,
         )
     selected_match = matches_by_dataset[selected_dataset]
+    available_metadata_fields = {
+        name for name, _ in selected_match.dataset.categorical_fields
+    }
+    split_options = [
+        "None",
+        *(
+            field
+            for field in ("sex", "sample")
+            if field in available_metadata_fields
+        ),
+    ]
+    if st.session_state.get("ucsc_atlas_split_metadata") not in split_options:
+        st.session_state["ucsc_atlas_split_metadata"] = "None"
+    with control_columns[2]:
+        split_metadata = st.selectbox(
+            "Additional UMAP",
+            options=split_options,
+            key="ucsc_atlas_split_metadata",
+            help="Show a second full-width UMAP below, colored by sex or biological sample when that field is available in this atlas view.",
+        )
 
     atlas_url = cell_browser_url(
         selected_match.dataset.name,
@@ -545,8 +572,112 @@ def render_ucsc_cell_atlas(
         "Goldman et al., Cell 2025. The atlas displays normalized single-nucleus "
         "expression, not bulk-RNA TPM."
     )
-    st.markdown(f"[Open this view in a new tab]({atlas_url})")
-    st.iframe(atlas_url, height=760)
+    if split_metadata == "None":
+        st.markdown(f"[Open this view in a new tab]({atlas_url})")
+        st.iframe(atlas_url, height=760)
+    else:
+        split_url = cell_browser_metadata_url(selected_dataset, split_metadata)
+        st.caption(f"Expression · {selected_gene}")
+        st.markdown(f"[Open expression UMAP in a new tab]({atlas_url})")
+        st.iframe(atlas_url, height=760)
+        st.caption(f"Colored by {split_metadata}")
+        st.markdown(f"[Open {split_metadata} UMAP in a new tab]({split_url})")
+        st.iframe(split_url, height=760)
+
+    expression_views: dict[str, dict[str, object]] = {}
+    for dataset in atlas_datasets:
+        gene_matches = [
+            candidate["matches_by_dataset"][dataset.name]
+            for candidate in candidates.values()
+            if dataset.name in candidate["matches_by_dataset"]
+        ]
+        if gene_matches:
+            expression_views[dataset.name] = {
+                "dataset": dataset,
+                "matches": gene_matches,
+            }
+
+    section_title_with_info(
+        "Single-cell expression across selected genes",
+        "The UCSC dot plot compares normalized single-nucleus expression across a categorical atlas annotation. Dot color shows average expression and dot size shows the fraction of nuclei expressing each gene.",
+    )
+    expression_columns = st.columns([2, 2, 1])
+    with expression_columns[0]:
+        expression_dataset_name = st.selectbox(
+            "Expression atlas view",
+            options=list(expression_views),
+            key="ucsc_expression_dataset",
+            format_func=lambda name: expression_views[name]["dataset"].display_label,
+        )
+    expression_view = expression_views[expression_dataset_name]
+    expression_dataset = expression_view["dataset"]
+    metadata_labels = dict(expression_dataset.categorical_fields)
+    metadata_options = list(metadata_labels)
+    preferred_metadata = expression_dataset.default_metadata_field
+    preferred_metadata_index = (
+        metadata_options.index(preferred_metadata)
+        if preferred_metadata in metadata_options
+        else 0
+    )
+    with expression_columns[1]:
+        metadata_field = st.selectbox(
+            "Group cells by",
+            options=metadata_options,
+            index=preferred_metadata_index,
+            key=f"ucsc_expression_metadata_{expression_dataset_name}",
+            format_func=lambda name: metadata_labels[name],
+        )
+    with expression_columns[2]:
+        include_default_genes = st.toggle(
+            "Include dataset genes",
+            value=False,
+            key="ucsc_expression_include_defaults",
+            help="Add the atlas authors' curated default genes for this view to the selected genes.",
+        )
+
+    expression_genes = list(
+        dict.fromkeys(match.gene_query for match in expression_view["matches"])
+    )
+    selected_gene_count = len(expression_genes)
+    if include_default_genes:
+        expression_genes.extend(
+            gene.split("|", 1)[0] for gene, _ in expression_dataset.quick_genes
+        )
+    expression_genes = list(dict.fromkeys(expression_genes))
+    omitted_genes = [
+        display_name
+        for display_name, candidate in candidates.items()
+        if expression_dataset_name not in candidate["matches_by_dataset"]
+    ]
+    expression_context = candidates[selected_gene]["matches_by_dataset"].get(
+        expression_dataset_name
+    )
+    expression_url = cell_browser_expression_url(
+        expression_dataset_name,
+        expression_genes,
+        metadata_field,
+        context_gene=(
+            expression_context.gene_query
+            if expression_context is not None
+            else expression_genes[0]
+        ),
+    )
+    default_gene_note = (
+        f" plus {len(expression_genes) - selected_gene_count} dataset genes"
+        if include_default_genes
+        else "; dataset genes hidden"
+    )
+    st.caption(
+        f"Showing {selected_gene_count} selected genes{default_gene_note}, grouped by "
+        f"{metadata_labels[metadata_field]}."
+    )
+    if omitted_genes:
+        st.warning(
+            f"This atlas view does not contain: {', '.join(omitted_genes)}. "
+            "Choose another expression view to include them."
+        )
+    st.markdown(f"[Open this expression plot in a new tab]({expression_url})")
+    st.iframe(expression_url, height=760)
 
 
 def mean_expression_by_study(

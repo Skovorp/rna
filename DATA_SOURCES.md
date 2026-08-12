@@ -11,7 +11,7 @@ The Genes page also embeds the [UCSC Aedes aegypti Mosquito Cell Atlas](https://
 
 The files under `expression/` contain the validated gene-level Salmon matrices for the ovary and midgut datasets, faithful tabular extracts of the 2016 study's published supplementary tables, and every pairwise DESeq2 contrast produced by `nf-core/differentialabundance` 2.0.0: 28 contrasts across the eight midgut conditions and 55 across the eleven ovary conditions. TPM values are descriptive normalized abundance, not raw read counts; the app displays differential-expression statistics only from the precomputed count-aware pipeline outputs.
 
-`expression/ucsc_mosquito_cell_atlas_genes.json.gz` is a compact routing manifest derived from each UCSC view's public `exprMatrix.json`. It records which exact identifiers can be passed as `gene=` for all 24 leaf datasets, allowing the app to offer only working dataset/gene combinations. Refresh it with `scripts/update_ucsc_cell_atlas_manifest.py`; no UCSC expression matrix is downloaded or analyzed by the app.
+`expression/ucsc_mosquito_cell_atlas_genes.json.gz` is a compact routing manifest derived from each UCSC view's public `exprMatrix.json` and `dataset.json`. It records which exact identifiers can be passed as `gene=` for all 24 leaf datasets, plus the categorical metadata fields and author-curated default genes used to configure the embedded multi-gene dot plot. Refresh it with `scripts/update_ucsc_cell_atlas_manifest.py`; no UCSC expression matrix is downloaded or analyzed by the app.
 
 ## Displayed-data provenance
 
