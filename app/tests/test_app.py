@@ -222,8 +222,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "Group median TPM" not in captions
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
-    assert len(studies.options) == 3
-    assert "Midgut · blood-meal time course" in studies.options
+    assert len(studies.options) == 5
+    assert "Midgut (reprocessed) · blood-meal time course" in studies.options
     assert all("legacy" not in option.casefold() for option in studies.options)
     assert studies.value == ["elife", "neuro_ru"]
 
@@ -550,7 +550,7 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
         if "Samples ≥1 TPM" in frame.value.columns
     )
     ovary_summary = summary[
-        summary["Study"] == "Drought resilience · ovary time course"
+        summary["Study"] == "Ovary (reprocessed) · blood-meal time course"
     ]
     assert all(value.endswith("/33") for value in ovary_summary["Samples ≥1 TPM"])
 
@@ -671,7 +671,7 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     warnings = " ".join(element.value for element in app.warning)
     assert "Gene not found:" in warnings
     assert "ir7a" in warnings
-    assert "Neurotranscriptome · updated AaegL.RU" in warnings
+    assert "Atlas (paper) · neurotranscriptome AaegL.RU" in warnings
     matched_genes = _matched_gene_editor(app).value
     assert len(_mean_tpm_columns(matched_genes)) == 2
     assert any(
