@@ -52,6 +52,23 @@ STAR_SALMON_CONDITION_LABELS = {
 
 STAR_SALMON_CONDITION_SEQUENCE = tuple(STAR_SALMON_CONDITION_LABELS)
 
+# Elapsed time since the blood meal, independent of sex. Non-blood-fed samples
+# and the male midgut have no post-blood-meal time.
+STAR_SALMON_TIMEPOINT_LABELS = {
+    "NBF": "not_applicable",
+    "3hBF": "3h",
+    "6hBF": "6h",
+    "12hBF": "12h",
+    "24hBF": "24h",
+    "48hBF": "48h",
+    "72hBF": "72h",
+    "96hBF": "96h",
+    "6dBF.Retained": "6d",
+    "6dBF.Laid": "6d",
+    "13dBF": "13d",
+    "Ma.Mg": "not_applicable",
+}
+
 CONDITION_LABELS = {
     "BF": "Blood-fed",
     "O": "Gravid / oviposition-stage",
@@ -288,6 +305,9 @@ def _load_star_salmon_samples(
     samples["replicate"] = samples["sample"].str.extract(
         r"[._]([0-9]+)_S[0-9]+$"
     )[0]
+    samples["timepoint"] = samples["condition"].map(
+        STAR_SALMON_TIMEPOINT_LABELS
+    ).fillna("not_applicable")
     samples["_condition_order"] = samples["condition"].map(
         {value: index for index, value in enumerate(STAR_SALMON_CONDITION_SEQUENCE)}
     )

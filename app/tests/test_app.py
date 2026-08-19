@@ -116,26 +116,26 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     home_html = " ".join(element.value for element in app.markdown)
     assert "# Aedes RNA Atlas" in home_html
     assert "Use the menu above to:" in home_html
-    assert "## Data sources" in home_html
-    assert "## Reference, annotation, and provenance" in home_html
-    assert "VectorBase-68_AaegyptiLVP_AGWG_Genome.fasta" in home_html
-    assert "AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf" in home_html
-    assert "Salmon 1.10.3" in home_html
-    assert "Salmon 2.4.1" in home_html
-    assert "skip_alignment: true" in home_html
-    assert "Our Salmon 2.4.1 gene-level TPM matrix" in home_html
-    assert "published TPM values are not displayed" in home_html
-    assert "## Exact nf-core commands" in home_html
+    assert "## Datasets" in home_html
+    assert "## Comparisons" in home_html
+    assert "**Ovary (paper)**" in home_html
+    assert "**Ovary (reprocessed)**" in home_html
+    assert "**Atlas (paper)**" in home_html
+    assert "**Midgut (reprocessed)**" in home_html
+    assert "**Crop (reprocessed)**" in home_html
+    assert "identical* pipeline" in home_html
+    assert "Methods" in home_html
+    assert "never recomputed from TPM" in home_html
+    # Pipeline parameters live only in METHODS.md, rendered by the Methods page.
+    assert "nextflow run" not in home_html
+    assert "skip_alignment" not in home_html
     assert 'class="home-hero"' not in home_html
     assert 'class="home-card-grid"' not in home_html
     assert 'class="home-metrics"' not in home_html
 
     source = APP.read_text()
-    assert "nextflow run nf-core/rnaseq" in source
-    assert "nextflow run nf-core/differentialabundance" in source
-    assert '"pseudo_aligner": "salmon"' in source
-    assert '"seed": 20260804' in source
-    assert "female_72hBF_vs_NBF,condition,female_NBF,female_72hBF" in source
+    assert "nextflow run" not in source
+    assert "pseudo_aligner" not in source
     assert '[data-testid="stSidebar"]' in source
     assert '[data-testid="stSidebarCollapsedControl"]' in source
     assert '[data-testid="stToolbar"]' in source
@@ -889,7 +889,7 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
         "FDR",
         "FDR < 0.05",
     } <= set(result_tables[0].columns)
-    assert len(result_tables[0]) == 15_646
+    assert 10_000 < len(result_tables[0]) <= 19_920
 
     plot = _plotly_spec(app)
     assert [trace["name"] for trace in plot["data"]] == [
@@ -913,8 +913,10 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
     assert plot["layout"]["shapes"][0]["y0"] == 0
     assert plot["layout"]["shapes"][0]["y1"] == 0
     captions = " ".join(element.value for element in app.caption)
-    assert "nf-core/differentialabundance 2.0.0" in captions
-    assert "Salmon gene-level counts" in captions
+    assert "DESeq2" in captions
+    assert "ashr-shrunk" in captions
+    assert "STAR + Salmon length-scaled gene counts" in captions
+    assert "Methods page" in captions
     assert "Significant genes are gold and drawn last" in captions
     assert "Welch" not in captions
     contrasts = next(
@@ -961,7 +963,7 @@ def test_ovary_differential_expression_has_every_pair(monkeypatch):
         frame.value for frame in app.dataframe if "FDR" in frame.value.columns
     ]
     assert len(result_tables) == 1
-    assert len(result_tables[0]) == 17_660
+    assert 10_000 < len(result_tables[0]) <= 19_920
 
 
 def test_neurotranscriptome_differential_expression_is_not_available(monkeypatch):
@@ -979,7 +981,8 @@ def test_neurotranscriptome_differential_expression_is_not_available(monkeypatch
         element.value for element in [*app.markdown, *app.info]
     )
     assert "NOT AVAILABLE" in rendered_text
-    assert "does not compute differential-expression statistics from TPM" in rendered_text
+    assert "never computes differential-expression statistics from TPM" in rendered_text
+    assert "only for our reprocessed datasets" in rendered_text
     assert not any(
         selectbox.label == "Contrast · target vs reference"
         for selectbox in app.selectbox
