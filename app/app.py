@@ -960,7 +960,7 @@ def alternative_names_by_gene(
 
 
 def default_grouping(dataset) -> tuple[str, str]:
-    if dataset.key == "elife":
+    if dataset.key in {"elife", "ovary_paper"}:
         return "reproductive_state", "Reproductive state"
     if dataset.key.startswith("neuro_"):
         return "tissue_condition", "Tissue + condition"
@@ -973,6 +973,9 @@ def sample_groupings(dataset) -> list[tuple[str, str]]:
     """Return the biological sample metadata exposed for filtering and color."""
     configured = {
         "elife": [
+            ("reproductive_state", "Reproductive state / time"),
+        ],
+        "ovary_paper": [
             ("reproductive_state", "Reproductive state / time"),
         ],
         "neuro_ru": [
@@ -1528,144 +1531,54 @@ def render_home() -> None:
 
         - **Genes** — search gene symbols and historical identifiers, then compare expression across studies.
         - **Families** — examine IR, OR, GR, and OBP family members.
-        - **Differential expression** — browse precomputed DESeq2 contrasts from nf-core/differentialabundance.
+        - **Differential expression** — browse precomputed DESeq2 contrasts. Available only for our reprocessed datasets.
         - **Clusters** — inspect relationships between biological samples using PCA, UMAP, or t-SNE.
 
-        ## Data sources
+        ## Datasets
 
-        - [Venkataraman et al., eLife 2023](https://doi.org/10.7554/eLife.80489) — ovary expression across reproductive and drought-resilience states.
-        - [Matthews et al., BMC Genomics 2016](https://doi.org/10.1186/s12864-015-2239-0) — female and male tissues across feeding and reproductive conditions.
-        - **Nadav Shai · Vosshall lab midgut RNA-seq** — female midgut from non-blood-fed through 72 hours post-blood-meal, plus non-blood-fed male midgut.
-        - [Goldman et al., Cell 2025](https://doi.org/10.1016/j.cell.2025.10.008) — embedded UCSC single-nucleus Mosquito Cell Atlas views on the Genes page.
-
-        ## Reference, annotation, and provenance
-
-        Our raw-FASTQ analyses use one shared *Aedes aegypti* reference pair:
-
-        - **Genome FASTA:** `VectorBase-68_AaegyptiLVP_AGWG_Genome.fasta`
-          (AaegL5 / AaegLVP_AGWG; SHA-256
-          `fd96bcf4d05fa54b0dc4edeebaf077ab6206c35bda1faa150a392dfdcd0545ec`).
-        - **Gene annotation GTF:**
-          `AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf`
-          (VectorBase 58 with Jové et al. 2019 gene names; SHA-256
-          `0bf20c3fae7f8788e44b56fdbc1e81f5dd502da8c4350d5e4c8757a048a74580`).
-
-        The ovary FASTQs were quantified by us with **Salmon 2.4.1**. The
-        midgut run used Trim Galore followed by **Salmon 1.10.3
-        pseudoalignment and quantification**. It did not create genomic BAM
-        alignments: the recorded nf-core setting was `skip_alignment: true`
-        with `pseudo_aligner: salmon`.
-
-        | Dataset | What this site currently displays | Processing provenance |
+        | Dataset | What is displayed | Provenance |
         |---|---|---|
-        | Venkataraman et al. 2023 · ovary (`PRJNA796320`) | Our Salmon 2.4.1 gene-level TPM matrix | We quantified all 33 biological samples from the raw paired-end FASTQs against the shared AaegL5 FASTA and VectorBase 58 + Jové GTF above. The study's published TPM values are not displayed. |
-        | Matthews et al. 2016 · neurotranscriptome (`PRJNA236239`) | Published `AaegL.RU` TPM matrix from the study supplement | The displayed values retain the authors' annotation. Our raw-FASTQ reprocessing is tracked separately and is not presented as complete here. |
-        | Nadav Shai · midgut | Our Salmon gene-level TPM matrix and our seven DESeq2 contrasts | We ran nf-core/rnaseq 3.26.0 and nf-core/differentialabundance 2.0.0 ourselves from the raw paired-end FASTQs using the reference pair above. |
+        | **Ovary (paper)** | Published TPM supplement | Venkataraman et al., eLife 2023 (`PRJNA796320`) values as published by the authors. |
+        | **Ovary (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts | We reprocessed the same 33 raw paired-end samples ourselves. |
+        | **Atlas (paper)** | Published neurotranscriptome TPM matrices (`AaegL.RU` and legacy `AaegL3.3`) | Matthews et al., BMC Genomics 2016 (`PRJNA236239`) values as published. Our reprocessing is not complete and is not shown. |
+        | **Midgut (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | Nadav Shai · Vosshall lab midgut RNA-seq, reprocessed by us from raw reads. |
+        | **Crop (reprocessed)** | Our STAR + Salmon gene TPM matrix | Vosshall lab crop RNA-seq, reprocessed by us. Single condition, so no differential contrasts exist. |
 
-        TPM is descriptive normalized abundance. Differential-expression statistics
-        are displayed only when precomputed count-aware nf-core results are available.
+        Every reprocessed dataset above went through the *identical* pipeline,
+        reference, and parameters — see the **Methods** page. Paper datasets
+        keep their published values and are not covered by those methods.
 
-        ## Exact nf-core commands
+        ## Comparisons
 
-        These are the original commands and worker paths preserved from the
-        completed midgut run. Nextflow was pinned to 25.10.7. The referenced
-        parameter files are reproduced directly below each command.
+        Where a reprocessed dataset has a published counterpart, a comparison
+        page reports how closely the two agree:
+
+        - **Ovary · paper vs reprocessed** — TPM agreement and zero ↔ non-zero transitions.
+
+        ## Other sources
+
+        - [Goldman et al., Cell 2025](https://doi.org/10.1016/j.cell.2025.10.008) — embedded UCSC single-nucleus Mosquito Cell Atlas views on the Genes page. External visualization, not a locally reprocessed dataset.
+
+        TPM is descriptive normalized abundance. Differential-expression
+        statistics are displayed only from precomputed count-aware pipeline
+        outputs, never recomputed from TPM in the app.
         """,
     )
 
-    st.markdown("### RNA-seq quantification · nf-core/rnaseq 3.26.0")
-    st.code(
-        """export PATH="/opt/conda/bin:/usr/local/bin:$PATH"
-export NXF_HOME=/rna/.nextflow
-export NXF_VER=25.10.7
-export NXF_CONDA_CACHEDIR=/rna/conda
-export NXF_TEMP=/rna/tmp
-export NXF_OPTS='-Xms1g -Xmx8g'
-
-PROJECT_ROOT=/rna/project/nadav_shai
-WORK_ROOT=/rna/work/nadav_shai_nfcore
-
-nextflow run nf-core/rnaseq \\
-    -r 3.26.0 \\
-    -profile mamba \\
-    -c "$PROJECT_ROOT/vast.config" \\
-    -params-file "$PROJECT_ROOT/nfcore-params.json" \\
-    -work-dir "$WORK_ROOT" \\
-    -resume""",
-        language="bash",
+    st.page_link(
+        "pages/3_Methods.py",
+        label="Methods — pipeline, reference, and parameters",
+        icon="\U0001F9EA",
     )
-    with st.expander("Exact nf-core/rnaseq parameter file"):
-        st.code(
-            """{
-  "input": "/rna/project/nadav_shai/samplesheet.csv",
-  "fasta": "/rna/input/Nadav_Shai_Midgut_RNAseq/VectorBase-63_AaegyptiLVP_AGWG_Genome/VectorBase-68_AaegyptiLVP_AGWG_Genome.fasta",
-  "gtf": "/rna/reference/AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf",
-  "pseudo_aligner": "salmon",
-  "skip_alignment": true,
-  "save_reference": true,
-  "max_cpus": 28,
-  "max_memory": "170.GB",
-  "max_time": "72.h",
-  "outdir": "/rna/results/nadav_shai_nfcore"
-}""",
-            language="json",
-        )
-
-    st.markdown(
-        "### Differential expression · nf-core/differentialabundance 2.0.0"
+    st.page_link(
+        "pages/2_Ovary_paper_vs_reprocessed.py",
+        label="Ovary · paper vs reprocessed comparison",
+        icon="\U0001F4CA",
     )
-    st.code(
-        """export PATH="/opt/conda/bin:/usr/local/bin:$PATH"
-export NXF_HOME=/rna/.nextflow
-export NXF_VER=25.10.7
-export NXF_CONDA_CACHEDIR=/rna/conda
-export NXF_TEMP=/rna/tmp
-export NXF_OPTS='-Xms1g -Xmx8g'
-
-PROJECT_ROOT=/rna/project/nadav_shai
-WORK_ROOT=/rna/work/nadav_shai_differential
-
-nextflow run nf-core/differentialabundance \\
-    -r 2.0.0 \\
-    -profile rnaseq,mamba \\
-    -c "$PROJECT_ROOT/vast.config" \\
-    -params-file "$PROJECT_ROOT/differential-params.json" \\
-    -work-dir "$WORK_ROOT" \\
-    -resume""",
-        language="bash",
-    )
-    with st.expander("Exact differential-expression parameters and contrasts"):
-        st.markdown("**`differential-params.json`**")
-        st.code(
-            """{
-  "study_name": "nadav_shai_midgut_rnaseq",
-  "study_type": "rnaseq",
-  "input": "/rna/project/nadav_shai/observations.csv",
-  "contrasts": "/rna/project/nadav_shai/contrasts.csv",
-  "matrix": "/rna/results/nadav_shai_nfcore/salmon/salmon.merged.gene_counts.tsv",
-  "feature_length_matrix": "/rna/results/nadav_shai_nfcore/salmon/salmon.merged.gene_lengths.tsv",
-  "gtf": "/rna/reference/AaegLVP_VB58-Jove19_MT_noS1_geneNames.sorted.gtf",
-  "seed": 20260804,
-  "outdir": "/rna/results/nadav_shai_differential"
-}""",
-            language="json",
-        )
-        st.markdown("**`contrasts.csv`**")
-        st.code(
-            """id,variable,reference,target
-female_3hBF_vs_NBF,condition,female_NBF,female_3hBF
-female_6hBF_vs_NBF,condition,female_NBF,female_6hBF
-female_12hBF_vs_NBF,condition,female_NBF,female_12hBF
-female_24hBF_vs_NBF,condition,female_NBF,female_24hBF
-female_48hBF_vs_NBF,condition,female_NBF,female_48hBF
-female_72hBF_vs_NBF,condition,female_NBF,female_72hBF
-male_vs_female_NBF,condition,female_NBF,male_midgut""",
-            language="text",
-        )
-
-    st.caption(
-        "Recorded software: Salmon 1.10.3; nf-core/rnaseq 3.26.0; "
-        "nf-core/differentialabundance 2.0.0; DESeq2 1.34.0; Nextflow 25.10.7."
+    st.page_link(
+        "pages/1_Mosquito_cheatsheet.py",
+        label="Mosquito basics — tissues and reproductive states",
+        icon="\U0001F99F",
     )
 
 
@@ -2209,9 +2122,11 @@ elif mode == "Differential expression":
     if not available_contrasts:
         st.subheader("NOT AVAILABLE")
         st.info(
-            "NOT AVAILABLE — this study has no bundled "
-            "nf-core/differentialabundance results. The atlas does not compute "
-            "differential-expression statistics from TPM values."
+            "NOT AVAILABLE — differential expression is available only for our "
+            "reprocessed datasets, and only where the dataset has more than one "
+            "condition. Paper datasets are displayed at their published values, "
+            "and the atlas never computes differential-expression statistics "
+            "from TPM."
         )
     else:
         try:
@@ -2268,7 +2183,7 @@ elif mode == "Differential expression":
                 "Gray genes do not pass the selected FDR threshold. Significant genes are gold and drawn last, so gray points cannot cover them. All markers are fully opaque."
             )
             st.caption(
-                f"Precomputed by nf-core/differentialabundance 2.0.0 with DESeq2 from Salmon gene-level counts. Positive log₂ fold change means higher in {target_label}; negative means higher in {reference_label}."
+                f"Precomputed with DESeq2 (ashr-shrunk log₂ fold changes) from STAR + Salmon length-scaled gene counts; see the Methods page. Positive log₂ fold change means higher in {target_label}; negative means higher in {reference_label}."
             )
 
             displayed_results = comparison_results

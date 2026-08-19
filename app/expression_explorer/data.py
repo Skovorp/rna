@@ -26,7 +26,31 @@ class ExpressionDataset:
         return list(self.values.columns)
 
 
-DATASET_ORDER = ("elife", "neuro_ru", "midgut", "neuro_legacy")
+DATASET_ORDER = (
+    "ovary_paper",
+    "elife",
+    "neuro_ru",
+    "midgut",
+    "crop",
+    "neuro_legacy",
+)
+
+STAR_SALMON_CONDITION_LABELS = {
+    "NBF": "Non-blood-fed",
+    "3hBF": "3 hours post-blood-meal",
+    "6hBF": "6 hours post-blood-meal",
+    "12hBF": "12 hours post-blood-meal",
+    "24hBF": "24 hours post-blood-meal",
+    "48hBF": "48 hours post-blood-meal",
+    "72hBF": "72 hours post-blood-meal",
+    "96hBF": "96 hours post-blood-meal",
+    "6dBF.Retained": "6 days post-blood-meal (eggs retained)",
+    "6dBF.Laid": "6 days post-blood-meal (eggs laid)",
+    "13dBF": "13 days post-blood-meal",
+    "Ma.Mg": "Male · non-blood-fed",
+}
+
+STAR_SALMON_CONDITION_SEQUENCE = tuple(STAR_SALMON_CONDITION_LABELS)
 
 CONDITION_LABELS = {
     "BF": "Blood-fed",
@@ -234,6 +258,48 @@ def _load_midgut_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFr
     return samples
 
 
+def star_salmon_condition(sample: str) -> str:
+    """Fe.Mg.12hBF.1_S13 / Fe_Crop_NBF_1_S1 -> 12hBF / NBF; Ma.Mg.1_S1 -> Ma.Mg."""
+    condition = re.sub(r"^Fe[._][A-Za-z]+[._]", "", sample)
+    return re.sub(r"[._][0-9]+_S[0-9]+$", "", condition)
+
+
+def _load_star_salmon_samples(
+    sample_columns: Iterable[str], tissue: str
+) -> pd.DataFrame:
+    samples = pd.DataFrame({"sample": list(sample_columns)})
+    samples["condition"] = samples["sample"].map(star_salmon_condition)
+    unknown = sorted(
+        set(samples["condition"]) - set(STAR_SALMON_CONDITION_LABELS)
+    )
+    if unknown:
+        raise ValueError(f"Unknown star_salmon conditions: {unknown}")
+    samples["condition_label"] = samples["condition"].map(
+        STAR_SALMON_CONDITION_LABELS
+    )
+    samples["reproductive_state"] = samples["condition_label"]
+    samples["sex"] = np.where(
+        samples["sample"].str.startswith("Ma"), "male", "female"
+    )
+    samples["tissue"] = tissue
+    samples["tissue_condition"] = (
+        tissue.title() + " · " + samples["condition_label"]
+    )
+    samples["replicate"] = samples["sample"].str.extract(
+        r"[._]([0-9]+)_S[0-9]+$"
+    )[0]
+    samples["_condition_order"] = samples["condition"].map(
+        {value: index for index, value in enumerate(STAR_SALMON_CONDITION_SEQUENCE)}
+    )
+    samples["_replicate_order"] = pd.to_numeric(
+        samples["replicate"], errors="coerce"
+    )
+    samples = samples.sort_values(
+        ["_condition_order", "_replicate_order", "sample"], kind="stable"
+    ).drop(columns=["_condition_order", "_replicate_order"])
+    return samples.set_index("sample", drop=False)
+
+
 def _generic_samples(sample_columns: Iterable[str]) -> pd.DataFrame:
     samples = pd.DataFrame({"sample": list(sample_columns)})
     samples["condition"] = ""
@@ -367,53 +433,75 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
         expression_dir / "neurotranscriptome_2016_samples.tsv", legacy_values.columns
     )
 
-    elife_annotations, elife_values = _read_matrix(
-        expression_dir / "elife_80489_salmon_gene_tpm.tsv.gz",
+    paper_annotations, paper_values = _read_matrix(
+        expression_dir / "elife_80489_tpm.tsv.gz",
         ["IDs", "Symbols"],
     )
-    elife_genes = _finalize_genes(
-        elife_annotations,
-        elife_annotations["IDs"],
-        pd.Series([""] * len(elife_annotations)),
-        elife_annotations["Symbols"],
+    paper_genes = _finalize_genes(
+        paper_annotations,
+        paper_annotations["IDs"],
+        pd.Series([""] * len(paper_annotations)),
+        paper_annotations["Symbols"],
     )
-    elife_samples = _load_elife_samples(
-        expression_dir / "elife_80489_samples.tsv", elife_values.columns
+    paper_samples = _load_elife_samples(
+        expression_dir / "elife_80489_samples.tsv", paper_values.columns
     )
 
-    midgut_path = expression_dir / "midgut_nadav_shai_gene_tpm.tsv.gz"
-    midgut_columns = pd.read_csv(
-        midgut_path, sep="\t", compression="gzip", nrows=0
-    ).columns
-    midgut_sample_columns = [
-        column for column in midgut_columns if column not in {"gene_id", "gene_name"}
-    ]
-    midgut_samples = _load_midgut_samples(
-        expression_dir / "midgut_nadav_shai_samples.csv", midgut_sample_columns
+    def star_salmon_dataset(
+        file_name: str, key: str, tissue: str, label: str, paper: str
+    ) -> ExpressionDataset:
+        path = expression_dir / file_name
+        columns = pd.read_csv(path, sep="\t", compression="gzip", nrows=0).columns
+        sample_columns = [
+            column for column in columns if column not in {"gene_id", "gene_name"}
+        ]
+        samples = _load_star_salmon_samples(sample_columns, tissue)
+        return load_nfcore_dataset(
+            path,
+            key,
+            crosswalk,
+            label=label,
+            paper=paper,
+            annotation_version="AaegL5 · VectorBase 58 + Jové et al. 2019",
+            samples=samples,
+        )
+
+    ovary = star_salmon_dataset(
+        "ovary_star_salmon_gene_tpm.tsv.gz",
+        "elife",
+        "ovary",
+        "Ovary (reprocessed) · blood-meal time course",
+        "Venkataraman et al. raw reads, our nf-core reprocessing",
     )
-    midgut = load_nfcore_dataset(
-        midgut_path,
+    midgut = star_salmon_dataset(
+        "midgut_star_salmon_gene_tpm.tsv.gz",
         "midgut",
-        crosswalk,
-        label="Midgut · blood-meal time course",
-        paper="Nadav Shai · Vosshall lab midgut RNA-seq",
-        annotation_version="AaegL5 · VectorBase 58 + Jové et al. 2019",
-        samples=midgut_samples,
+        "midgut",
+        "Midgut (reprocessed) · blood-meal time course",
+        "Nadav Shai · Vosshall lab midgut RNA-seq",
+    )
+    crop = star_salmon_dataset(
+        "crop_star_salmon_gene_tpm.tsv.gz",
+        "crop",
+        "crop",
+        "Crop (reprocessed) · non-blood-fed",
+        "Vosshall lab crop RNA-seq",
     )
 
     datasets = {
-        "elife": ExpressionDataset(
-            key="elife",
-            label="Drought resilience · ovary time course",
+        "ovary_paper": ExpressionDataset(
+            key="ovary_paper",
+            label="Ovary (paper) · published TPM",
             paper="Venkataraman et al., eLife 2023",
-            annotation_version="AaegL5 · VectorBase 58 + Jové et al. 2019",
-            genes=elife_genes,
-            values=elife_values,
-            samples=elife_samples,
+            annotation_version="Published TPM supplement",
+            genes=paper_genes,
+            values=paper_values,
+            samples=paper_samples,
         ),
+        "elife": ovary,
         "neuro_ru": ExpressionDataset(
             key="neuro_ru",
-            label="Neurotranscriptome · updated AaegL.RU",
+            label="Atlas (paper) · neurotranscriptome AaegL.RU",
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL.RU (recommended)",
             genes=ru_genes,
@@ -422,7 +510,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
         ),
         "neuro_legacy": ExpressionDataset(
             key="neuro_legacy",
-            label="Neurotranscriptome · legacy AaegL3.3",
+            label="Atlas (paper) · neurotranscriptome legacy AaegL3.3",
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL3.3 (compatibility)",
             genes=legacy_genes,
@@ -430,6 +518,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
             samples=legacy_samples,
         ),
         "midgut": midgut,
+        "crop": crop,
     }
 
     import_dir = expression_dir / "imports"

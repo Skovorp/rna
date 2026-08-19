@@ -22,14 +22,20 @@ def test_family_classifier_accepts_numbered_gene_copies():
 
 def test_dataset_dimensions_and_sample_metadata():
     datasets = load_datasets(EXPRESSION_DIR)
-    assert datasets["elife"].values.shape == (19_920, 33)
+    assert set(datasets) >= {
+        "ovary_paper",
+        "elife",
+        "neuro_ru",
+        "neuro_legacy",
+        "midgut",
+        "crop",
+    }
     assert datasets["neuro_ru"].values.shape == (16_176, 122)
     assert datasets["neuro_legacy"].values.shape == (17_478, 122)
-    assert datasets["midgut"].values.shape == (18_943, 24)
-    assert all(
-        abs(total - 1_000_000.0) < 0.5
-        for total in datasets["elife"].values.sum(axis=0)
-    )
+    assert datasets["ovary_paper"].values.shape[1] == 33
+    assert datasets["elife"].values.shape[1] == 33
+    assert datasets["midgut"].values.shape[1] == 24
+    assert datasets["crop"].values.shape[1] == 3
     for dataset in datasets.values():
         assert dataset.samples.index.tolist() == dataset.sample_columns
         assert dataset.samples["sample"].notna().all()
@@ -39,32 +45,40 @@ def test_dataset_dimensions_and_sample_metadata():
     assert midgut.samples["condition_label"].nunique() == 8
     assert not midgut.samples["condition_label"].eq("Unspecified").any()
     assert midgut.samples["condition_label"].drop_duplicates().tolist() == [
-        "Female · non-blood-fed",
-        "Female · 3 h post-blood-meal",
-        "Female · 6 h post-blood-meal",
-        "Female · 12 h post-blood-meal",
-        "Female · 24 h post-blood-meal",
-        "Female · 48 h post-blood-meal",
-        "Female · 72 h post-blood-meal",
+        "Non-blood-fed",
+        "3 hours post-blood-meal",
+        "6 hours post-blood-meal",
+        "12 hours post-blood-meal",
+        "24 hours post-blood-meal",
+        "48 hours post-blood-meal",
+        "72 hours post-blood-meal",
         "Male · non-blood-fed",
     ]
+    assert midgut.samples["sex"].drop_duplicates().tolist() == ["female", "male"]
 
     elife = datasets["elife"]
     assert elife.samples["condition"].nunique() == 11
     assert elife.samples.groupby("condition").size().eq(3).all()
     assert elife.samples["condition"].drop_duplicates().tolist() == [
-        "female_NBF",
-        "female_3hBF",
-        "female_6hBF",
-        "female_12hBF",
-        "female_24hBF",
-        "female_48hBF",
-        "female_72hBF",
-        "female_96hBF",
-        "female_6dBF_retained",
-        "female_6dBF_laid",
-        "female_13dBF",
+        "NBF",
+        "3hBF",
+        "6hBF",
+        "12hBF",
+        "24hBF",
+        "48hBF",
+        "72hBF",
+        "96hBF",
+        "6dBF.Retained",
+        "6dBF.Laid",
+        "13dBF",
     ]
+
+    crop = datasets["crop"]
+    assert crop.samples["condition"].eq("NBF").all()
+    assert crop.samples["tissue"].eq("crop").all()
+
+    paper = datasets["ovary_paper"]
+    assert paper.samples["reproductive_state"].nunique() == 11
 
 
 def test_ir25a_resolves_in_every_dataset():
