@@ -1,0 +1,78 @@
+{
+  "agreement": {
+    "error_q01": -3.311289148413184,
+    "error_q10": -0.47373060515365206,
+    "error_q25": -0.09664044076637429,
+    "error_q75": 0.015017886727471508,
+    "error_q90": 0.0447233753881141,
+    "error_q99": 0.7356871593855582,
+    "fraction_abs_error_le_0_5": 0.8888850259588896,
+    "fraction_abs_error_le_1": 0.9367963948929858,
+    "median_absolute_log2_error": 0.036234504202935613,
+    "median_signed_log2_error": 0.0,
+    "pearson_log2_tpm_plus_1": 0.9720237513073442,
+    "rmse_log2_tpm_plus_1": 0.693608547210964,
+    "spearman_log2_tpm_plus_1": 0.9359823304273037
+  },
+  "discordance": {
+    "abs_log2_error_gt_2_count": 17007,
+    "abs_log2_error_gt_2_fraction": 0.028155793070565798,
+    "gene_sample_pairs": 604032,
+    "genes_with_abs_log2_error_gt_2_in_all_samples": 112,
+    "genes_with_abs_log2_error_gt_2_in_any_sample": 1543,
+    "genes_with_abs_log2_error_gt_2_in_at_least_30_samples": 185,
+    "published_tpm_ge_10_reanalysis_zero_count": 4073,
+    "reanalysis_tpm_ge_10_published_zero_count": 163,
+    "severe_pairs_with_exact_zero_count": 10804,
+    "severe_pairs_with_exact_zero_fraction": 0.6352678308931616
+  },
+  "mapping_diagnostics": {
+    "ambiguous_source_aliases": 0,
+    "sources_removed_for_duplicate_target": 0
+  },
+  "mapping_methods": {
+    "direct_identifier": 316,
+    "exact_coordinate_crosswalk": 17988
+  },
+  "matched_gene_fraction_of_published": 0.9908515130190007,
+  "matched_genes": 18304,
+  "pca": {
+    "gene_selection": "all_matched_genes",
+    "genes_passing_expression_filter": 18304,
+    "genes_used": 18304,
+    "joint_pc1_variance_pct": 21.345522456754594,
+    "joint_pc2_variance_pct": 14.205911343629381,
+    "min_mean_tpm": 0.0,
+    "pairwise_sample_distance_pearson": 0.9864018460827773,
+    "pairwise_sample_distance_spearman": 0.9893772869286085,
+    "procrustes_disparity": 0.016105284530183662,
+    "published_pc1_variance_pct": 24.311483496543197,
+    "published_pc2_variance_pct": 15.390001365607725,
+    "reanalysis_pc1_variance_pct": 22.579759811246173,
+    "reanalysis_pc2_variance_pct": 15.484628756847735
+  },
+  "published_genes": 18473,
+  "published_sample_tpm_sum_max": 1000000.103948001,
+  "published_sample_tpm_sum_min": 999999.5123030478,
+  "reanalysis_genes": 19920,
+  "reanalysis_sample_tpm_sum_max": 1000000.0000769999,
+  "reanalysis_sample_tpm_sum_min": 999999.9999200001,
+  "sample_identity": {
+    "matching_sample_top1_count": 33,
+    "matching_sample_top1_fraction": 1.0,
+    "max_matching_sample_correlation": 0.9798852474133671,
+    "median_matching_sample_correlation": 0.9723247645183182,
+    "min_matching_sample_correlation": 0.9549800341559166
+  },
+  "samples": 33,
+  "zero_transitions": {
+    "genes_ever_published_nonzero_to_reanalysis_zero": 6645,
+    "genes_ever_published_zero_to_reanalysis_nonzero": 1869,
+    "published_ge_10_to_reanalysis_zero_count": 4073,
+    "published_ge_1_to_reanalysis_zero_count": 19638,
+    "published_nonzero_to_reanalysis_zero_count": 54162,
+    "published_zero_to_reanalysis_ge_10_count": 163,
+    "published_zero_to_reanalysis_ge_1_count": 1477,
+    "published_zero_to_reanalysis_nonzero_count": 6924
+  }
+}
