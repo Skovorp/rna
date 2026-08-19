@@ -6,12 +6,18 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 
-# Reports are embedded with components.html rather than served from app/static/:
-# Streamlit's static server returns .html as text/plain with nosniff, so an
-# iframe pointed at it shows raw source. That makes the embedded size the thing
-# that matters — scripts/theme_comparison_reports.py strips the inlined ~4.9 MB
-# plotly.js down to a CDN reference, taking these files to well under 0.5 MB.
+# One report, not two: the full report already embeds the same zero-transition
+# figure as the old standalone page, plus the per-gene transition tables that
+# page lacked. The generator still writes the standalone file; the app ignores
+# it.
+#
+# Embedded with components.html rather than served from app/static/, because
+# Streamlit's static server returns .html as text/plain with nosniff and an
+# iframe pointed at it would show raw source. Embedded size therefore matters:
+# scripts/theme_comparison_reports.py strips the inlined ~4.9 MB plotly.js to a
+# CDN reference, taking this file well under 0.5 MB.
 ASSET_DIR = Path(__file__).resolve().parents[1] / "assets" / "ovary_comparison"
+REPORT = "elife_ovary_tpm_full_report.html"
 
 st.set_page_config(
     page_title="Ovary paper vs reprocessed · Aedes RNA Atlas",
@@ -54,21 +60,12 @@ st.caption(
     "what the atlas actually displays."
 )
 
-REPORTS = {
-    "TPM agreement report": (
-        "elife_ovary_tpm_full_report.html",
-        2400,
-        "Per-sample and per-gene agreement between published and reprocessed "
-        "TPM values: correlations, log2 error distributions, PCA, and the "
-        "most discordant genes.",
-    ),
-    "Zero ↔ non-zero transitions": (
-        "elife_ovary_zero_nonzero_transitions.html",
-        1400,
-        "Genes that are exactly zero in one matrix but expressed in the "
-        "other — the dominant driver of severe disagreements.",
-    ),
-}
+st.markdown(
+    "The report below covers, in order: **overall TPM agreement** and the "
+    "error distribution, **exact zero ↔ non-zero transitions** with the "
+    "genes driving them, **PCA** of the two matrices, and a **sample-identity "
+    "correlation** check against sample swaps."
+)
 
 
 @st.cache_data(show_spinner=False)
@@ -76,19 +73,15 @@ def report_html(file_name: str) -> str:
     return (ASSET_DIR / file_name).read_text(encoding="utf-8")
 
 
-choice = st.radio("Report", list(REPORTS), horizontal=True)
-file_name, height, description = REPORTS[choice]
-st.caption(description)
-
-if not (ASSET_DIR / file_name).is_file():
-    st.error(f"Bundled report is missing: {file_name}")
+if not (ASSET_DIR / REPORT).is_file():
+    st.error(f"Bundled report is missing: {REPORT}")
 else:
-    html = report_html(file_name)
-    components.html(html, height=height, scrolling=True)
+    html = report_html(REPORT)
+    components.html(html, height=3200, scrolling=True)
     st.download_button(
         "Download this report",
         data=html,
-        file_name=file_name,
+        file_name=REPORT,
         mime="text/html",
         help="Charts in the downloaded file load plotly.js from a CDN, so it "
         "needs a network connection to render.",

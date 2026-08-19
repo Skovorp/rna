@@ -7,7 +7,13 @@ sample columns. The reprocessed STAR + Salmon matrix uses `gene_id`/`gene_name`
 and nf-core sample names, so this adapts it before delegating to that script.
 
 Run this whenever the reprocessed ovary matrix changes, or the comparison page
-will keep describing a matrix the atlas no longer displays.
+will keep describing a matrix the atlas no longer displays. Afterwards run
+`scripts/theme_comparison_reports.py` and copy the full report into
+`app/assets/ovary_comparison/`.
+
+The app shows only `elife_ovary_tpm_full_report.html`. The generator also emits
+a standalone zero-transition report, but that is a strict subset of the full
+one (same figure, without the per-gene tables), so it is not bundled.
 """
 from __future__ import annotations
 
