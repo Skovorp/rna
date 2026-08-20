@@ -51,7 +51,7 @@ def sample_embedding(
         explained = model.explained_variance_ratio_ * 100
         x_label = f"PC1 ({explained[0]:.1f}%)"
         y_label = f"PC2 ({explained[1]:.1f}%)"
-        details = f"{gene_details} · PC1 + PC2 explain {explained.sum():.1f}%"
+        details = f"{gene_details}, PC1 + PC2 explain {explained.sum():.1f}%"
     elif method == "UMAP":
         from umap import UMAP
 
@@ -66,7 +66,7 @@ def sample_embedding(
         ).fit_transform(scaled)
         x_label = "UMAP 1"
         y_label = "UMAP 2"
-        details = f"{gene_details} · {neighbors} neighbors"
+        details = f"{gene_details}, {neighbors} neighbors"
     else:
         perplexity = min(30.0, max(2.0, (len(dataset.sample_columns) - 1) / 3.0))
         coordinates = TSNE(
@@ -78,7 +78,7 @@ def sample_embedding(
         ).fit_transform(scaled)
         x_label = "t-SNE 1"
         y_label = "t-SNE 2"
-        details = f"{gene_details} · perplexity {perplexity:g}"
+        details = f"{gene_details}, perplexity {perplexity:g}"
 
     metadata = (
         dataset.samples.set_index("sample", drop=False)

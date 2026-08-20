@@ -1,0 +1,11 @@
+nonzero_tpm_threshold	threshold_label	direction	gene_sample_pairs
+0.0	>0	published 0 → reanalysis nonzero	6924
+0.0	>0	published nonzero → reanalysis 0	54162
+0.1	≥0.1	published 0 → reanalysis nonzero	5610
+0.1	≥0.1	published nonzero → reanalysis 0	44630
+1.0	≥1	published 0 → reanalysis nonzero	1477
+1.0	≥1	published nonzero → reanalysis 0	19638
+5.0	≥5	published 0 → reanalysis nonzero	319
+5.0	≥5	published nonzero → reanalysis 0	7077
+10.0	≥10	published 0 → reanalysis nonzero	163
+10.0	≥10	published nonzero → reanalysis 0	4073

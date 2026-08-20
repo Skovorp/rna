@@ -52,7 +52,7 @@ def test_dataset_dimensions_and_sample_metadata():
         "24 hours post-blood-meal",
         "48 hours post-blood-meal",
         "72 hours post-blood-meal",
-        "Male · non-blood-fed",
+        "Male, non-blood-fed",
     ]
     assert midgut.samples["sex"].drop_duplicates().tolist() == ["female", "male"]
 

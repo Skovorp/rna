@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 from collections import Counter, defaultdict
 from html import escape
 import json
@@ -758,15 +759,17 @@ def pca_figure(
     pv = arrays["published_variance"] * 100
     rv = arrays["reanalysis_variance"] * 100
     jv = arrays["joint_variance"] * 100
+    # Stacked, not side by side: three squeezed panels in one row made the
+    # condition clusters unreadable.
     figure = make_subplots(
-        rows=1,
-        cols=3,
+        rows=3,
+        cols=1,
         subplot_titles=(
             f"Published PCA (PC1+PC2 {pv.sum():.1f}%)",
             f"Reanalysis PCA (PC1+PC2 {rv.sum():.1f}%)",
             f"Joint PCA of all 66 profiles (PC1+PC2 {jv.sum():.1f}%)",
         ),
-        horizontal_spacing=0.08,
+        vertical_spacing=0.08,
     )
     palette = condition_palette(metadata)
     add_condition_points(
@@ -783,8 +786,8 @@ def pca_figure(
         figure,
         arrays["reanalysis_scores"],
         metadata,
-        1,
         2,
+        1,
         palette,
         "Reanalysis",
         False,
@@ -794,13 +797,13 @@ def pca_figure(
     sample_count = len(metadata)
     joint_published = arrays["joint_scores"][:sample_count]
     joint_reanalysis = arrays["joint_scores"][sample_count:]
-    add_pair_lines(figure, joint_published, joint_reanalysis, 1, 3)
+    add_pair_lines(figure, joint_published, joint_reanalysis, 3, 1)
     add_condition_points(
         figure,
         joint_published,
         metadata,
-        1,
         3,
+        1,
         palette,
         "Published",
         False,
@@ -809,8 +812,8 @@ def pca_figure(
         figure,
         joint_reanalysis,
         metadata,
-        1,
         3,
+        1,
         palette,
         "Reanalysis",
         False,
@@ -819,12 +822,12 @@ def pca_figure(
 
     figure.update_xaxes(title_text=f"PC1 ({pv[0]:.1f}%)", row=1, col=1)
     figure.update_yaxes(title_text=f"PC2 ({pv[1]:.1f}%)", row=1, col=1)
-    figure.update_xaxes(title_text=f"PC1 ({rv[0]:.1f}%)", row=1, col=2)
-    figure.update_yaxes(title_text=f"PC2 ({rv[1]:.1f}%)", row=1, col=2)
-    figure.update_xaxes(title_text=f"Joint PC1 ({jv[0]:.1f}%)", row=1, col=3)
-    figure.update_yaxes(title_text=f"Joint PC2 ({jv[1]:.1f}%)", row=1, col=3)
+    figure.update_xaxes(title_text=f"PC1 ({rv[0]:.1f}%)", row=2, col=1)
+    figure.update_yaxes(title_text=f"PC2 ({rv[1]:.1f}%)", row=2, col=1)
+    figure.update_xaxes(title_text=f"Joint PC1 ({jv[0]:.1f}%)", row=3, col=1)
+    figure.update_yaxes(title_text=f"Joint PC2 ({jv[1]:.1f}%)", row=3, col=1)
     figure.update_layout(
-        height=650,
+        height=1750,
         title="Sample-level PCA comparison (joint PCA: circle = published, × = reanalysis)",
         template="plotly_white",
         legend={"title": "Reproductive state", "orientation": "v"},
@@ -1032,7 +1035,7 @@ th {{ color: #475569; background: #f8fafc; position: sticky; top: 0; }}
 code {{ background: #f1f5f9; padding: 2px 5px; border-radius: 5px; }}
 </style></head><body><main>
 <h1>Published versus reanalysed ovary TPM</h1>
-<div class="subtitle">Venkataraman et al. eLife 2023 · 33 matched biological samples · log expression is <code>log2(TPM + 1)</code>.</div>
+<div class="subtitle">Venkataraman et al. eLife 2023, 33 matched biological samples, log expression is <code>log2(TPM + 1)</code>.</div>
 <div class="cards">{cards}</div>
 <section>{error_html}<p class="note">Errors are reanalysis minus published values. The diagonal bands are forced by the coordinates: when published TPM is zero, error = +2 × average log-expression; when reanalysis TPM is zero, error = −2 × average log-expression. Of the {discordance['abs_log2_error_gt_2_count']:,} pairs with absolute error &gt;2, {discordance['severe_pairs_with_exact_zero_fraction']:.1%} contain an exact zero. Published TPM was ≥10 while reanalysis TPM was zero in {discordance['published_tpm_ge_10_reanalysis_zero_count']:,} pairs; the reverse occurred in {discordance['reanalysis_tpm_ge_10_published_zero_count']:,}. Density plots clip only the outer 0.1% for readable axes; summary metrics use the full distribution.</p></section>
 <section>{zero_transition_html}<p class="note"><strong>Green</strong> denotes published 0 → reanalysis nonzero; <strong>red</strong> denotes published nonzero → reanalysis 0. An exact zero can mean no compatible fragments were assigned under that quantification model; it is not a universal biological absence threshold. Threshold bars therefore ask how large the value is on the nonzero side. There are {zero_transitions['published_zero_to_reanalysis_nonzero_count']:,} exact published 0 → reanalysis nonzero pairs and {zero_transitions['published_nonzero_to_reanalysis_zero_count']:,} published nonzero → reanalysis 0 pairs. At a nonzero-side threshold of 1 TPM these fall to {zero_transitions['published_zero_to_reanalysis_ge_1_count']:,} and {zero_transitions['published_ge_1_to_reanalysis_zero_count']:,}; at 10 TPM, {zero_transitions['published_zero_to_reanalysis_ge_10_count']:,} and {zero_transitions['published_ge_10_to_reanalysis_zero_count']:,}.</p>{zero_tables}</section>
@@ -1070,6 +1073,101 @@ section {{ background: white; border: 1px solid #e2e8f0; border-radius: 12px; bo
 </main></body></html>""",
         encoding="utf-8",
     )
+
+
+def zero_transition_tables_records(
+    per_gene: pd.DataFrame, limit: int = 12
+) -> list[dict[str, object]]:
+    """The same top-N transition tables the HTML report shows, as plain records."""
+    configurations = [
+        (
+            "Largest published 0 to reanalysis nonzero transitions",
+            "published_zero_to_reanalysis_nonzero_samples",
+            "published_zero_to_reanalysis_nonzero_mean_tpm",
+            "published_zero_to_reanalysis_nonzero_max_tpm",
+            "Reanalysis TPM",
+        ),
+        (
+            "Largest published nonzero to reanalysis 0 transitions",
+            "published_nonzero_to_reanalysis_zero_samples",
+            "published_nonzero_to_reanalysis_zero_mean_tpm",
+            "published_nonzero_to_reanalysis_zero_max_tpm",
+            "Published TPM",
+        ),
+    ]
+    tables = []
+    for title, count_column, mean_column, max_column, tpm_label in configurations:
+        selected = (
+            per_gene.loc[per_gene[count_column] > 0]
+            .sort_values([max_column, count_column], ascending=False, kind="stable")
+            .head(limit)
+        )
+        tables.append(
+            {
+                "title": title,
+                "tpm_label": tpm_label,
+                "rows": [
+                    {
+                        "Published ID": str(row.published_id),
+                        "Reanalysis ID": str(row.reanalysis_id),
+                        "Samples": int(getattr(row, count_column)),
+                        f"Mean {tpm_label}": float(getattr(row, mean_column)),
+                        f"Maximum {tpm_label}": float(getattr(row, max_column)),
+                    }
+                    for row in selected.itertuples(index=False)
+                ],
+            }
+        )
+    return tables
+
+
+def export_figure_bundle(
+    output: Path,
+    summary: dict[str, object],
+    figures: dict[str, go.Figure],
+    zero_transition_genes: pd.DataFrame,
+) -> None:
+    """Write the figures as plotly JSON so the atlas can render them natively.
+
+    The standalone HTML report stays for sharing, but embedding it in the app
+    means an iframe with its own scrollbar and its own plotly copy. Emitting the
+    figures lets the atlas draw them as ordinary page content with its own
+    theme.
+    """
+    def plain(value: object) -> object:
+        """Recursively cast numpy arrays/scalars to plain JSON types.
+
+        pio.to_json encodes numpy arrays as base64 "bdata". Rebuilding a figure
+        from that in the app mis-scaled the density heatmaps (a Magma panel that
+        should be black rendered bright purple), so the bundle carries plain
+        numbers instead.
+        """
+        if isinstance(value, np.ndarray):
+            return [plain(item) for item in value.tolist()]
+        if isinstance(value, dict):
+            if {"dtype", "bdata"} <= set(value):
+                decoded = np.frombuffer(
+                    base64.b64decode(value["bdata"]), dtype=value["dtype"]
+                )
+                if value.get("shape"):
+                    shape = tuple(int(n) for n in str(value["shape"]).split(","))
+                    decoded = decoded.reshape(shape)
+                return decoded.tolist()
+            return {key: plain(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [plain(item) for item in value]
+        if isinstance(value, (np.integer, np.floating)):
+            return value.item()
+        return value
+
+    bundle = {
+        "summary": summary,
+        "figures": {
+            name: plain(figure.to_plotly_json()) for name, figure in figures.items()
+        },
+        "zero_transition_tables": zero_transition_tables_records(zero_transition_genes),
+    }
+    output.write_text(json.dumps(bundle), encoding="utf-8")
 
 
 def main() -> None:
@@ -1233,14 +1331,27 @@ def main() -> None:
     (output_dir / "summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
+    error_plot = error_figure(published_log, reanalysis_log, per_sample)
+    pca_plot = pca_figure(arrays, metadata)
     render_report(
         output_dir / "report.html",
         summary,
-        error_figure(published_log, reanalysis_log, per_sample),
+        error_plot,
         zero_transition_plot,
         zero_transition_genes,
-        pca_figure(arrays, metadata),
+        pca_plot,
         correlation_plot,
+    )
+    export_figure_bundle(
+        output_dir / "figures.json",
+        summary,
+        {
+            "error": error_plot,
+            "zero_transition": zero_transition_plot,
+            "pca": pca_plot,
+            "correlation": correlation_plot,
+        },
+        zero_transition_genes,
     )
     sendable = output_dir / "elife_ovary_tpm_full_report.html"
     sendable.write_bytes((output_dir / "report.html").read_bytes())

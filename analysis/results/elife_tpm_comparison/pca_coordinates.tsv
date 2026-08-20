@@ -1,0 +1,199 @@
+embedding	source	sample	reproductive_state	component_1	component_2
+separate_pca	Published	Fe_Ov_NBF_1_TPM	Non-blood-fed	69.883211482703	39.67826373547726
+separate_pca	Published	Fe_Ov_NBF_2_TPM	Non-blood-fed	68.75892820026743	30.69133472609736
+separate_pca	Published	Fe_Ov_NBF_3_TPM	Non-blood-fed	57.65000725341059	32.00187277764894
+separate_pca	Published	Fe_Ov_3hBF_1_TPM	3 hours post-blood-meal	40.430515459511916	45.38787233055972
+separate_pca	Published	Fe_Ov_3hBF_2_TPM	3 hours post-blood-meal	59.222961000677216	37.43281624678824
+separate_pca	Published	Fe_Ov_3hBF_3_TPM	3 hours post-blood-meal	45.34360309345504	24.536008787848104
+separate_pca	Published	Fe_Ov_6hBF_1_TPM	6 hours post-blood-meal	35.841039321683546	33.50529156244371
+separate_pca	Published	Fe_Ov_6hBF_2_TPM	6 hours post-blood-meal	41.77869251671032	13.29506890962873
+separate_pca	Published	Fe_Ov_6hBF_3_TPM	6 hours post-blood-meal	34.37910663692661	16.257962549339045
+separate_pca	Published	Fe_Ov_12hBF_1_TPM	12 hours post-blood-meal	17.134735869220886	-0.6220941815450758
+separate_pca	Published	Fe_Ov_12hBF_2_TPM	12 hours post-blood-meal	19.3005329195974	-3.8518144073576748
+separate_pca	Published	Fe_Ov_12hBF_3_TPM	12 hours post-blood-meal	28.052169925134656	-18.208190031550984
+separate_pca	Published	Fe_Ov_24hBF_1_TPM	24 hours (1 day) post-blood-meal	1.8742581914700798	-30.267549101614126
+separate_pca	Published	Fe_Ov_24hBF_2_TPM	24 hours (1 day) post-blood-meal	6.720514296365996	-27.319364008274306
+separate_pca	Published	Fe_Ov_24hBF_3_TPM	24 hours (1 day) post-blood-meal	9.622323659472606	-35.78637930421136
+separate_pca	Published	Fe_Ov_48hBF_1_TPM	48 hours (2 days) post-blood-meal	-80.48635768012227	-100.36487141526995
+separate_pca	Published	Fe_Ov_48hBF_2_TPM	48 hours (2 days) post-blood-meal	-78.58433090258752	-109.40885028633636
+separate_pca	Published	Fe_Ov_48hBF_3_TPM	48 hours (2 days) post-blood-meal	-77.12952145241192	-99.09179763693169
+separate_pca	Published	Fe_Ov_72hBF_1_TPM	72 hours (3 days) post-blood-meal	-127.01398006139951	-50.28067970116893
+separate_pca	Published	Fe_Ov_72hBF_2_TPM	72 hours (3 days) post-blood-meal	-84.51597505705394	32.50547773524842
+separate_pca	Published	Fe_Ov_72hBF_3_TPM	72 hours (3 days) post-blood-meal	-91.00418774092772	-5.8397519751867355
+separate_pca	Published	Fe_Ov_96hBF_1_TPM	96 hours (4 days) post-blood-meal	-71.48783040592366	55.46753663339988
+separate_pca	Published	Fe_Ov_96hBF_2_TPM	96 hours (4 days) post-blood-meal	-79.21190114740659	59.731940955833
+separate_pca	Published	Fe_Ov_96hBF_3_TPM	96 hours (4 days) post-blood-meal	-87.99901517212594	43.337674617084694
+separate_pca	Published	Fe_Ov_6dBF_Retained_1_TPM	6 days post-blood-meal (eggs retained)	-61.9788291446792	66.29119406950144
+separate_pca	Published	Fe_Ov_6dBF_Retained_2_TPM	6 days post-blood-meal (eggs retained)	-70.56603969984012	63.32200278328858
+separate_pca	Published	Fe_Ov_6dBF_Retained_3_TPM	6 days post-blood-meal (eggs retained)	-66.18430603262188	58.72006217420522
+separate_pca	Published	Fe_Ov_6dBF_Laid_1_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	100.51152332268848	-77.31659551797316
+separate_pca	Published	Fe_Ov_6dBF_Laid_2_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	78.19410011835369	-88.99497876846038
+separate_pca	Published	Fe_Ov_6dBF_Laid_3_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	79.66864715660746	-78.00116170669412
+separate_pca	Published	Fe_Ov_13dBF_1_TPM	13 days post-blood-meal (eggs laid >1 week prior)	68.58942089174461	26.75754368223439
+separate_pca	Published	Fe_Ov_13dBF_2_TPM	13 days post-blood-meal (eggs laid >1 week prior)	67.43900411638803	20.351972925416018
+separate_pca	Published	Fe_Ov_13dBF_3_TPM	13 days post-blood-meal (eggs laid >1 week prior)	45.766979064708806	26.082180840532445
+separate_pca	Reanalysis	Fe_Ov_NBF_1_TPM	Non-blood-fed	77.09277871299636	16.307393207830696
+separate_pca	Reanalysis	Fe_Ov_NBF_2_TPM	Non-blood-fed	73.5867339734615	8.784215558958664
+separate_pca	Reanalysis	Fe_Ov_NBF_3_TPM	Non-blood-fed	65.32007783566829	8.898791263928285
+separate_pca	Reanalysis	Fe_Ov_3hBF_1_TPM	3 hours post-blood-meal	52.063067759549654	29.44335891595086
+separate_pca	Reanalysis	Fe_Ov_3hBF_2_TPM	3 hours post-blood-meal	64.5657294395713	20.390843524061506
+separate_pca	Reanalysis	Fe_Ov_3hBF_3_TPM	3 hours post-blood-meal	50.69441589659104	6.879707774580304
+separate_pca	Reanalysis	Fe_Ov_6hBF_1_TPM	6 hours post-blood-meal	41.79247542452963	23.059048880300676
+separate_pca	Reanalysis	Fe_Ov_6hBF_2_TPM	6 hours post-blood-meal	40.24103962502484	3.719561364275224
+separate_pca	Reanalysis	Fe_Ov_6hBF_3_TPM	6 hours post-blood-meal	34.33220653090538	8.420237304225028
+separate_pca	Reanalysis	Fe_Ov_12hBF_1_TPM	12 hours post-blood-meal	15.942594354267708	-6.573970055489693
+separate_pca	Reanalysis	Fe_Ov_12hBF_2_TPM	12 hours post-blood-meal	16.226815438079033	-7.707043646384784
+separate_pca	Reanalysis	Fe_Ov_12hBF_3_TPM	12 hours post-blood-meal	19.33007510051942	-20.201573384916507
+separate_pca	Reanalysis	Fe_Ov_24hBF_1_TPM	24 hours (1 day) post-blood-meal	-12.019520926489987	-28.975423491611107
+separate_pca	Reanalysis	Fe_Ov_24hBF_2_TPM	24 hours (1 day) post-blood-meal	-6.700474923683778	-28.812005540338184
+separate_pca	Reanalysis	Fe_Ov_24hBF_3_TPM	24 hours (1 day) post-blood-meal	-10.282379202941955	-32.512179750917916
+separate_pca	Reanalysis	Fe_Ov_48hBF_1_TPM	48 hours (2 days) post-blood-meal	-110.41052971326762	-92.75208756167804
+separate_pca	Reanalysis	Fe_Ov_48hBF_2_TPM	48 hours (2 days) post-blood-meal	-107.84643005754326	-98.59465927345849
+separate_pca	Reanalysis	Fe_Ov_48hBF_3_TPM	48 hours (2 days) post-blood-meal	-103.86730099273029	-93.55661136675788
+separate_pca	Reanalysis	Fe_Ov_72hBF_1_TPM	72 hours (3 days) post-blood-meal	-119.92492587356423	-11.175869324651215
+separate_pca	Reanalysis	Fe_Ov_72hBF_2_TPM	72 hours (3 days) post-blood-meal	-66.99368003030433	56.83519146013649
+separate_pca	Reanalysis	Fe_Ov_72hBF_3_TPM	72 hours (3 days) post-blood-meal	-76.79300893534372	33.0145023786168
+separate_pca	Reanalysis	Fe_Ov_96hBF_1_TPM	96 hours (4 days) post-blood-meal	-49.06766171628179	72.03099717259926
+separate_pca	Reanalysis	Fe_Ov_96hBF_2_TPM	96 hours (4 days) post-blood-meal	-54.63300330946801	77.11915714356083
+separate_pca	Reanalysis	Fe_Ov_96hBF_3_TPM	96 hours (4 days) post-blood-meal	-67.50342992239884	63.42242943971999
+separate_pca	Reanalysis	Fe_Ov_6dBF_Retained_1_TPM	6 days post-blood-meal (eggs retained)	-35.35879794312984	74.07020496790484
+separate_pca	Reanalysis	Fe_Ov_6dBF_Retained_2_TPM	6 days post-blood-meal (eggs retained)	-43.8200213565147	74.16504222949955
+separate_pca	Reanalysis	Fe_Ov_6dBF_Retained_3_TPM	6 days post-blood-meal (eggs retained)	-41.61647682431329	69.23181329572431
+separate_pca	Reanalysis	Fe_Ov_6dBF_Laid_1_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	69.0720130560021	-75.84310932744877
+separate_pca	Reanalysis	Fe_Ov_6dBF_Laid_2_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	43.33077338608187	-82.67823213908574
+separate_pca	Reanalysis	Fe_Ov_6dBF_Laid_3_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	51.627997126662834	-78.9643063635402
+separate_pca	Reanalysis	Fe_Ov_13dBF_1_TPM	13 days post-blood-meal (eggs laid >1 week prior)	72.55125157554627	4.0090426160341535
+separate_pca	Reanalysis	Fe_Ov_13dBF_2_TPM	13 days post-blood-meal (eggs laid >1 week prior)	67.09005627596983	0.8166591841150278
+separate_pca	Reanalysis	Fe_Ov_13dBF_3_TPM	13 days post-blood-meal (eggs laid >1 week prior)	51.97754021654835	7.7288735442563175
+procrustes_aligned_separate_pca	Published	Fe_Ov_NBF_1_TPM	Non-blood-fed	0.14494766460199865	0.08229833091375763
+procrustes_aligned_separate_pca	Published	Fe_Ov_NBF_2_TPM	Non-blood-fed	0.1426157420603387	0.06365816907494477
+procrustes_aligned_separate_pca	Published	Fe_Ov_NBF_3_TPM	Non-blood-fed	0.11957426881760329	0.06637641035084081
+procrustes_aligned_separate_pca	Published	Fe_Ov_3hBF_1_TPM	3 hours post-blood-meal	0.08385860738471873	0.0941408666829322
+procrustes_aligned_separate_pca	Published	Fe_Ov_3hBF_2_TPM	3 hours post-blood-meal	0.12283679736138224	0.07764095523558842
+procrustes_aligned_separate_pca	Published	Fe_Ov_3hBF_3_TPM	3 hours post-blood-meal	0.0940490460239229	0.05089115249565997
+procrustes_aligned_separate_pca	Published	Fe_Ov_6hBF_1_TPM	6 hours post-blood-meal	0.07433938475870251	0.06949471354772113
+procrustes_aligned_separate_pca	Published	Fe_Ov_6hBF_2_TPM	6 hours post-blood-meal	0.08665491728182859	0.027575853317077476
+procrustes_aligned_separate_pca	Published	Fe_Ov_6hBF_3_TPM	6 hours post-blood-meal	0.07130712960091978	0.033721313785024395
+procrustes_aligned_separate_pca	Published	Fe_Ov_12hBF_1_TPM	12 hours post-blood-meal	0.03553986565758221	-0.0012903113189033995
+procrustes_aligned_separate_pca	Published	Fe_Ov_12hBF_2_TPM	12 hours post-blood-meal	0.04003203506126902	-0.007989207865254111
+procrustes_aligned_separate_pca	Published	Fe_Ov_12hBF_3_TPM	12 hours post-blood-meal	0.058184168005402964	-0.03776636141508681
+procrustes_aligned_separate_pca	Published	Fe_Ov_24hBF_1_TPM	24 hours (1 day) post-blood-meal	0.003887476576287613	-0.06277917775131411
+procrustes_aligned_separate_pca	Published	Fe_Ov_24hBF_2_TPM	24 hours (1 day) post-blood-meal	0.013939297171878121	-0.056664224888854406
+procrustes_aligned_separate_pca	Published	Fe_Ov_24hBF_3_TPM	24 hours (1 day) post-blood-meal	0.019958060210646344	-0.07422601215158262
+procrustes_aligned_separate_pca	Published	Fe_Ov_48hBF_1_TPM	48 hours (2 days) post-blood-meal	-0.16694008947975159	-0.20817093849964227
+procrustes_aligned_separate_pca	Published	Fe_Ov_48hBF_2_TPM	48 hours (2 days) post-blood-meal	-0.16299501692849422	-0.22692942982048492
+procrustes_aligned_separate_pca	Published	Fe_Ov_48hBF_3_TPM	48 hours (2 days) post-blood-meal	-0.15997753636671344	-0.20553040342517956
+procrustes_aligned_separate_pca	Published	Fe_Ov_72hBF_1_TPM	72 hours (3 days) post-blood-meal	-0.263444958969315	-0.1042892411876269
+procrustes_aligned_separate_pca	Published	Fe_Ov_72hBF_2_TPM	72 hours (3 days) post-blood-meal	-0.17529808585160472	0.06742095826066463
+procrustes_aligned_separate_pca	Published	Fe_Ov_72hBF_3_TPM	72 hours (3 days) post-blood-meal	-0.18875555662341298	-0.012112471546441968
+procrustes_aligned_separate_pca	Published	Fe_Ov_96hBF_1_TPM	96 hours (4 days) post-blood-meal	-0.14827587119929506	0.11504751607225562
+procrustes_aligned_separate_pca	Published	Fe_Ov_96hBF_2_TPM	96 hours (4 days) post-blood-meal	-0.16429668637713918	0.1238924937763547
+procrustes_aligned_separate_pca	Published	Fe_Ov_96hBF_3_TPM	96 hours (4 days) post-blood-meal	-0.18252240367677683	0.08988846665386203
+procrustes_aligned_separate_pca	Published	Fe_Ov_6dBF_Retained_1_TPM	6 days post-blood-meal (eggs retained)	-0.12855285767041635	0.137497312447216
+procrustes_aligned_separate_pca	Published	Fe_Ov_6dBF_Retained_2_TPM	6 days post-blood-meal (eggs retained)	-0.1463639469006857	0.13133878976971025
+procrustes_aligned_separate_pca	Published	Fe_Ov_6dBF_Retained_3_TPM	6 days post-blood-meal (eggs retained)	-0.1372756115409343	0.1217937140673889
+procrustes_aligned_separate_pca	Published	Fe_Ov_6dBF_Laid_1_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	0.20847511529745602	-0.1603655544376549
+procrustes_aligned_separate_pca	Published	Fe_Ov_6dBF_Laid_2_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	0.16218562308939619	-0.18458817304046768
+procrustes_aligned_separate_pca	Published	Fe_Ov_6dBF_Laid_3_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	0.16524404220045236	-0.16178544153521845
+procrustes_aligned_separate_pca	Published	Fe_Ov_13dBF_1_TPM	13 days post-blood-meal (eggs laid >1 week prior)	0.14226415992806313	0.05549893007114877
+procrustes_aligned_separate_pca	Published	Fe_Ov_13dBF_2_TPM	13 days post-blood-meal (eggs laid >1 week prior)	0.1398780328258739	0.04221287034457927
+procrustes_aligned_separate_pca	Published	Fe_Ov_13dBF_3_TPM	13 days post-blood-meal (eggs laid >1 week prior)	0.09492718766881605	0.054098132016985274
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_NBF_1_TPM	Non-blood-fed	0.1500913764595365	0.07778019522483806
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_NBF_2_TPM	Non-blood-fed	0.1471412663201276	0.060220102703501886
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_NBF_3_TPM	Non-blood-fed	0.12998210882981928	0.055732468706485565
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_3hBF_1_TPM	3 hours post-blood-meal	0.09082783667237107	0.09063760200951267
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_3hBF_2_TPM	3 hours post-blood-meal	0.12185435025035521	0.07906444819450426
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_3hBF_3_TPM	3 hours post-blood-meal	0.1008933156100067	0.0431985908495545
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6hBF_1_TPM	6 hours post-blood-meal	0.07323920554963764	0.07156637564140676
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6hBF_2_TPM	6 hours post-blood-meal	0.08108405528149115	0.030689780161148122
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6hBF_3_TPM	6 hours post-blood-meal	0.06617932715289065	0.03703276067006268
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_12hBF_1_TPM	12 hours post-blood-meal	0.03672302193068553	-0.004482065341771221
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_12hBF_2_TPM	12 hours post-blood-meal	0.03795830350976038	-0.006662581192156037
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_12hBF_3_TPM	12 hours post-blood-meal	0.05151604281109064	-0.03072502181315013
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_24hBF_1_TPM	24 hours (1 day) post-blood-meal	-0.008293787817584159	-0.06678435913652835
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_24hBF_2_TPM	24 hours (1 day) post-blood-meal	0.0026114642068166597	-0.06340650931313604
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_24hBF_3_TPM	24 hours (1 day) post-blood-meal	-0.0026804267765738548	-0.07310480427572517
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_48hBF_1_TPM	48 hours (2 days) post-blood-meal	-0.17529574901134923	-0.25489319063163424
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_48hBF_2_TPM	48 hours (2 days) post-blood-meal	-0.16665459837539168	-0.2655089462618978
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_48hBF_3_TPM	48 hours (2 days) post-blood-meal	-0.16130595196308828	-0.2528171933295089
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_72hBF_1_TPM	72 hours (3 days) post-blood-meal	-0.24159185189464855	-0.09164869330353685
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_72hBF_2_TPM	72 hours (3 days) post-blood-meal	-0.17101098776397453	0.07923484051694538
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_72hBF_3_TPM	72 hours (3 days) post-blood-meal	-0.17765992301417335	0.024378250874847417
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_96hBF_1_TPM	96 hours (4 days) post-blood-meal	-0.14262851272289348	0.12090157601127842
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_96hBF_2_TPM	96 hours (4 days) post-blood-meal	-0.15704442848916025	0.12824210250903556
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_96hBF_3_TPM	96 hours (4 days) post-blood-meal	-0.17582977386370888	0.09256450674726421
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6dBF_Retained_1_TPM	6 days post-blood-meal (eggs retained)	-0.11544696328066073	0.1329530989454452
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6dBF_Retained_2_TPM	6 days post-blood-meal (eggs retained)	-0.13299716334893213	0.1283134511550362
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6dBF_Retained_3_TPM	6 days post-blood-meal (eggs retained)	-0.12562127030871792	0.11937195758414025
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6dBF_Laid_1_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	0.18617192402357102	-0.1173513386623474
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6dBF_Laid_2_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	0.13685095406941303	-0.1461965200738117
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_6dBF_Laid_3_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	0.15188525702779457	-0.13377489459701056
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_13dBF_1_TPM	13 days post-blood-meal (eggs laid >1 week prior)	0.1477292130132722	0.0497542692716614
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_13dBF_2_TPM	13 days post-blood-meal (eggs laid >1 week prior)	0.13826113835367945	0.04003192619150527
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_13dBF_3_TPM	13 days post-blood-meal (eggs laid >1 week prior)	0.10306122755853812	0.04568781396404063
+joint_pca	Published	Fe_Ov_NBF_1_TPM	Non-blood-fed	83.66870587702407	16.402558668792125
+joint_pca	Published	Fe_Ov_NBF_2_TPM	Non-blood-fed	82.11896997357414	7.627205302358669
+joint_pca	Published	Fe_Ov_NBF_3_TPM	Non-blood-fed	71.99515135039181	9.944821449141012
+joint_pca	Published	Fe_Ov_3hBF_1_TPM	3 hours post-blood-meal	57.01608915499315	27.18668048440289
+joint_pca	Published	Fe_Ov_3hBF_2_TPM	3 hours post-blood-meal	72.9831010327435	18.178637692881075
+joint_pca	Published	Fe_Ov_3hBF_3_TPM	3 hours post-blood-meal	57.75669762248818	6.529222817083424
+joint_pca	Published	Fe_Ov_6hBF_1_TPM	6 hours post-blood-meal	49.17653520575474	18.922769900062463
+joint_pca	Published	Fe_Ov_6hBF_2_TPM	6 hours post-blood-meal	51.6158960172422	-1.1226833886717695
+joint_pca	Published	Fe_Ov_6hBF_3_TPM	6 hours post-blood-meal	45.14262165606603	2.517826914644702
+joint_pca	Published	Fe_Ov_12hBF_1_TPM	12 hours post-blood-meal	27.387760460992226	-11.593412903466481
+joint_pca	Published	Fe_Ov_12hBF_2_TPM	12 hours post-blood-meal	27.7025133718542	-13.72903571482706
+joint_pca	Published	Fe_Ov_12hBF_3_TPM	12 hours post-blood-meal	33.57508349509337	-28.338033732801218
+joint_pca	Published	Fe_Ov_24hBF_1_TPM	24 hours (1 day) post-blood-meal	7.223585142063864	-36.5535834279947
+joint_pca	Published	Fe_Ov_24hBF_2_TPM	24 hours (1 day) post-blood-meal	11.637076193372991	-34.3681506480513
+joint_pca	Published	Fe_Ov_24hBF_3_TPM	24 hours (1 day) post-blood-meal	12.659091432423256	-41.42159696189791
+joint_pca	Published	Fe_Ov_48hBF_1_TPM	48 hours (2 days) post-blood-meal	-82.8432657807545	-94.69905098734623
+joint_pca	Published	Fe_Ov_48hBF_2_TPM	48 hours (2 days) post-blood-meal	-81.90947673102744	-103.83589049758699
+joint_pca	Published	Fe_Ov_48hBF_3_TPM	48 hours (2 days) post-blood-meal	-78.21309142644517	-94.76549366848892
+joint_pca	Published	Fe_Ov_72hBF_1_TPM	72 hours (3 days) post-blood-meal	-116.25181718189417	-38.64147226189685
+joint_pca	Published	Fe_Ov_72hBF_2_TPM	72 hours (3 days) post-blood-meal	-64.87636829674807	37.59928456373281
+joint_pca	Published	Fe_Ov_72hBF_3_TPM	72 hours (3 days) post-blood-meal	-77.28196938986295	2.692622534506723
+joint_pca	Published	Fe_Ov_96hBF_1_TPM	96 hours (4 days) post-blood-meal	-48.5801961186905	56.25832716224118
+joint_pca	Published	Fe_Ov_96hBF_2_TPM	96 hours (4 days) post-blood-meal	-55.03729406267578	61.53344955943793
+joint_pca	Published	Fe_Ov_96hBF_3_TPM	96 hours (4 days) post-blood-meal	-66.33848346092209	47.06251689867713
+joint_pca	Published	Fe_Ov_6dBF_Retained_1_TPM	6 days post-blood-meal (eggs retained)	-36.372503811216006	62.53361252439465
+joint_pca	Published	Fe_Ov_6dBF_Retained_2_TPM	6 days post-blood-meal (eggs retained)	-45.318122477075626	61.50939726878236
+joint_pca	Published	Fe_Ov_6dBF_Retained_3_TPM	6 days post-blood-meal (eggs retained)	-42.059243492557606	56.70710533470623
+joint_pca	Published	Fe_Ov_6dBF_Laid_1_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	95.03963999308006	-90.61849223937152
+joint_pca	Published	Fe_Ov_6dBF_Laid_2_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	70.7836374589609	-97.55021635465916
+joint_pca	Published	Fe_Ov_6dBF_Laid_3_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	75.86120021633411	-90.7128488931121
+joint_pca	Published	Fe_Ov_13dBF_1_TPM	13 days post-blood-meal (eggs laid >1 week prior)	80.97046560798863	4.789453733916754
+joint_pca	Published	Fe_Ov_13dBF_2_TPM	13 days post-blood-meal (eggs laid >1 week prior)	77.57780810358649	-0.1156211717978722
+joint_pca	Published	Fe_Ov_13dBF_3_TPM	13 days post-blood-meal (eggs laid >1 week prior)	58.87242675644515	7.54324434997259
+joint_pca	Reanalysis	Fe_Ov_NBF_1_TPM	Non-blood-fed	60.26742090405605	36.459060917765434
+joint_pca	Reanalysis	Fe_Ov_NBF_2_TPM	Non-blood-fed	57.24570033482734	27.217298036859244
+joint_pca	Reanalysis	Fe_Ov_NBF_3_TPM	Non-blood-fed	49.110474997312195	27.322730151042865
+joint_pca	Reanalysis	Fe_Ov_3hBF_1_TPM	3 hours post-blood-meal	35.855871078111974	44.20762859469898
+joint_pca	Reanalysis	Fe_Ov_3hBF_2_TPM	3 hours post-blood-meal	48.081226313690955	37.99662027936272
+joint_pca	Reanalysis	Fe_Ov_3hBF_3_TPM	3 hours post-blood-meal	35.914405303081	24.248130170735994
+joint_pca	Reanalysis	Fe_Ov_6hBF_1_TPM	6 hours post-blood-meal	26.930618340988715	37.43621992180239
+joint_pca	Reanalysis	Fe_Ov_6hBF_2_TPM	6 hours post-blood-meal	26.59331516928587	18.501966967934404
+joint_pca	Reanalysis	Fe_Ov_6hBF_3_TPM	6 hours post-blood-meal	20.951379010081506	21.973232996031317
+joint_pca	Reanalysis	Fe_Ov_12hBF_1_TPM	12 hours post-blood-meal	4.85930607066302	4.478553111014322
+joint_pca	Reanalysis	Fe_Ov_12hBF_2_TPM	12 hours post-blood-meal	4.9984605893603	4.084233602099387
+joint_pca	Reanalysis	Fe_Ov_12hBF_3_TPM	12 hours post-blood-meal	9.11537068936049	-7.585651194824417
+joint_pca	Reanalysis	Fe_Ov_24hBF_1_TPM	24 hours (1 day) post-blood-meal	-18.9971071811192	-20.539481791778222
+joint_pca	Reanalysis	Fe_Ov_24hBF_2_TPM	24 hours (1 day) post-blood-meal	-14.455522102160119	-18.7649278189147
+joint_pca	Reanalysis	Fe_Ov_24hBF_3_TPM	24 hours (1 day) post-blood-meal	-17.420204408804366	-23.571999067248875
+joint_pca	Reanalysis	Fe_Ov_48hBF_1_TPM	48 hours (2 days) post-blood-meal	-108.52322341896432	-92.05211514822471
+joint_pca	Reanalysis	Fe_Ov_48hBF_2_TPM	48 hours (2 days) post-blood-meal	-105.42002196737538	-98.22667980124032
+joint_pca	Reanalysis	Fe_Ov_48hBF_3_TPM	48 hours (2 days) post-blood-meal	-102.42116106762204	-92.82479818038384
+joint_pca	Reanalysis	Fe_Ov_72hBF_1_TPM	72 hours (3 days) post-blood-meal	-123.47957219274103	-23.114858575020467
+joint_pca	Reanalysis	Fe_Ov_72hBF_2_TPM	72 hours (3 days) post-blood-meal	-77.75001108643042	49.55993881199062
+joint_pca	Reanalysis	Fe_Ov_72hBF_3_TPM	72 hours (3 days) post-blood-meal	-85.20636766581771	25.22872044446788
+joint_pca	Reanalysis	Fe_Ov_96hBF_1_TPM	96 hours (4 days) post-blood-meal	-61.56055963276342	67.78274948407466
+joint_pca	Reanalysis	Fe_Ov_96hBF_2_TPM	96 hours (4 days) post-blood-meal	-67.86946590610734	72.01510319016583
+joint_pca	Reanalysis	Fe_Ov_96hBF_3_TPM	96 hours (4 days) post-blood-meal	-78.78300577227645	57.473716471460534
+joint_pca	Reanalysis	Fe_Ov_6dBF_Retained_1_TPM	6 days post-blood-meal (eggs retained)	-49.4496451067354	73.00703092452314
+joint_pca	Reanalysis	Fe_Ov_6dBF_Retained_2_TPM	6 days post-blood-meal (eggs retained)	-57.18736870809327	71.99491875382553
+joint_pca	Reanalysis	Fe_Ov_6dBF_Retained_3_TPM	6 days post-blood-meal (eggs retained)	-55.07764068812258	67.91113654079253
+joint_pca	Reanalysis	Fe_Ov_6dBF_Laid_1_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	60.66953126746129	-58.11121208490515
+joint_pca	Reanalysis	Fe_Ov_6dBF_Laid_2_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	37.3149061307878	-67.28038922111703
+joint_pca	Reanalysis	Fe_Ov_6dBF_Laid_3_TPM	6 days post-blood-meal (eggs laid <5 hours prior)	44.05621716345324	-63.45043443515664
+joint_pca	Reanalysis	Fe_Ov_13dBF_1_TPM	13 days post-blood-meal (eggs laid >1 week prior)	56.97811765365591	23.991424471443022
+joint_pca	Reanalysis	Fe_Ov_13dBF_2_TPM	13 days post-blood-meal (eggs laid >1 week prior)	51.83614123909373	20.06219465603481
+joint_pca	Reanalysis	Fe_Ov_13dBF_3_TPM	13 days post-blood-meal (eggs laid >1 week prior)	37.140190757259255	25.09678451292278

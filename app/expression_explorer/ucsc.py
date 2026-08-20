@@ -32,8 +32,8 @@ class AtlasDataset:
     def display_label(self) -> str:
         label = self.label
         if self.parent_label:
-            label = f"{self.parent_label} · {label}"
-        return f"{label} · {self.sample_count:,} nuclei"
+            label = f"{self.parent_label}: {label}"
+        return f"{label}, {self.sample_count:,} nuclei"
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 from pathlib import Path
+import pickle
 import re
 from typing import Iterable
 
@@ -47,7 +49,7 @@ STAR_SALMON_CONDITION_LABELS = {
     "6dBF.Retained": "6 days post-blood-meal (eggs retained)",
     "6dBF.Laid": "6 days post-blood-meal (eggs laid)",
     "13dBF": "13 days post-blood-meal",
-    "Ma.Mg": "Male · non-blood-fed",
+    "Ma.Mg": "Male, non-blood-fed",
 }
 
 STAR_SALMON_CONDITION_SEQUENCE = tuple(STAR_SALMON_CONDITION_LABELS)
@@ -97,6 +99,12 @@ PAPER_FAMILY_LABELS = {
     "OBP": "Odorant-binding proteins (OBP)",
 }
 
+ORCO_ALIASES = ("Orco", "AaegOr7", "Or7", "AAEL005776")
+
+# Bump when a change alters derived dataset content without touching this file.
+_CACHE_VERSION = 1
+_CACHE_DIR = ".cache"
+
 PAPER_ANNOTATION_COLUMNS = [
     "paper_gene_family",
     "orthodb_category",
@@ -112,10 +120,18 @@ def _clean(value: object) -> str:
     return str(value).strip()
 
 
+_NON_ALPHANUMERIC = re.compile(r"[^a-z0-9]")
+
+
+def _clean_series(values: pd.Series) -> np.ndarray:
+    """Vectorized _clean over a whole column."""
+    return values.fillna("").astype(str).str.strip().to_numpy()
+
+
 def normalize_alias(value: object) -> str:
     """Normalize an identifier for forgiving exact matching."""
     text = _clean(value).casefold()
-    return re.sub(r"[^a-z0-9]", "", text)
+    return _NON_ALPHANUMERIC.sub("", text)
 
 
 def canonical_symbol(symbol: object, stable_id: object = "") -> str:
@@ -130,17 +146,24 @@ def canonical_symbol(symbol: object, stable_id: object = "") -> str:
     return raw or _clean(stable_id)
 
 
+# Compiled once: these were rebuilt from an f-string on every call, which cost
+# ~440k regex-cache lookups per startup.
+_NUMBERED_SYMBOL = r"\d+(?:[A-Z]+\d*)?"
+_FAMILY_PATTERNS = (
+    (re.compile(rf"OR{_NUMBERED_SYMBOL}"), "Odorant receptors (OR)"),
+    (re.compile(rf"IR{_NUMBERED_SYMBOL}"), "Ionotropic receptors (IR)"),
+    (re.compile(rf"GR{_NUMBERED_SYMBOL}"), "Gustatory receptors (GR)"),
+    (re.compile(rf"OBP{_NUMBERED_SYMBOL}"), "Odorant-binding proteins (OBP)"),
+)
+
+
 def classify_family(symbol: object) -> str:
     normalized = normalize_alias(symbol).upper()
-    numbered_symbol = r"\d+(?:[A-Z]+\d*)?"
-    if normalized == "ORCO" or re.fullmatch(rf"OR{numbered_symbol}", normalized):
+    if normalized == "ORCO":
         return "Odorant receptors (OR)"
-    if re.fullmatch(rf"IR{numbered_symbol}", normalized):
-        return "Ionotropic receptors (IR)"
-    if re.fullmatch(rf"GR{numbered_symbol}", normalized):
-        return "Gustatory receptors (GR)"
-    if re.fullmatch(rf"OBP{numbered_symbol}", normalized):
-        return "Odorant-binding proteins (OBP)"
+    for pattern, family in _FAMILY_PATTERNS:
+        if pattern.fullmatch(normalized):
+            return family
     return "Other"
 
 
@@ -152,9 +175,9 @@ def _finalize_genes(
 ) -> pd.DataFrame:
     genes = annotations.copy().reset_index(drop=True)
     genes.insert(0, "row_id", np.arange(len(genes), dtype=int))
-    genes["stable_id"] = stable_id.map(_clean).to_numpy()
-    genes["internal_id"] = internal_id.map(_clean).to_numpy()
-    genes["raw_symbol"] = raw_symbol.map(_clean).to_numpy()
+    genes["stable_id"] = _clean_series(stable_id)
+    genes["internal_id"] = _clean_series(internal_id)
+    genes["raw_symbol"] = _clean_series(raw_symbol)
     genes["canonical_symbol"] = [
         canonical_symbol(symbol, stable)
         for symbol, stable in zip(genes["raw_symbol"], genes["stable_id"])
@@ -162,28 +185,46 @@ def _finalize_genes(
     genes["display_name"] = genes["canonical_symbol"].where(
         genes["canonical_symbol"].ne(""), genes["stable_id"]
     )
-    genes["family"] = genes["canonical_symbol"].map(classify_family)
+    # Symbols repeat heavily across a matrix, so classify each distinct one once.
+    family_by_symbol = {
+        symbol: classify_family(symbol)
+        for symbol in genes["canonical_symbol"].unique()
+    }
+    genes["family"] = genes["canonical_symbol"].map(family_by_symbol)
     for column in PAPER_ANNOTATION_COLUMNS:
         genes[column] = ""
 
-    def aliases(row: pd.Series) -> tuple[str, ...]:
-        values = {
-            row["stable_id"],
-            row["internal_id"],
-            row["raw_symbol"],
-            row["canonical_symbol"],
-        }
-        if row["canonical_symbol"].casefold() == "orco":
-            values.update({"Orco", "AaegOr7", "Or7", "AAEL005776"})
-        return tuple(sorted(value for value in values if value))
+    # Built by zipping raw columns rather than genes.apply(axis=1): the latter
+    # materializes a Series per gene and dominated startup (~560k Series
+    # lookups across the bundled matrices).
+    alias_rows: list[tuple[str, ...]] = []
+    search_text: list[str] = []
+    search_normalized: list[str] = []
+    normalized_cache: dict[str, str] = {}
+    for stable, internal, raw, canonical in zip(
+        genes["stable_id"],
+        genes["internal_id"],
+        genes["raw_symbol"],
+        genes["canonical_symbol"],
+    ):
+        values = {stable, internal, raw, canonical}
+        if canonical.casefold() == "orco":
+            values.update(ORCO_ALIASES)
+        row = tuple(sorted(value for value in values if value))
+        alias_rows.append(row)
+        search_text.append(" | ".join(row))
+        normalized = []
+        for value in row:
+            cached = normalized_cache.get(value)
+            if cached is None:
+                cached = normalize_alias(value)
+                normalized_cache[value] = cached
+            normalized.append(cached)
+        search_normalized.append(" | ".join(normalized))
 
-    genes["aliases"] = genes.apply(aliases, axis=1)
-    genes["search_text"] = genes["aliases"].map(
-        lambda values: " | ".join(values)
-    )
-    genes["search_normalized"] = genes["aliases"].map(
-        lambda values: " | ".join(normalize_alias(value) for value in values)
-    )
+    genes["aliases"] = alias_rows
+    genes["search_text"] = search_text
+    genes["search_normalized"] = search_normalized
     return genes
 
 
@@ -211,7 +252,7 @@ def _load_bmc_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFrame
         "abdominaltip", "abdominal tip", regex=False
     )
     samples["tissue_condition"] = (
-        samples["tissue"].str.title() + " · " + samples["condition_label"]
+        samples["tissue"].str.title() + ", " + samples["condition_label"]
     )
     samples["reproductive_state"] = samples["condition_label"]
     samples = samples.set_index("sample", drop=False).reindex(list(sample_columns))
@@ -232,7 +273,7 @@ def _load_elife_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFra
     samples["condition_label"] = samples["reproductive_state"]
     samples["tissue"] = "ovary"
     samples["sex"] = "female"
-    samples["tissue_condition"] = "Ovary · " + samples["reproductive_state"]
+    samples["tissue_condition"] = "Ovary, " + samples["reproductive_state"]
     samples = samples.set_index("sample", drop=False).reindex(list(sample_columns))
     return samples
 
@@ -240,21 +281,21 @@ def _load_elife_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFra
 def _load_midgut_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFrame:
     samples = pd.read_csv(path, dtype=str).fillna("")
     condition_labels = {
-        "male_midgut": "Male · non-blood-fed",
-        "female_NBF": "Female · non-blood-fed",
-        "female_3hBF": "Female · 3 h post-blood-meal",
-        "female_6hBF": "Female · 6 h post-blood-meal",
-        "female_12hBF": "Female · 12 h post-blood-meal",
-        "female_24hBF": "Female · 24 h post-blood-meal",
-        "female_48hBF": "Female · 48 h post-blood-meal",
-        "female_72hBF": "Female · 72 h post-blood-meal",
+        "male_midgut": "Male, non-blood-fed",
+        "female_NBF": "Female, non-blood-fed",
+        "female_3hBF": "Female, 3 h post-blood-meal",
+        "female_6hBF": "Female, 6 h post-blood-meal",
+        "female_12hBF": "Female, 12 h post-blood-meal",
+        "female_24hBF": "Female, 24 h post-blood-meal",
+        "female_48hBF": "Female, 48 h post-blood-meal",
+        "female_72hBF": "Female, 72 h post-blood-meal",
     }
     samples["condition_label"] = samples["condition"].map(condition_labels).fillna(
         samples["condition"]
     )
     samples["reproductive_state"] = samples["condition_label"]
     samples["tissue"] = "midgut"
-    samples["tissue_condition"] = "Midgut · " + samples["condition_label"]
+    samples["tissue_condition"] = "Midgut, " + samples["condition_label"]
     condition_order = {
         "female_NBF": 0,
         "female_3hBF": 1,
@@ -300,7 +341,7 @@ def _load_star_salmon_samples(
     )
     samples["tissue"] = tissue
     samples["tissue_condition"] = (
-        tissue.title() + " · " + samples["condition_label"]
+        tissue.title() + ", " + samples["condition_label"]
     )
     samples["replicate"] = samples["sample"].str.extract(
         r"[._]([0-9]+)_S[0-9]+$"
@@ -388,7 +429,7 @@ def load_nfcore_dataset(
         for suffix in (".gz", ".tsv"):
             if label.endswith(suffix):
                 label = label[: -len(suffix)]
-        label = f"nf-core · {label}"
+        label = f"nf-core {label}"
     if samples is None:
         samples = _generic_samples(values.columns)
     else:
@@ -413,7 +454,57 @@ def load_nfcore_dataset(
     )
 
 
-def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
+def _cache_signature(expression_dir: Path) -> str:
+    """Identify the inputs and the code that derive the dataset objects."""
+    parts = [f"v{_CACHE_VERSION}", str(Path(__file__).stat().st_mtime_ns)]
+    for path in sorted(expression_dir.rglob("*")):
+        if path.is_file() and not path.is_relative_to(expression_dir / _CACHE_DIR):
+            stat = path.stat()
+            parts.append(f"{path.name}:{stat.st_size}:{stat.st_mtime_ns}")
+    return hashlib.sha256("|".join(parts).encode()).hexdigest()[:16]
+
+
+def load_datasets(
+    expression_dir: Path | str, use_cache: bool = True
+) -> dict[str, ExpressionDataset]:
+    """Build the dataset objects, reusing a derived cache when inputs are unchanged.
+
+    Parsing and harmonizing the bundled matrices takes a couple of seconds, which
+    is paid on every server start and by every test. The cache is keyed by the
+    size and mtime of every source file plus this module's own mtime, so editing
+    either invalidates it automatically.
+    """
+    expression_dir = Path(expression_dir)
+    cache_path = None
+    if use_cache:
+        cache_path = (
+            expression_dir / _CACHE_DIR / f"datasets-{_cache_signature(expression_dir)}.pkl"
+        )
+        try:
+            with cache_path.open("rb") as handle:
+                return pickle.load(handle)
+        except (OSError, EOFError, pickle.UnpicklingError, AttributeError):
+            pass
+
+    datasets = _build_datasets(expression_dir)
+
+    if cache_path is not None:
+        try:
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
+            # Write-then-rename so a concurrent reader never sees a partial file.
+            temporary = cache_path.with_suffix(".tmp")
+            with temporary.open("wb") as handle:
+                pickle.dump(datasets, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            temporary.replace(cache_path)
+            for stale in cache_path.parent.glob("datasets-*.pkl"):
+                if stale != cache_path:
+                    stale.unlink(missing_ok=True)
+        except OSError:
+            pass  # A read-only bundle just pays the rebuild cost.
+    return datasets
+
+
+def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
     expression_dir = Path(expression_dir)
 
     ru_annotations, ru_values = _read_matrix(
@@ -482,7 +573,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
             crosswalk,
             label=label,
             paper=paper,
-            annotation_version="AaegL5 · VectorBase 58 + Jové et al. 2019",
+            annotation_version="AaegL5, VectorBase 58 + Jové et al. 2019",
             samples=samples,
         )
 
@@ -490,28 +581,28 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
         "ovary_star_salmon_gene_tpm.tsv.gz",
         "elife",
         "ovary",
-        "Ovary (reprocessed) · blood-meal time course",
+        "Ovary (reprocessed), blood-meal time course",
         "Venkataraman et al. raw reads, our nf-core reprocessing",
     )
     midgut = star_salmon_dataset(
         "midgut_star_salmon_gene_tpm.tsv.gz",
         "midgut",
         "midgut",
-        "Midgut (reprocessed) · blood-meal time course",
-        "Nadav Shai · Vosshall lab midgut RNA-seq",
+        "Midgut (reprocessed), blood-meal time course",
+        "Nadav Shai, Vosshall lab midgut RNA-seq",
     )
     crop = star_salmon_dataset(
         "crop_star_salmon_gene_tpm.tsv.gz",
         "crop",
         "crop",
-        "Crop (reprocessed) · non-blood-fed",
+        "Crop (reprocessed), non-blood-fed",
         "Vosshall lab crop RNA-seq",
     )
 
     datasets = {
         "ovary_paper": ExpressionDataset(
             key="ovary_paper",
-            label="Ovary (paper) · published TPM",
+            label="Ovary (paper), published TPM",
             paper="Venkataraman et al., eLife 2023",
             annotation_version="Published TPM supplement",
             genes=paper_genes,
@@ -521,7 +612,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
         "elife": ovary,
         "neuro_ru": ExpressionDataset(
             key="neuro_ru",
-            label="Atlas (paper) · neurotranscriptome AaegL.RU",
+            label="Atlas (paper), neurotranscriptome AaegL.RU",
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL.RU (recommended)",
             genes=ru_genes,
@@ -530,7 +621,7 @@ def load_datasets(expression_dir: Path | str) -> dict[str, ExpressionDataset]:
         ),
         "neuro_legacy": ExpressionDataset(
             key="neuro_legacy",
-            label="Atlas (paper) · neurotranscriptome legacy AaegL3.3",
+            label="Atlas (paper), neurotranscriptome legacy AaegL3.3",
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL3.3 (compatibility)",
             genes=legacy_genes,

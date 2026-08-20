@@ -24,8 +24,8 @@ closely they agree.
 | --- | --- | --- |
 | Ovary (paper) | Venkataraman et al. published TPM supplement | Not available |
 | Ovary (reprocessed) | Our STAR + Salmon gene TPM from all 33 `PRJNA796320` raw samples | All 55 pairwise DESeq2 contrasts |
-| Atlas (paper) · AaegL.RU | Matthews et al. published `AaegL.RU` TPM matrix | Not available |
-| Atlas (paper) · legacy AaegL3.3 | Matthews et al. published legacy matrix, retained for identifier compatibility | Not available |
+| Atlas (paper), AaegL.RU | Matthews et al. published `AaegL.RU` TPM matrix | Not available |
+| Atlas (paper), legacy AaegL3.3 | Matthews et al. published legacy matrix, retained for identifier compatibility | Not available |
 | Midgut (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab midgut raw reads | All 28 pairwise DESeq2 contrasts |
 | Crop (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab crop raw reads | Not applicable — a single condition, so no contrasts exist |
 

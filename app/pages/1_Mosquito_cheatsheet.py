@@ -9,7 +9,7 @@ ASSET_DIR = Path(__file__).resolve().parents[1] / "assets"
 
 
 st.set_page_config(
-    page_title="Mosquito basics · Aedes RNA Atlas",
+    page_title="Mosquito basics - Aedes RNA Atlas",
     page_icon="🦟",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -19,7 +19,17 @@ st.markdown(
     """
     <style>
     .block-container { padding-top: 2.4rem; padding-bottom: 3rem; max-width: 1180px; }
-    .cheat-lead { color: #9aa8a5; max-width: 850px; margin-bottom: 1rem; }
+    .cheat-lead { color: #9aa8a5; max-width: 850px; margin-bottom: 1rem; font-size: 1.2rem; }
+    /* Explanatory reference page: read at a comfortable size. */
+    .block-container p,
+    .block-container li,
+    .block-container td,
+    .block-container th { font-size: 1.15rem; line-height: 1.7; }
+    .block-container h2 { font-size: 1.9rem; margin-top: 2rem; }
+    .block-container h3 { font-size: 1.35rem; }
+    .block-container code { font-size: 1.02rem; }
+    .block-container pre code { font-size: 1rem; line-height: 1.6; }
+    div[data-testid="stCaptionContainer"] p { font-size: 1.02rem; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -47,8 +57,8 @@ st.image(
 
 st.markdown("## How to read a plot row")
 st.markdown(
-    "**`Antenna · Blood-fed`** means RNA was measured from antenna tissue dissected from blood-fed adult females. "
-    "The word before `·` is the tissue; the phrase after it is the sex, feeding state, or reproductive time point."
+    "**`Antenna, Blood-fed`** means RNA was measured from antenna tissue dissected from blood-fed adult females. "
+    "The word before the comma is the tissue; the phrase after it is the sex, feeding state, or reproductive time point."
 )
 
 st.markdown("## Body parts used in the atlas")
@@ -57,7 +67,7 @@ head, thorax, abdomen = st.columns(3)
 
 with head:
     with st.container(border=True):
-        st.markdown("### Head · sensing and feeding")
+        st.markdown("### Head: sensing and feeding")
         st.markdown(
             "**🧪 Antenna / antennae**  \n"
             "Paired sensory appendages that detect odors and air cues."
@@ -85,7 +95,7 @@ with head:
 
 with thorax:
     with st.container(border=True):
-        st.markdown("### Thorax · movement")
+        st.markdown("### Thorax: movement")
         st.markdown(
             "**Wings**  \n"
             "One pair of wings used for flight."
@@ -116,7 +126,7 @@ with thorax:
 
 with abdomen:
     with st.container(border=True):
-        st.markdown("### Abdomen · digestion and reproduction")
+        st.markdown("### Abdomen: digestion and reproduction")
         st.markdown(
             "**Abdominal segments**  \n"
             "The abdomen is the long, visibly segmented rear body region; it contains much of the digestive and reproductive system."
@@ -146,19 +156,19 @@ st.markdown("## Mosquito life stages")
 egg, larva, pupa, adult = st.columns(4)
 with egg:
     with st.container(border=True):
-        st.markdown("### 1 · Egg")
+        st.markdown("### 1. Egg")
         st.write("Laid near water. Aedes eggs can tolerate drying and hatch after being covered by water.")
 with larva:
     with st.container(border=True):
-        st.markdown("### 2 · Larva")
+        st.markdown("### 2. Larva")
         st.write("Aquatic, feeding, growing stage—often called a wiggler.")
 with pupa:
     with st.container(border=True):
-        st.markdown("### 3 · Pupa")
+        st.markdown("### 3. Pupa")
         st.write("Aquatic, non-feeding transition stage from larva to adult.")
 with adult:
     with st.container(border=True):
-        st.markdown("### 4 · Adult")
+        st.markdown("### 4. Adult")
         st.write("Flying stage. This is the only life stage represented in the current RNA Atlas datasets.")
 
 st.markdown("## Adult feeding and reproductive states")
@@ -190,9 +200,9 @@ st.markdown(
     """
 | Special label | What it means |
 | --- | --- |
-| **6 days PBM · eggs retained** | Freshwater for egg laying was unavailable, so mature eggs remained in the ovaries. This models a drought-like condition. |
-| **6 days PBM · eggs laid <5 hours prior** | Females had very recently laid their eggs; ovaries were sampled within five hours afterward. |
-| **13 days PBM · eggs laid >1 week prior** | A later post-egg-laying ovary state, more than a week after laying. |
+| **6 days PBM, eggs retained** | Freshwater for egg laying was unavailable, so mature eggs remained in the ovaries. This models a drought-like condition. |
+| **6 days PBM, eggs laid <5 hours prior** | Females had very recently laid their eggs; ovaries were sampled within five hours afterward. |
+| **13 days PBM, eggs laid >1 week prior** | A later post-egg-laying ovary state, more than a week after laying. |
 """
 )
 
@@ -220,8 +230,8 @@ st.markdown(
 
 st.markdown("## Sources")
 st.markdown(
-    "- [Matthews et al. 2016 · neurotranscriptome study](https://pmc.ncbi.nlm.nih.gov/articles/PMC4704297/)  \n"
-    "- [Venkataraman et al. 2023 · drought-resilience study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10076016/)  \n"
-    "- [CDC · parts of an adult mosquito](https://www.cdc.gov/mosquitoes/about/index.html)  \n"
-    "- [CDC · life cycle of Aedes mosquitoes](https://www.cdc.gov/mosquitoes/about/life-cycle-of-aedes-mosquitoes.html)"
+    "- [Matthews et al. 2016, neurotranscriptome study](https://pmc.ncbi.nlm.nih.gov/articles/PMC4704297/)  \n"
+    "- [Venkataraman et al. 2023, drought-resilience study](https://pmc.ncbi.nlm.nih.gov/articles/PMC10076016/)  \n"
+    "- [CDC, parts of an adult mosquito](https://www.cdc.gov/mosquitoes/about/index.html)  \n"
+    "- [CDC, life cycle of Aedes mosquitoes](https://www.cdc.gov/mosquitoes/about/life-cycle-of-aedes-mosquitoes.html)"
 )

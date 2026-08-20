@@ -44,10 +44,10 @@ UCSC_MANIFEST = EXPRESSION_DIR / "ucsc_mosquito_cell_atlas_genes.json.gz"
 DATA_SCHEMA_VERSION = "2026-08-04-all-pairs-deseq2-v2"
 
 FAMILIES = {
-    "IR · Ionotropic receptors": "Ionotropic receptors (IR)",
-    "OR · Odorant receptors": "Odorant receptors (OR)",
-    "GR · Gustatory receptors": "Gustatory receptors (GR)",
-    "OBP · Odorant-binding proteins": "Odorant-binding proteins (OBP)",
+    "IR - Ionotropic receptors": "Ionotropic receptors (IR)",
+    "OR - Odorant receptors": "Odorant receptors (OR)",
+    "GR - Gustatory receptors": "Gustatory receptors (GR)",
+    "OBP - Odorant-binding proteins": "Odorant-binding proteins (OBP)",
 }
 CUSTOM_FAMILY_LABEL = "Custom family"
 
@@ -423,7 +423,7 @@ def detected_gene_tokens(
                 "label": label,
                 "family": "/".join(families),
                 "status": "found",
-                "title": f"Input: {query} · Found in: {found_labels}",
+                "title": f"Input: {query}. Found in: {found_labels}",
             }
         )
     return tokens
@@ -523,7 +523,7 @@ def render_ucsc_cell_atlas(
         return
 
     section_title_with_info(
-        "Single-cell context · UCSC Mosquito Cell Atlas",
+        "Single-cell context: UCSC Mosquito Cell Atlas",
         "The embedded UCSC Cell Browser shows the authors' interactive single-nucleus view. This app selects a compatible atlas dataset and gene identifier but does not recompute the atlas analysis.",
     )
     control_columns = st.columns([1, 2, 1])
@@ -577,7 +577,7 @@ def render_ucsc_cell_atlas(
         st.iframe(atlas_url, height=760)
     else:
         split_url = cell_browser_metadata_url(selected_dataset, split_metadata)
-        st.caption(f"Expression · {selected_gene}")
+        st.caption(f"Expression: {selected_gene}")
         st.markdown(f"[Open expression UMAP in a new tab]({atlas_url})")
         st.iframe(atlas_url, height=760)
         st.caption(f"Colored by {split_metadata}")
@@ -726,7 +726,7 @@ def render_matched_gene_table(
             st.session_state[revision_key] += 1
 
     mean_columns = {
-        study_key: f"Mean TPM · {datasets[study_key].label}"
+        study_key: f"Mean TPM: {datasets[study_key].label}"
         for study_key in mean_tpm_by_study
     }
     rows: list[dict[str, object]] = []
@@ -761,7 +761,7 @@ def render_matched_gene_table(
     )
     entry_keys = [str(row["Gene"]).casefold() for row in rows]
     st.markdown(
-        f'<div class="matched-genes-title">Matched genes · {len(entries)}</div>',
+        f'<div class="matched-genes-title">Matched genes: {len(entries)}</div>',
         unsafe_allow_html=True,
     )
     table = pd.DataFrame(rows)
@@ -1013,7 +1013,7 @@ def render_gene_sample_controls(dataset) -> tuple[dict[str, list[str]], str | No
     for column, (field, label) in zip(columns, groupings):
         with column:
             filters[field] = st.multiselect(
-                f"Filter · {label}",
+                f"Filter: {label}",
                 options=sample_group_values(dataset, field),
                 default=[],
                 key=f"gene_filter_{dataset.key}_{field}",
@@ -1460,7 +1460,7 @@ def differential_ma_figure(results: pd.DataFrame, fdr_threshold: float) -> go.Fi
             "ticktext": abundance_labels,
         },
         yaxis={
-            "title": "Log₂ fold change · target / reference",
+            "title": "Log₂ fold change (target / reference)",
             "range": fold_change_range,
             "zeroline": False,
         },
@@ -1536,24 +1536,31 @@ def render_home() -> None:
 
         ## Datasets
 
-        | Dataset | What is displayed | Provenance |
+        | Dataset | What is displayed | Comparison |
         |---|---|---|
-        | **Ovary (paper)** | Published TPM supplement | Venkataraman et al., eLife 2023 (`PRJNA796320`) values as published by the authors. |
-        | **Ovary (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts | We reprocessed the same 33 raw paired-end samples ourselves. |
-        | **Atlas (paper)** | Published neurotranscriptome TPM matrices (`AaegL.RU` and legacy `AaegL3.3`) | Matthews et al., BMC Genomics 2016 (`PRJNA236239`) values as published. Our reprocessing is not complete and is not shown. |
-        | **Midgut (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | Nadav Shai · Vosshall lab midgut RNA-seq, reprocessed by us from raw reads. |
-        | **Crop (reprocessed)** | Our STAR + Salmon gene TPM matrix | Vosshall lab crop RNA-seq, reprocessed by us. Single condition, so no differential contrasts exist. |
+        | **Ovary (paper)** | Published TPM supplement from Venkataraman et al., eLife 2023 (`PRJNA796320`) | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
+        | **Ovary (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts over the same 33 raw samples | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
+        | **Atlas (paper)** | Published neurotranscriptome matrices (`AaegL.RU` and legacy `AaegL3.3`) from Matthews et al., BMC Genomics 2016 (`PRJNA236239`) | Reprocessing outstanding |
+        | **Midgut (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | No published counterpart |
+        | **Crop (reprocessed)** | Our STAR + Salmon gene TPM matrix. Single condition, so no differential contrasts exist | No published counterpart |
 
         Every reprocessed dataset above went through the *identical* pipeline,
-        reference, and parameters — see the **Methods** page. Paper datasets
-        keep their published values and are not covered by those methods.
+        reference, and parameters — see [Methods](/Methods). Paper datasets keep
+        their published values and are not covered by those methods.
 
         ## Comparisons
 
         Where a reprocessed dataset has a published counterpart, a comparison
         page reports how closely the two agree:
 
-        - **Ovary · paper vs reprocessed** — TPM agreement and zero ↔ non-zero transitions.
+        - [**Ovary: paper vs reprocessed**](/Ovary_paper_vs_reprocessed) — TPM
+          agreement, exact zero ↔ non-zero transitions, PCA, and a
+          sample-identity check. Pearson r 0.972; 2.8% of gene-sample pairs
+          disagree by more than 2 log₂.
+
+        Atlas (paper) has no comparison yet because its reprocessing is still
+        outstanding. Midgut and crop have no published counterpart to compare
+        against.
 
         ## Other sources
 
@@ -1569,11 +1576,6 @@ def render_home() -> None:
         "pages/3_Methods.py",
         label="Methods — pipeline, reference, and parameters",
         icon="\U0001F9EA",
-    )
-    st.page_link(
-        "pages/2_Ovary_paper_vs_reprocessed.py",
-        label="Ovary · paper vs reprocessed comparison",
-        icon="\U0001F4CA",
     )
     st.page_link(
         "pages/1_Mosquito_cheatsheet.py",
@@ -1930,7 +1932,7 @@ elif mode == "Families":
             family_selection_id = (
                 "custom"
                 if custom_family
-                else family_label.split(" · ", maxsplit=1)[0].casefold()
+                else family_label.split(" - ", maxsplit=1)[0].casefold()
             )
             enabled_family_gene_keys = render_matched_gene_table(
                 matched_family_entries,
@@ -2088,7 +2090,7 @@ elif mode == "Differential expression":
         available_contrasts = differential_contrasts.get(comparison_key, [])
         if available_contrasts:
             selected_contrast_id = st.selectbox(
-                "Contrast · target vs reference",
+                "Contrast: target vs reference",
                 options=[contrast.contrast_id for contrast in available_contrasts],
                 format_func=lambda contrast_id: contrast_label(
                     comparison_dataset,
@@ -2170,7 +2172,7 @@ elif mode == "Differential expression":
             reference_metric.metric(
                 "Reference samples", reference_samples, help=reference_label
             )
-            significant_metric.metric(f"Colored genes · FDR < {fdr_threshold:g}", significant_count)
+            significant_metric.metric(f"Colored genes, FDR < {fdr_threshold:g}", significant_count)
             st.plotly_chart(
                 differential_ma_figure(comparison_results, fdr_threshold),
                 width="stretch",
@@ -2183,7 +2185,7 @@ elif mode == "Differential expression":
                 "Gray genes do not pass the selected FDR threshold. Significant genes are gold and drawn last, so gray points cannot cover them. All markers are fully opaque."
             )
             st.caption(
-                f"Precomputed with DESeq2 (ashr-shrunk log₂ fold changes) from STAR + Salmon length-scaled gene counts; see the Methods page. Positive log₂ fold change means higher in {target_label}; negative means higher in {reference_label}."
+                f"Precomputed with DESeq2 (ashr-shrunk log₂ fold changes) from STAR + Salmon length-scaled gene counts; see the [Methods page](/Methods). Positive log₂ fold change means higher in {target_label}; negative means higher in {reference_label}."
             )
 
             displayed_results = comparison_results
@@ -2389,7 +2391,7 @@ else:
         cluster_figure.update_yaxes(showgrid=False, zeroline=False)
         section_title_with_info(
             "Cluster map",
-            f"{cluster_method} · {cluster_details}. TPM was transformed as log₂(TPM + 1), then each selected gene was standardized across samples. PCA preserves broad linear variation. UMAP and t-SNE emphasize local neighborhoods; their axis values and distances between far-apart groups are not directly interpretable.",
+            f"{cluster_method}: {cluster_details}. TPM was transformed as log₂(TPM + 1), then each selected gene was standardized across samples. PCA preserves broad linear variation. UMAP and t-SNE emphasize local neighborhoods; their axis values and distances between far-apart groups are not directly interpretable.",
         )
         st.plotly_chart(
             cluster_figure,

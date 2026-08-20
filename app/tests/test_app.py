@@ -60,7 +60,7 @@ def _matched_gene_editor(app):
         for element in app.dataframe
         if MATCHED_GENE_COLUMNS <= set(element.value.columns)
         and any(
-            str(column).startswith("Mean TPM · ")
+            str(column).startswith("Mean TPM: ")
             for column in element.value.columns
         )
     ]
@@ -70,7 +70,7 @@ def _matched_gene_editor(app):
 
 def _mean_tpm_columns(frame):
     return [
-        column for column in frame.columns if str(column).startswith("Mean TPM · ")
+        column for column in frame.columns if str(column).startswith("Mean TPM: ")
     ]
 
 
@@ -124,8 +124,13 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "**Midgut (reprocessed)**" in home_html
     assert "**Crop (reprocessed)**" in home_html
     assert "identical* pipeline" in home_html
-    assert "Methods" in home_html
     assert "never recomputed from TPM" in home_html
+    # Comparisons and Methods are reachable as inline links, not just from the
+    # page-link buttons at the bottom.
+    assert home_html.count("(/Ovary_paper_vs_reprocessed)") >= 3
+    assert "(/Methods)" in home_html
+    # The bottom page-link duplicate of the ovary comparison was removed.
+    assert "Ovary: paper vs reprocessed comparison" not in APP.read_text()
     # Pipeline parameters live only in METHODS.md, rendered by the Methods page.
     assert "nextflow run" not in home_html
     assert "skip_alignment" not in home_html
@@ -192,7 +197,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert len(mean_tpm_columns) == 2
     assert matched_genes[mean_tpm_columns[0]].dropna().is_monotonic_decreasing
     for mean_tpm_column in mean_tpm_columns:
-        study_label = mean_tpm_column.removeprefix("Mean TPM · ")
+        study_label = mean_tpm_column.removeprefix("Mean TPM: ")
         study_values = raw_tables[0][raw_tables[0]["Study"] == study_label]
         raw_mean_tpm = study_values.groupby("Gene")["TPM"].mean()
         for _, matched_gene in matched_genes.iterrows():
@@ -223,7 +228,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     assert len(studies.options) == 5
-    assert "Midgut (reprocessed) · blood-meal time course" in studies.options
+    assert "Midgut (reprocessed), blood-meal time course" in studies.options
     assert all("legacy" not in option.casefold() for option in studies.options)
     assert studies.value == ["elife", "neuro_ru"]
 
@@ -364,7 +369,7 @@ def test_gene_atlas_umap_can_add_sample_metadata_plot_below(monkeypatch):
         "[Open sample UMAP in a new tab](https://cells.ucsc.edu/?ds=mosquito+t012&meta=sample)"
     ]
     captions = " ".join(element.value for element in app.caption)
-    assert "Expression · Ir25a" in captions
+    assert "Expression: Ir25a" in captions
     assert "Colored by sample" in captions
     assert "primary_column, split_column = st.columns(2)" not in APP.read_text()
 
@@ -550,7 +555,7 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
         if "Samples ≥1 TPM" in frame.value.columns
     )
     ovary_summary = summary[
-        summary["Study"] == "Ovary (reprocessed) · blood-meal time course"
+        summary["Study"] == "Ovary (reprocessed), blood-meal time course"
     ]
     assert all(value.endswith("/33") for value in ovary_summary["Samples ≥1 TPM"])
 
@@ -650,7 +655,7 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
         for element in app.markdown
         if '<div class="matched-genes-title"' in element.value
     )
-    assert "Matched genes · 1" in matched_title
+    assert "Matched genes: 1" in matched_title
     matched_genes = _matched_gene_editor(app).value
     assert matched_genes["Gene"].tolist() == ["Orco"]
     aliases = matched_genes["Alternative names"].item()
@@ -671,7 +676,7 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     warnings = " ".join(element.value for element in app.warning)
     assert "Gene not found:" in warnings
     assert "ir7a" in warnings
-    assert "Atlas (paper) · neurotranscriptome AaegL.RU" in warnings
+    assert "Atlas (paper), neurotranscriptome AaegL.RU" in warnings
     matched_genes = _matched_gene_editor(app).value
     assert len(_mean_tpm_columns(matched_genes)) == 2
     assert any(
@@ -907,7 +912,7 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
     assert {"1", "10", "100", "1,000"} <= set(plot["layout"]["xaxis"]["ticktext"])
     assert (
         plot["layout"]["yaxis"]["title"]["text"]
-        == "Log₂ fold change · target / reference"
+        == "Log₂ fold change (target / reference)"
     )
     assert plot["layout"]["yaxis"]["range"][0] == -plot["layout"]["yaxis"]["range"][1]
     assert plot["layout"]["shapes"][0]["y0"] == 0
@@ -922,7 +927,7 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
     contrasts = next(
         selectbox
         for selectbox in app.selectbox
-        if selectbox.label == "Contrast · target vs reference"
+        if selectbox.label == "Contrast: target vs reference"
     )
     assert len(contrasts.options) == 28
     fdr_threshold = next(
@@ -956,7 +961,7 @@ def test_ovary_differential_expression_has_every_pair(monkeypatch):
     contrasts = next(
         selectbox
         for selectbox in app.selectbox
-        if selectbox.label == "Contrast · target vs reference"
+        if selectbox.label == "Contrast: target vs reference"
     )
     assert len(contrasts.options) == 55
     result_tables = [
@@ -984,7 +989,7 @@ def test_neurotranscriptome_differential_expression_is_not_available(monkeypatch
     assert "never computes differential-expression statistics from TPM" in rendered_text
     assert "only for our reprocessed datasets" in rendered_text
     assert not any(
-        selectbox.label == "Contrast · target vs reference"
+        selectbox.label == "Contrast: target vs reference"
         for selectbox in app.selectbox
     )
 
@@ -1019,7 +1024,7 @@ def test_cluster_mode_renders_sample_pca(monkeypatch):
         for element in app.markdown
         if "Cluster map" in element.value and "section-info-icon" in element.value
     )
-    assert f"PCA · {genes_used.value:,} genes (all)" in info_html
+    assert f"PCA: {genes_used.value:,} genes (all)" in info_html
     assert "TPM was transformed as log₂(TPM + 1)" in info_html
     assert "PCA preserves broad linear variation" in info_html
     assert "UMAP and t-SNE emphasize local neighborhoods" in info_html
@@ -1030,4 +1035,4 @@ def test_cluster_mode_renders_sample_pca(monkeypatch):
         for element in app.markdown
         if "Cluster map" in element.value and "section-info-icon" in element.value
     )
-    assert "PCA · 2,000 most-variable genes" in reduced_info_html
+    assert "PCA: 2,000 most-variable genes" in reduced_info_html

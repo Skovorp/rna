@@ -18,3 +18,6 @@ scripts/*
 # The prepared copies the app serves live in app/assets/ovary_comparison/.
 analysis/results/**/*.html
 analysis/results/**/*.png
+
+# Derived dataset cache, rebuilt automatically from the bundled matrices.
+expression/.cache/
