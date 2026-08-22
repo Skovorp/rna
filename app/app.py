@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import html
 from pathlib import Path
 import re
@@ -307,6 +308,24 @@ def datasets_resource(schema_version: str):
 
 
 datasets = datasets_resource(DATA_SCHEMA_VERSION)
+
+# Datasets hidden until the viewer unlocks them from the footer. The password is
+# checked server-side against a SHA-256 digest, so private data is never sent to
+# the browser for a locked session.
+PRIVATE_DATASET_KEYS = frozenset({"crop"})
+_PRIVATE_PASSWORD_SHA256 = "a7e70ed2033498dc9e9852fb666b72bf7a6abcff8dd22d86f165b5c0989c88fa"
+
+
+def private_datasets_unlocked() -> bool:
+    return bool(st.session_state.get("private_datasets_unlocked"))
+
+
+if not private_datasets_unlocked():
+    datasets = {
+        key: dataset
+        for key, dataset in datasets.items()
+        if key not in PRIVATE_DATASET_KEYS
+    }
 
 
 @st.cache_resource(show_spinner=False)
@@ -966,6 +985,8 @@ def default_grouping(dataset) -> tuple[str, str]:
         return "tissue_condition", "Tissue + condition"
     if dataset.key == "midgut":
         return "condition_label", "Sex + blood-meal time"
+    if dataset.key == "yedlin":
+        return "condition_label", "Tissue + blood-meal time"
     return "sample", "Sample"
 
 
@@ -987,6 +1008,11 @@ def sample_groupings(dataset) -> list[tuple[str, str]]:
             ("sex", "Sex"),
             ("timepoint", "Blood-meal time"),
             ("condition_label", "Sex + blood-meal time"),
+        ],
+        "yedlin": [
+            ("tissue", "Tissue"),
+            ("timepoint", "Blood-meal time"),
+            ("condition_label", "Tissue + blood-meal time"),
         ],
     }.get(dataset.key, [])
     return [
@@ -1542,6 +1568,7 @@ def render_home() -> None:
         | **Ovary (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts over the same 33 raw samples | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
         | **Atlas (paper)** | Published neurotranscriptome matrices (`AaegL.RU` and legacy `AaegL3.3`) from Matthews et al., BMC Genomics 2016 (`PRJNA236239`) | Reprocessing outstanding |
         | **Midgut (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | No published counterpart |
+        | **Fat body & Malpighian tubules (reprocessed)** | Our STAR + Salmon gene TPM matrix over the blood-meal time course and all 66 pairwise DESeq2 contrasts | No published counterpart |
         | **Crop (reprocessed)** | Our STAR + Salmon gene TPM matrix. Single condition, so no differential contrasts exist | No published counterpart |
 
         Every reprocessed dataset above went through the *identical* pipeline,
@@ -2398,3 +2425,40 @@ else:
             width="stretch",
             key=f"cluster_plot_{cluster_key}_{cluster_method}_{variable_genes}_{color_field}",
         )
+
+
+def _try_unlock_private_datasets() -> None:
+    entered = st.session_state.get("private_datasets_password", "")
+    digest = hashlib.sha256(entered.encode("utf-8")).hexdigest()
+    if hmac.compare_digest(digest, _PRIVATE_PASSWORD_SHA256):
+        st.session_state["private_datasets_unlocked"] = True
+        st.session_state["private_datasets_error"] = False
+    else:
+        st.session_state["private_datasets_error"] = True
+    st.session_state["private_datasets_password"] = ""
+
+
+def _lock_private_datasets() -> None:
+    st.session_state["private_datasets_unlocked"] = False
+    st.session_state["private_datasets_error"] = False
+
+
+st.divider()
+with st.expander("🔒 Private datasets", expanded=False):
+    if private_datasets_unlocked():
+        st.success("Private datasets are unlocked for this session.")
+        st.button("Lock again", on_click=_lock_private_datasets)
+    else:
+        st.caption(
+            "Some datasets are not public. Enter the access password to include them "
+            "in every page for this session."
+        )
+        st.text_input(
+            "Password",
+            type="password",
+            key="private_datasets_password",
+            on_change=_try_unlock_private_datasets,
+        )
+        st.button("Unlock", on_click=_try_unlock_private_datasets)
+        if st.session_state.get("private_datasets_error"):
+            st.error("Wrong password.")

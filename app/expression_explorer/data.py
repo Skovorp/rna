@@ -33,6 +33,7 @@ DATASET_ORDER = (
     "elife",
     "neuro_ru",
     "midgut",
+    "yedlin",
     "crop",
     "neuro_legacy",
 )
@@ -50,6 +51,18 @@ STAR_SALMON_CONDITION_LABELS = {
     "6dBF.Laid": "6 days post-blood-meal (eggs laid)",
     "13dBF": "13 days post-blood-meal",
     "Ma.Mg": "Male, non-blood-fed",
+    "FB_NBF": "Fat body, non-blood-fed",
+    "FB_4h": "Fat body, 4 hours post-blood-meal",
+    "FB_8h": "Fat body, 8 hours post-blood-meal",
+    "FB_12h": "Fat body, 12 hours post-blood-meal",
+    "FB_16h": "Fat body, 16 hours post-blood-meal",
+    "FB_20h": "Fat body, 20 hours post-blood-meal",
+    "MT_NBF": "Malpighian tubules, non-blood-fed",
+    "MT_4h": "Malpighian tubules, 4 hours post-blood-meal",
+    "MT_8h": "Malpighian tubules, 8 hours post-blood-meal",
+    "MT_12h": "Malpighian tubules, 12 hours post-blood-meal",
+    "MT_16h": "Malpighian tubules, 16 hours post-blood-meal",
+    "MT_20h": "Malpighian tubules, 20 hours post-blood-meal",
 }
 
 STAR_SALMON_CONDITION_SEQUENCE = tuple(STAR_SALMON_CONDITION_LABELS)
@@ -69,6 +82,18 @@ STAR_SALMON_TIMEPOINT_LABELS = {
     "6dBF.Laid": "6d",
     "13dBF": "13d",
     "Ma.Mg": "not_applicable",
+    "FB_NBF": "not_applicable",
+    "FB_4h": "4h",
+    "FB_8h": "8h",
+    "FB_12h": "12h",
+    "FB_16h": "16h",
+    "FB_20h": "20h",
+    "MT_NBF": "not_applicable",
+    "MT_4h": "4h",
+    "MT_8h": "8h",
+    "MT_12h": "12h",
+    "MT_16h": "16h",
+    "MT_20h": "20h",
 }
 
 CONDITION_LABELS = {
@@ -317,9 +342,11 @@ def _load_midgut_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFr
 
 
 def star_salmon_condition(sample: str) -> str:
-    """Fe.Mg.12hBF.1_S13 / Fe_Crop_NBF_1_S1 -> 12hBF / NBF; Ma.Mg.1_S1 -> Ma.Mg."""
+    """Fe.Mg.12hBF.1_S13 / Fe_Crop_NBF_1_S1 -> 12hBF / NBF; Ma.Mg.1_S1 -> Ma.Mg;
+    FB_12h_R1 / MT_NBF_R4 -> FB_12h / MT_NBF."""
     condition = re.sub(r"^Fe[._][A-Za-z]+[._]", "", sample)
-    return re.sub(r"[._][0-9]+_S[0-9]+$", "", condition)
+    condition = re.sub(r"[._][0-9]+_S[0-9]+$", "", condition)
+    return re.sub(r"_R[0-9]+$", "", condition)
 
 
 def _load_star_salmon_samples(
@@ -343,9 +370,18 @@ def _load_star_salmon_samples(
     samples["tissue_condition"] = (
         tissue.title() + ", " + samples["condition_label"]
     )
+    # Yedlin-style samples carry their tissue in the name (FB_/MT_ prefix), and
+    # their condition labels already spell it out.
+    fat_body = samples["sample"].str.startswith("FB_")
+    tubules = samples["sample"].str.startswith("MT_")
+    samples.loc[fat_body, "tissue"] = "fat body"
+    samples.loc[tubules, "tissue"] = "Malpighian tubules"
+    samples.loc[fat_body | tubules, "tissue_condition"] = samples.loc[
+        fat_body | tubules, "condition_label"
+    ]
     samples["replicate"] = samples["sample"].str.extract(
-        r"[._]([0-9]+)_S[0-9]+$"
-    )[0]
+        r"(?:[._]([0-9]+)_S[0-9]+|_R([0-9]+))$"
+    ).bfill(axis=1)[0]
     samples["timepoint"] = samples["condition"].map(
         STAR_SALMON_TIMEPOINT_LABELS
     ).fillna("not_applicable")
@@ -591,6 +627,13 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "Midgut (reprocessed), blood-meal time course",
         "Nadav Shai, Vosshall lab midgut RNA-seq",
     )
+    yedlin = star_salmon_dataset(
+        "yedlin_star_salmon_gene_tpm.tsv.gz",
+        "yedlin",
+        "fat body / Malpighian tubules",
+        "Fat body & Malpighian tubules (reprocessed), blood-meal time course",
+        "Yedlin, Vosshall lab fat body / Malpighian tubule RNA-seq",
+    )
     crop = star_salmon_dataset(
         "crop_star_salmon_gene_tpm.tsv.gz",
         "crop",
@@ -629,6 +672,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
             samples=legacy_samples,
         ),
         "midgut": midgut,
+        "yedlin": yedlin,
         "crop": crop,
     }
 
