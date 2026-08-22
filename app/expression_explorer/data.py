@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import cached_property
 import hashlib
 from pathlib import Path
 import pickle
@@ -26,6 +27,19 @@ class ExpressionDataset:
     @property
     def sample_columns(self) -> list[str]:
         return list(self.values.columns)
+
+    @cached_property
+    def alias_index(self) -> dict[str, tuple[int, ...]]:
+        """Normalized alias -> row_ids, so exact search is a dict lookup instead
+        of re-normalizing every alias of every gene per query."""
+        index: dict[str, list[int]] = {}
+        for row_id, normalized in zip(
+            self.genes["row_id"], self.genes["search_normalized"]
+        ):
+            for alias in normalized.split(" | "):
+                if alias:
+                    index.setdefault(alias, []).append(int(row_id))
+        return {alias: tuple(rows) for alias, rows in index.items()}
 
 
 DATASET_ORDER = (
@@ -127,7 +141,7 @@ PAPER_FAMILY_LABELS = {
 ORCO_ALIASES = ("Orco", "AaegOr7", "Or7", "AAEL005776")
 
 # Bump when a change alters derived dataset content without touching this file.
-_CACHE_VERSION = 1
+_CACHE_VERSION = 2
 _CACHE_DIR = ".cache"
 
 PAPER_ANNOTATION_COLUMNS = [
@@ -523,6 +537,8 @@ def load_datasets(
             pass
 
     datasets = _build_datasets(expression_dir)
+    for dataset in datasets.values():
+        dataset.alias_index  # materialize so the pickle carries the index
 
     if cache_path is not None:
         try:
@@ -698,10 +714,9 @@ def search_genes(dataset: ExpressionDataset, query: str, mode: str = "exact") ->
         return dataset.genes.iloc[0:0].copy()
     normalized = normalize_alias(query)
     if mode == "exact":
-        mask = dataset.genes["aliases"].map(
-            lambda values: normalized in {normalize_alias(value) for value in values}
-        )
-    elif mode == "prefix":
+        row_ids = dataset.alias_index.get(normalized, ())
+        return dataset.genes.iloc[list(row_ids)].copy()
+    if mode == "prefix":
         mask = dataset.genes["aliases"].map(
             lambda values: any(normalize_alias(value).startswith(normalized) for value in values)
         )

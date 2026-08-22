@@ -370,6 +370,97 @@ def differential_results_cached(
     return load_differential_results(dataset, contrast)
 
 
+# Per-selection caches below are shared across every session and keyed by
+# row_ids that are POSITIONAL within the current data build, so:
+#   - never add persist="disk" (a data update shifts row_ids and would silently
+#     serve the wrong genes),
+#   - max_entries is mandatory (keys include user-chosen queries and gene
+#     subsets, an unbounded set),
+#   - every cached function must sit behind an uncached shim that refuses
+#     private dataset keys for locked sessions, because the cache reads the
+#     unfiltered datasets_resource.
+
+
+def _guard_dataset_key(dataset_key: str) -> None:
+    if dataset_key in PRIVATE_DATASET_KEYS and not private_datasets_unlocked():
+        raise PermissionError(f"Dataset is locked: {dataset_key}")
+
+
+def _row_ids(genes: pd.DataFrame) -> tuple[int, ...]:
+    return tuple(int(row_id) for row_id in genes["row_id"])
+
+
+def _genes_for_row_ids(dataset, row_ids: tuple[int, ...]) -> pd.DataFrame:
+    return (
+        dataset.genes.set_index("row_id", drop=False)
+        .loc[list(row_ids)]
+        .reset_index(drop=True)
+    )
+
+
+@st.cache_data(show_spinner=False, max_entries=2048)
+def _search_contains_cached(
+    schema_version: str, dataset_key: str, query: str
+) -> pd.DataFrame:
+    dataset = datasets_resource(schema_version)[dataset_key]
+    return search_genes(dataset, query, "contains")
+
+
+@st.cache_data(show_spinner=False, max_entries=64)
+def _family_members_cached(
+    schema_version: str, dataset_key: str, family: str
+) -> pd.DataFrame:
+    return family_members(datasets_resource(schema_version)[dataset_key], family)
+
+
+@st.cache_data(show_spinner=False, max_entries=64)
+def _expression_long_cached(
+    schema_version: str, dataset_key: str, row_ids: tuple[int, ...]
+) -> pd.DataFrame:
+    dataset = datasets_resource(schema_version)[dataset_key]
+    return expression_long(dataset, _genes_for_row_ids(dataset, row_ids))
+
+
+@st.cache_data(show_spinner=False, max_entries=64)
+def _gene_statistics_cached(
+    schema_version: str, dataset_key: str, row_ids: tuple[int, ...]
+) -> pd.DataFrame:
+    dataset = datasets_resource(schema_version)[dataset_key]
+    return gene_statistics(dataset, _genes_for_row_ids(dataset, row_ids))
+
+
+@st.cache_data(show_spinner=False, max_entries=64)
+def _mean_tpm_cached(
+    schema_version: str, dataset_key: str, row_ids: tuple[int, ...]
+) -> dict[str, float]:
+    long = _expression_long_cached(schema_version, dataset_key, row_ids)
+    if long.empty:
+        return {}
+    return {
+        str(gene_name).casefold(): float(mean_tpm)
+        for gene_name, mean_tpm in long.groupby("gene")["tpm"].mean().items()
+    }
+
+
+def family_members_for(dataset_key: str, family: str) -> pd.DataFrame:
+    _guard_dataset_key(dataset_key)
+    return _family_members_cached(DATA_SCHEMA_VERSION, dataset_key, family)
+
+
+def expression_long_for(dataset_key: str, genes: pd.DataFrame) -> pd.DataFrame:
+    _guard_dataset_key(dataset_key)
+    if genes.empty:
+        return pd.DataFrame()
+    return _expression_long_cached(DATA_SCHEMA_VERSION, dataset_key, _row_ids(genes))
+
+
+def gene_statistics_for(dataset_key: str, genes: pd.DataFrame) -> pd.DataFrame:
+    _guard_dataset_key(dataset_key)
+    if genes.empty:
+        return pd.DataFrame()
+    return _gene_statistics_cached(DATA_SCHEMA_VERSION, dataset_key, _row_ids(genes))
+
+
 def parse_queries(raw: str) -> list[str]:
     values = [item.strip() for item in re.split(r"[,;\s]+", raw) if item.strip()]
     return list(dict.fromkeys(values))
@@ -389,9 +480,14 @@ def gene_color_index(gene_name: str) -> int:
     ) % len(GENE_COLOR_NAMES)
 
 
-def resolve_one(dataset, query: str) -> pd.DataFrame:
-    exact = search_genes(dataset, query, "exact")
-    return exact if not exact.empty else search_genes(dataset, query, "contains")
+def resolve_one(dataset_key: str, query: str) -> pd.DataFrame:
+    # Exact search is a dict lookup on the precomputed alias index; only the
+    # substring fallback is worth caching.
+    exact = search_genes(datasets[dataset_key], query, "exact")
+    if not exact.empty:
+        return exact
+    _guard_dataset_key(dataset_key)
+    return _search_contains_cached(DATA_SCHEMA_VERSION, dataset_key, query)
 
 
 def detected_gene_tokens(
@@ -403,7 +499,7 @@ def detected_gene_tokens(
         matched_frames = []
         found_keys = []
         for key in selected_keys:
-            matches = resolve_one(datasets[key], query)
+            matches = resolve_one(key, query)
             if not matches.empty:
                 matched_frames.append(matches)
                 found_keys.append(key)
@@ -710,11 +806,10 @@ def mean_expression_by_study(
         if matches is None or matches.empty:
             means_by_study[study_key] = {}
             continue
-        long = expression_long(datasets[study_key], matches)
-        means_by_study[study_key] = {
-            str(gene_name).casefold(): float(mean_tpm)
-            for gene_name, mean_tpm in long.groupby("gene")["tpm"].mean().items()
-        }
+        _guard_dataset_key(study_key)
+        means_by_study[study_key] = _mean_tpm_cached(
+            DATA_SCHEMA_VERSION, study_key, _row_ids(matches)
+        )
     return means_by_study
 
 
@@ -936,8 +1031,9 @@ def render_gene_query_editor(
     return queries
 
 
-def resolve_queries(dataset, queries: list[str]) -> pd.DataFrame:
-    matches = [resolve_one(dataset, query) for query in queries]
+def resolve_queries(dataset_key: str, queries: list[str]) -> pd.DataFrame:
+    dataset = datasets[dataset_key]
+    matches = [resolve_one(dataset_key, query) for query in queries]
     matches = [frame for frame in matches if not frame.empty]
     if not matches:
         return dataset.genes.iloc[0:0].copy()
@@ -1706,7 +1802,7 @@ elif mode == "Genes":
         for query in queries:
             per_study: dict[str, pd.DataFrame] = {}
             for key in selected_keys:
-                matches = resolve_one(datasets[key], query)
+                matches = resolve_one(key, query)
                 if not matches.empty:
                     per_study[key] = matches.drop_duplicates("row_id")
                     prior = all_resolved_for_comparison.get(key)
@@ -1761,7 +1857,7 @@ elif mode == "Genes":
                     continue
                 dataset = datasets[key]
                 field, field_label = default_grouping(dataset)
-                long = expression_long(dataset, combined_genes)
+                long = expression_long_for(key, combined_genes)
                 st.markdown(f"### {dataset.label}")
                 filters, label_color_field, _ = render_gene_sample_controls(dataset)
                 filtered_long = filter_expression_samples(long, filters)
@@ -1827,7 +1923,7 @@ elif mode == "Genes":
                 if matches.empty:
                     continue
                 dataset = datasets[key]
-                summary = gene_statistics(dataset, matches)
+                summary = gene_statistics_for(key, matches)
                 summary.insert(0, "Study", dataset.label)
                 summary["Alternative names"] = [
                     ", ".join(
@@ -1843,7 +1939,7 @@ elif mode == "Genes":
                     axis=1,
                 )
                 combined_summaries.append(summary)
-                long = expression_long(dataset, matches)
+                long = expression_long_for(key, matches)
                 long.insert(0, "Study", dataset.label)
                 combined_raw_rows.append(long)
 
@@ -1947,9 +2043,9 @@ elif mode == "Families":
         )
         all_members_by_study = {
             key: (
-                resolve_queries(datasets[key], family_queries)
+                resolve_queries(key, family_queries)
                 if custom_family
-                else family_members(datasets[key], family_name)
+                else family_members_for(key, family_name)
             )
             for key in family_keys
         }
@@ -1985,7 +2081,7 @@ elif mode == "Families":
     if custom_family and family_queries:
         for query in family_queries:
             for key in family_keys:
-                if resolve_one(datasets[key], query).empty:
+                if resolve_one(key, query).empty:
                     st.warning(
                         f"Gene not found: `{query}` is not present in {datasets[key].label}."
                     )
@@ -2007,7 +2103,7 @@ elif mode == "Families":
                 continue
             family_gene_count = members["display_name"].nunique()
             field, _ = default_grouping(dataset)
-            long = expression_long(dataset, members)
+            long = expression_long_for(key, members)
             mean_expression = (
                 long.groupby("gene", as_index=False)["tpm"].mean().rename(
                     columns={"tpm": "mean_tpm"}
@@ -2022,7 +2118,7 @@ elif mode == "Families":
                 .rename(columns={"detected": "Detected n"})
             )
             ranking = (
-                gene_statistics(dataset, members)
+                gene_statistics_for(key, members)
                 .sort_values("mean_tpm", ascending=False)
                 .drop_duplicates("gene")
                 .drop(columns="mean_tpm")
