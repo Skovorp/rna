@@ -298,7 +298,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     widget_count = sum(len(getattr(app, widget_type)) for widget_type in widget_types)
     table_count = len(app.dataframe) + len(app.table)
     # UMAP and expression controls stay focused despite embedding two atlas views.
-    assert widget_count + table_count <= 26
+    # +1 for the private-datasets unlock password input.
+    assert widget_count + table_count <= 27
 
     logo = next(button for button in app.button if button.label == "🧬 Aedes RNA Atlas")
     logo.click().run()
