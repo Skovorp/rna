@@ -307,60 +307,6 @@ def datasets_resource(schema_version: str):
     return load_datasets(EXPRESSION_DIR)
 
 
-# Full-screen loading overlay, shown only on a session's first script run. It
-# is the first element streamed to the browser, so it covers the progressive
-# render; the .bzz-done marker at the end of the script fades it out via the
-# body:has() rule. Reruns skip it entirely, so interactions never re-flash it.
-if not st.session_state.get("bzz_overlay_shown"):
-    st.markdown(
-        """
-        <style>
-        .bzz-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: .9rem;
-            background: #0E1518;
-            transition: opacity .5s ease;
-        }
-        body:has(.bzz-done) .bzz-overlay {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .bzz-overlay .bzz-mosquito {
-            font-size: 3rem;
-            animation: bzz-fly 1.6s ease-in-out infinite alternate;
-        }
-        .bzz-overlay .bzz-text {
-            color: #53D6A5;
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: .35em;
-            animation: bzz-pulse 1.1s ease-in-out infinite;
-        }
-        @keyframes bzz-fly {
-            0% { transform: translate(-1.4rem, .5rem) rotate(-8deg); }
-            35% { transform: translate(.8rem, -.7rem) rotate(6deg); }
-            70% { transform: translate(-.5rem, -.2rem) rotate(-4deg); }
-            100% { transform: translate(1.4rem, .6rem) rotate(9deg); }
-        }
-        @keyframes bzz-pulse {
-            0%, 100% { opacity: .45; }
-            50% { opacity: 1; }
-        }
-        </style>
-        <div class="bzz-overlay">
-            <div class="bzz-mosquito">🦟</div>
-            <div class="bzz-text">bzzzzz</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
 datasets = datasets_resource(DATA_SCHEMA_VERSION)
 
 # Datasets hidden until the viewer unlocks them from the footer. The password is
@@ -2622,6 +2568,7 @@ with st.expander("🔒 Private datasets", expanded=False):
         if st.session_state.get("private_datasets_error"):
             st.error("Wrong password.")
 
-if not st.session_state.get("bzz_overlay_shown"):
-    st.session_state["bzz_overlay_shown"] = True
-    st.markdown('<div class="bzz-done"></div>', unsafe_allow_html=True)
+# Ready marker for the loading overlay that nginx injects into index.html
+# (deploy/vps/nginx-rna-atlas.conf): its script removes the overlay once this
+# element exists. Rendered every run so a marker is always in the DOM.
+st.markdown('<div class="bzz-done"></div>', unsafe_allow_html=True)
