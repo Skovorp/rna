@@ -1,0 +1,7 @@
+[Unit]
+Description=Update Aedes RNA Atlas from GitHub
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/rna-atlas/deploy/vps/update.sh
