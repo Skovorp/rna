@@ -6,6 +6,12 @@ secondaryBackgroundColor = "#172126"
 textColor = "#EDF5F2"
 font = "sans serif"
 
+[client]
+# The app hides all built-in chrome with CSS, but CSS lands mid-render and the
+# chrome flashes first. Disable what can be disabled before first paint.
+showSidebarNavigation = false
+toolbarMode = "minimal"
+
 [server]
 headless = true
 runOnSave = false
