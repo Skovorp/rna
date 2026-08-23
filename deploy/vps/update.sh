@@ -26,3 +26,9 @@ fi
 cp deploy/vps/rna-atlas.service deploy/vps/rna-atlas-update.service deploy/vps/rna-atlas-update.timer /etc/systemd/system/
 systemctl daemon-reload
 systemctl restart rna-atlas.service
+
+# /etc/nginx/sites-enabled/rna-atlas is a symlink to the repo's conf, so a
+# pull updates it in place; reload only when it actually changed and validates.
+if ! git diff --quiet "$before" "$after" -- deploy/vps/nginx-rna-atlas.conf; then
+  nginx -t && systemctl reload nginx
+fi
