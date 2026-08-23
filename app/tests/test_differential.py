@@ -19,10 +19,11 @@ def test_manifests_cover_every_midgut_and_ovary_pair():
     datasets = load_datasets(EXPRESSION_DIR)
     contrasts = load_differential_contrasts(EXPRESSION_DIR)
 
-    assert set(contrasts) == {"midgut", "elife", "yedlin"}
+    assert set(contrasts) == {"midgut", "elife", "yedlin", "atlas"}
     assert len(contrasts["midgut"]) == 28
     assert len(contrasts["elife"]) == 55
     assert len(contrasts["yedlin"]) == 66
+    assert len(contrasts["atlas"]) == 378
     assert all(
         contrast.method == "DESeq2"
         for dataset_contrasts in contrasts.values()
@@ -31,7 +32,7 @@ def test_manifests_cover_every_midgut_and_ovary_pair():
     assert "ovary_paper" not in contrasts
     assert "crop" not in contrasts
 
-    for dataset_key in ("midgut", "elife", "yedlin"):
+    for dataset_key in ("midgut", "elife", "yedlin", "atlas"):
         conditions = (
             datasets[dataset_key].samples["condition"].drop_duplicates().tolist()
         )
@@ -43,8 +44,8 @@ def test_manifests_cover_every_midgut_and_ovary_pair():
             for contrast in contrasts[dataset_key]
         }
         assert actual_pairs == expected_pairs
-        if dataset_key == "yedlin":
-            # Yedlin conditions have 3-4 replicates each.
+        if dataset_key in ("yedlin", "atlas"):
+            # Yedlin and atlas conditions have 3-8 replicates each.
             assert all(
                 min(contrast_sample_counts(datasets[dataset_key], contrast)) >= 3
                 for contrast in contrasts[dataset_key]

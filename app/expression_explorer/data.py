@@ -46,6 +46,7 @@ DATASET_ORDER = (
     "ovary_paper",
     "elife",
     "neuro_ru",
+    "atlas",
     "midgut",
     "yedlin",
     "crop",
@@ -296,6 +297,54 @@ def _load_bmc_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFrame
     samples["reproductive_state"] = samples["condition_label"]
     samples = samples.set_index("sample", drop=False).reindex(list(sample_columns))
     return samples
+
+
+ATLAS_TISSUE_CODES = {
+    "An": "antenna",
+    "At": "abdominal tip",
+    "Br": "brain",
+    "FL": "forelegs",
+    "HL": "hindlegs",
+    "ML": "midlegs",
+    "Os": "proboscis",
+    "Ov": "ovaries",
+    "Pa": "palps",
+    "Rs": "rostrum",
+}
+
+
+def _load_atlas_reprocessed_samples(sample_columns: Iterable[str]) -> pd.DataFrame:
+    """Reprocessed 2016 atlas samples are named Fe_An_BF_1 / Ma_At_1 (sex, tissue
+    code, feeding state for females, replicate), sometimes with an nf-core `.1`
+    dedup suffix. The reprocessing covers a few libraries absent from the shipped
+    paper metadata table, so everything derives from the name."""
+    samples = pd.DataFrame({"sample": list(sample_columns)})
+    library = samples["sample"].str.replace(r"\.[0-9]+$", "", regex=True)
+    parts = library.str.split("_")
+    bad = sorted(
+        name
+        for name, part in zip(library, parts)
+        if part[0] not in {"Fe", "Ma"}
+        or part[1] not in ATLAS_TISSUE_CODES
+        or (part[0] == "Fe" and part[2] not in {"BF", "O", "SF"})
+    )
+    if bad:
+        raise ValueError(f"Unrecognized atlas sample names: {bad}")
+    samples["sex"] = np.where(parts.str[0].eq("Ma"), "male", "female")
+    samples["tissue"] = parts.str[1].map(ATLAS_TISSUE_CODES)
+    feeding = np.where(parts.str[0].eq("Ma"), "male", parts.str[2])
+    feeding_label = pd.Series(feeding, index=samples.index).map(CONDITION_LABELS)
+    samples["tissue_condition"] = samples["tissue"].str.title() + ", " + feeding_label
+    samples["condition_label"] = samples["tissue_condition"]
+    samples["reproductive_state"] = feeding_label
+    # The DESeq2 contrasts name conditions by tissue + feeding prefix (Fe_An_BF).
+    samples["condition"] = library.str.replace(r"_[0-9]+$", "", regex=True)
+    samples["replicate"] = library.str.extract(r"_([0-9]+)$")[0]
+    samples["timepoint"] = "not_applicable"
+    samples = samples.sort_values(
+        ["tissue", "sex", "condition", "sample"], kind="stable"
+    )
+    return samples.set_index("sample", drop=False)
 
 
 def _load_elife_samples(path: Path, sample_columns: Iterable[str]) -> pd.DataFrame:
@@ -643,6 +692,23 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "Midgut (reprocessed), blood-meal time course",
         "Nadav Shai, Vosshall lab midgut RNA-seq",
     )
+    atlas_path = expression_dir / "atlas_star_salmon_gene_tpm.tsv.gz"
+    atlas_columns = pd.read_csv(
+        atlas_path, sep="\t", compression="gzip", nrows=0
+    ).columns
+    atlas_samples = _load_atlas_reprocessed_samples(
+        [c for c in atlas_columns if c not in {"gene_id", "gene_name"}]
+    )
+    atlas = load_nfcore_dataset(
+        atlas_path,
+        "atlas",
+        crosswalk,
+        label="Atlas (reprocessed), tissue atlas",
+        paper="Matthews et al. raw reads, our nf-core reprocessing",
+        annotation_version="AaegL5, VectorBase 58 + Jové et al. 2019",
+        samples=atlas_samples,
+    )
+
     yedlin = star_salmon_dataset(
         "yedlin_star_salmon_gene_tpm.tsv.gz",
         "yedlin",
@@ -687,6 +753,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
             values=legacy_values,
             samples=legacy_samples,
         ),
+        "atlas": atlas,
         "midgut": midgut,
         "yedlin": yedlin,
         "crop": crop,

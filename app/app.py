@@ -312,7 +312,7 @@ datasets = datasets_resource(DATA_SCHEMA_VERSION)
 # Datasets hidden until the viewer unlocks them from the footer. The password is
 # checked server-side against a SHA-256 digest, so private data is never sent to
 # the browser for a locked session.
-PRIVATE_DATASET_KEYS = frozenset({"crop"})
+PRIVATE_DATASET_KEYS = frozenset({"crop", "yedlin"})
 _PRIVATE_PASSWORD_SHA256 = "a7e70ed2033498dc9e9852fb666b72bf7a6abcff8dd22d86f165b5c0989c88fa"
 
 
@@ -1083,6 +1083,8 @@ def default_grouping(dataset) -> tuple[str, str]:
         return "condition_label", "Sex + blood-meal time"
     if dataset.key == "yedlin":
         return "condition_label", "Tissue + blood-meal time"
+    if dataset.key == "atlas":
+        return "tissue_condition", "Tissue + condition"
     return "sample", "Sample"
 
 
@@ -1109,6 +1111,12 @@ def sample_groupings(dataset) -> list[tuple[str, str]]:
             ("tissue", "Tissue"),
             ("timepoint", "Blood-meal time"),
             ("condition_label", "Tissue + blood-meal time"),
+        ],
+        "atlas": [
+            ("sex", "Sex"),
+            ("tissue", "Anatomy"),
+            ("reproductive_state", "Feeding / reproductive state"),
+            ("tissue_condition", "Tissue + condition"),
         ],
     }.get(dataset.key, [])
     return [
@@ -1662,7 +1670,8 @@ def render_home() -> None:
         |---|---|---|
         | **Ovary (paper)** | Published TPM supplement from Venkataraman et al., eLife 2023 (`PRJNA796320`) | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
         | **Ovary (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts over the same 33 raw samples | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
-        | **Atlas (paper)** | Published neurotranscriptome matrices (`AaegL.RU` and legacy `AaegL3.3`) from Matthews et al., BMC Genomics 2016 (`PRJNA236239`) | Reprocessing outstanding |
+        | **Atlas (paper)** | Published neurotranscriptome matrices (`AaegL.RU` and legacy `AaegL3.3`) from Matthews et al., BMC Genomics 2016 (`PRJNA236239`) | See Atlas (reprocessed) |
+        | **Atlas (reprocessed)** | Our STAR + Salmon gene TPM matrix over the same raw reads and all 378 pairwise DESeq2 contrasts | Same raw data as Atlas (paper) |
         | **Midgut (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | No published counterpart |
         | **Fat body & Malpighian tubules (reprocessed)** | Our STAR + Salmon gene TPM matrix over the blood-meal time course and all 66 pairwise DESeq2 contrasts | No published counterpart |
         | **Crop (reprocessed)** | Our STAR + Salmon gene TPM matrix. Single condition, so no differential contrasts exist | No published counterpart |

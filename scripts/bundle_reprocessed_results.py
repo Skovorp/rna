@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STAGING = ROOT / ".staging"
 EXPRESSION = ROOT / "expression"
 
-DATASETS = ("ovary", "midgut", "crop", "yedlin")
+DATASETS = ("ovary", "midgut", "crop", "yedlin", "atlas")
 
 
 def condition_from_sample(name: str) -> str:

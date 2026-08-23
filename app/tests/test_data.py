@@ -29,6 +29,7 @@ def test_dataset_dimensions_and_sample_metadata():
         "neuro_legacy",
         "midgut",
         "yedlin",
+        "atlas",
         "crop",
     }
     assert datasets["neuro_ru"].values.shape == (16_176, 122)
@@ -37,6 +38,7 @@ def test_dataset_dimensions_and_sample_metadata():
     assert datasets["elife"].values.shape[1] == 33
     assert datasets["midgut"].values.shape[1] == 24
     assert datasets["yedlin"].values.shape[1] == 47
+    assert datasets["atlas"].values.shape[1] == 125
     assert datasets["crop"].values.shape[1] == 3
     for dataset in datasets.values():
         assert dataset.samples.index.tolist() == dataset.sample_columns
