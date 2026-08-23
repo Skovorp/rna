@@ -10,7 +10,10 @@ import re
 from urllib.parse import urlencode
 
 
-UCSC_CELL_BROWSER = "https://cells.ucsc.edu/"
+# Served through our own nginx proxy (deploy/vps/nginx-rna-atlas.conf), which
+# patches out the cell browser's first-visit tutorial popup. The path is
+# relative so iframes and links resolve against the deployed origin.
+UCSC_CELL_BROWSER = "/ucsc/"
 
 
 def _normalize(value: object) -> str:
