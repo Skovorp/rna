@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import numpy as np
 from streamlit.testing.v1 import AppTest
 
 
@@ -121,6 +122,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "**Ovary (paper)**" in home_html
     assert "**Ovary (reprocessed)**" in home_html
     assert "**Atlas (paper)**" in home_html
+    assert "**Atlas (reprocessed)**" in home_html
     assert "**Midgut (reprocessed)**" in home_html
     assert "**Crop (reprocessed)**" in home_html
     assert "identical* pipeline" in home_html
@@ -128,6 +130,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     # Comparisons and Methods are reachable as inline links, not just from the
     # page-link buttons at the bottom.
     assert home_html.count("(/Ovary_paper_vs_reprocessed)") >= 3
+    assert home_html.count("(/Atlas_paper_vs_reprocessed)") >= 3
     assert "(/Methods)" in home_html
     # The bottom page-link duplicate of the ovary comparison was removed.
     assert "Ovary: paper vs reprocessed comparison" not in APP.read_text()
@@ -268,8 +271,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert expression_grouping.value == "annotation"
     assert include_dataset_genes.value is False
     assert any(
-        "https://cells.ucsc.edu/?ds=mosquito+all&amp;gene=Ir25a" in element.value
-        or "https://cells.ucsc.edu/?ds=mosquito+all&gene=Ir25a" in element.value
+        "/ucsc/?ds=mosquito+all&amp;gene=Ir25a" in element.value
+        or "/ucsc/?ds=mosquito+all&gene=Ir25a" in element.value
         for element in app.markdown
     )
     assert any(
@@ -367,7 +370,7 @@ def test_gene_atlas_umap_can_add_sample_metadata_plot_below(monkeypatch):
         if "Open sample UMAP in a new tab" in element.value
     ]
     assert split_links == [
-        "[Open sample UMAP in a new tab](https://cells.ucsc.edu/?ds=mosquito+t012&meta=sample)"
+        "[Open sample UMAP in a new tab](/ucsc/?ds=mosquito+t012&meta=sample)"
     ]
     captions = " ".join(element.value for element in app.caption)
     assert "Expression: Ir25a" in captions
@@ -925,12 +928,32 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
     assert "Methods page" in captions
     assert "Significant genes are gold and drawn last" in captions
     assert "Welch" not in captions
-    contrasts = next(
-        selectbox
-        for selectbox in app.selectbox
-        if selectbox.label == "Contrast: target vs reference"
+    target = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Target"
     )
-    assert len(contrasts.options) == 28
+    reference = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Reference"
+    )
+    assert len(target.options) == 8
+    assert len(reference.options) == 7
+    assert target.value != reference.value
+    original_target = target.value
+    original_reference = reference.value
+    original_fold_change = result_tables[0]["Log₂ fold change"].to_numpy()
+
+    target.set_value(original_reference).run()
+    reference = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Reference"
+    )
+    reference.set_value(original_target).run()
+    assert not app.exception, [exception.message for exception in app.exception]
+    reversed_table = next(
+        frame.value for frame in app.dataframe if "FDR" in frame.value.columns
+    )
+    assert np.allclose(
+        reversed_table["Log₂ fold change"], -original_fold_change, equal_nan=True
+    )
+
     fdr_threshold = next(
         widget for widget in app.number_input if widget.label == "FDR threshold"
     )
@@ -959,12 +982,14 @@ def test_ovary_differential_expression_has_every_pair(monkeypatch):
     study.set_value("elife").run()
 
     assert not app.exception, [exception.message for exception in app.exception]
-    contrasts = next(
-        selectbox
-        for selectbox in app.selectbox
-        if selectbox.label == "Contrast: target vs reference"
+    target = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Target"
     )
-    assert len(contrasts.options) == 55
+    reference = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Reference"
+    )
+    assert len(target.options) == 11
+    assert len(reference.options) == 10
     result_tables = [
         frame.value for frame in app.dataframe if "FDR" in frame.value.columns
     ]
@@ -990,8 +1015,7 @@ def test_neurotranscriptome_differential_expression_is_not_available(monkeypatch
     assert "never computes differential-expression statistics from TPM" in rendered_text
     assert "only for our reprocessed datasets" in rendered_text
     assert not any(
-        selectbox.label == "Contrast: target vs reference"
-        for selectbox in app.selectbox
+        selectbox.label in {"Target", "Reference"} for selectbox in app.selectbox
     )
 
 

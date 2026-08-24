@@ -9,7 +9,7 @@ It also includes the Nadav Shai / Vosshall lab midgut RNA-seq dataset: 24 paired
 
 The Genes page also embeds the [UCSC Aedes aegypti Mosquito Cell Atlas](https://cells.ucsc.edu/?ds=mosquito+all), from Goldman OV et al. (2025), *A single-nucleus transcriptomic atlas of the adult Aedes aegypti mosquito*, Cell 188:7267–7290.e26, DOI [10.1016/j.cell.2025.10.008](https://doi.org/10.1016/j.cell.2025.10.008). This is a deep-linked external visualization, not a locally reprocessed expression dataset. Its values are normalized single-nucleus expression rather than TPM.
 
-The files under `expression/` contain the validated gene-level Salmon matrices for the ovary and midgut datasets, faithful tabular extracts of the 2016 study's published supplementary tables, and every pairwise DESeq2 contrast produced by `nf-core/differentialabundance` 2.0.0: 28 contrasts across the eight midgut conditions and 55 across the eleven ovary conditions. TPM values are descriptive normalized abundance, not raw read counts; the app displays differential-expression statistics only from the precomputed count-aware pipeline outputs.
+The files under `expression/` contain the validated gene-level Salmon matrices for every reprocessed dataset, faithful tabular extracts of the published matrices, and all precomputed pairwise DESeq2 results: 55 ovary contrasts, 378 tissue-atlas contrasts, 28 midgut contrasts, and 66 private fat-body / Malpighian-tubule contrasts. TPM values are descriptive normalized abundance, not raw read counts; the app displays differential-expression statistics only from the precomputed count-aware pipeline outputs.
 
 `expression/ucsc_mosquito_cell_atlas_genes.json.gz` is a compact routing manifest derived from each UCSC view's public `exprMatrix.json` and `dataset.json`. It records which exact identifiers can be passed as `gene=` for all 24 leaf datasets, plus the categorical metadata fields and author-curated default genes used to configure the embedded multi-gene dot plot. Refresh it with `scripts/update_ucsc_cell_atlas_manifest.py`; no UCSC expression matrix is downloaded or analyzed by the app.
 
@@ -26,11 +26,18 @@ closely they agree.
 | Ovary (reprocessed) | Our STAR + Salmon gene TPM from all 33 `PRJNA796320` raw samples | All 55 pairwise DESeq2 contrasts |
 | Atlas (paper), AaegL.RU | Matthews et al. published `AaegL.RU` TPM matrix | Not available |
 | Atlas (paper), legacy AaegL3.3 | Matthews et al. published legacy matrix, retained for identifier compatibility | Not available |
+| Atlas (reprocessed) | Our STAR + Salmon gene TPM from 125 `PRJNA236239` raw libraries | All 378 pairwise DESeq2 contrasts |
 | Midgut (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab midgut raw reads | All 28 pairwise DESeq2 contrasts |
+| Fat body & Malpighian tubules (reprocessed, private) | Our STAR + Salmon gene TPM from the Vosshall lab raw reads | All 66 pairwise DESeq2 contrasts |
 | Crop (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab crop raw reads | Not applicable — a single condition, so no contrasts exist |
 
-Reprocessing of the Matthews et al. neurotranscriptome (the "atlas" dataset) is
-still outstanding; only the published version is shown.
+The paper-vs-reprocessed tissue-atlas comparison uses all 122 samples present in
+the published matrix. The reprocessing recovered three additional libraries
+(`Fe_An_O_1`, `Fe_Br_SF_2`, and `Fe_Br_SF_3`); the app displays them in the
+reprocessed atlas, but the comparison excludes them because no published TPM
+profiles exist for those samples. Twenty-two repeated historical identifiers in
+the paper matrix are collapsed by summing TPM before direct one-to-one gene-ID
+matching.
 
 Every reprocessed dataset above went through the *identical* pipeline,
 reference, and parameters. The exact workflow, versions, and parameter files
@@ -40,13 +47,18 @@ do not restate pipeline parameters elsewhere.
 
 ## Paper-vs-reprocessed comparisons
 
-`app/assets/ovary_comparison/` holds the self-contained comparison reports
-rendered by the atlas:
+`app/assets/ovary_comparison/` and `app/assets/atlas_comparison/` hold the
+comparison bundles rendered by the atlas:
 
 - `elife_ovary_tpm_full_report.html` -- per-sample and per-gene agreement
   between the published and reprocessed ovary TPM matrices.
-- `elife_ovary_zero_nonzero_transitions.html` -- genes that are exactly zero in
-  one matrix but expressed in the other.
+- `matthews_2016_atlas_tpm_full_report.html` -- the equivalent comparison for
+  the published and reprocessed 2016 tissue-atlas matrices.
 
-The generating analysis, its summary statistics, and the identifier crosswalk
-live under `analysis/results/elife_tpm_comparison/`.
+Each asset directory also contains `figures.json`, which lets Streamlit render
+the charts natively instead of embedding the standalone report in an iframe.
+
+The generating ovary analysis, its summary statistics, and the identifier
+crosswalk live under `analysis/results/elife_tpm_comparison/`. The corresponding
+tissue-atlas outputs live under `analysis/results/atlas_tpm_comparison/`; that
+comparison uses direct AaegL.RU identifiers rather than a coordinate crosswalk.

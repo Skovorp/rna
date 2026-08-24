@@ -38,9 +38,9 @@ st.page_link("app.py", label="Back to expression explorer", icon="⬅️")
 st.title("Reprocessing methods")
 st.markdown(
     "Pipeline, reference, and parameters used for every dataset we "
-    "reprocessed from raw reads (ovary, midgut, crop). Paper datasets shown "
-    "in the atlas keep their published values and are not covered by these "
-    "methods."
+    "reprocessed from raw reads (ovary, tissue atlas, midgut, fat body and "
+    "Malpighian tubules, crop). Paper datasets shown in the atlas keep their "
+    "published values and are not covered by these methods."
 )
 
 if not METHODS_PATH.is_file():

@@ -1,0 +1,123 @@
+sample	published_zero_to_reanalysis_nonzero	published_nonzero_to_reanalysis_zero	published_zero_to_reanalysis_ge_1	published_ge_1_to_reanalysis_zero	published_zero_to_reanalysis_ge_10	published_ge_10_to_reanalysis_zero	reproductive_state	replicate
+Fe_An_BF_1	280	80	56	40	30	25	Antenna	1
+Fe_An_BF_2	541	81	70	42	33	27	Antenna	2
+Fe_An_BF_3	531	83	64	47	32	31	Antenna	3
+Fe_An_BF_4	505	87	66	46	31	31	Antenna	4
+Fe_An_O_2	217	88	54	44	28	30	Antenna	2
+Fe_An_O_3	612	72	63	43	30	31	Antenna	3
+Fe_An_O_4	550	81	64	44	31	30	Antenna	4
+Fe_An_SF_1	513	96	66	32	37	18	Antenna	1
+Fe_An_SF_2	149	129	61	37	31	14	Antenna	2
+Fe_An_SF_3	162	134	63	42	32	22	Antenna	3
+Fe_An_SF_4	171	113	64	41	35	17	Antenna	4
+Fe_An_SF_5	465	73	60	37	30	26	Antenna	5
+Fe_An_SF_6	537	72	56	41	28	30	Antenna	6
+Fe_An_SF_7	506	72	62	38	31	31	Antenna	7
+Fe_An_SF_8	529	88	68	42	32	30	Antenna	8
+Fe_At_O_1	163	140	68	39	38	23	Abdominal Tip	1
+Fe_At_O_2	162	136	64	35	34	18	Abdominal Tip	2
+Fe_At_O_3	159	150	62	38	37	22	Abdominal Tip	3
+Fe_At_O_4	161	116	62	31	38	19	Abdominal Tip	4
+Fe_At_O_5	504	81	69	47	45	32	Abdominal Tip	5
+Fe_At_O_6	506	79	64	47	40	35	Abdominal Tip	6
+Fe_At_O_7	487	89	68	46	41	28	Abdominal Tip	7
+Fe_At_SF_1	590	95	69	46	38	29	Abdominal Tip	1
+Fe_At_SF_2	604	90	62	43	36	22	Abdominal Tip	2
+Fe_At_SF_3	577	101	63	44	38	26	Abdominal Tip	3
+Fe_Br_BF_1	550	73	72	40	39	27	Brain	1
+Fe_Br_BF_2	593	79	70	44	40	30	Brain	2
+Fe_Br_BF_3	629	65	66	35	35	25	Brain	3
+Fe_Br_BF_4	645	74	71	45	46	33	Brain	4
+Fe_Br_O_1	587	73	72	46	37	30	Brain	1
+Fe_Br_O_2	444	100	66	45	38	33	Brain	2
+Fe_Br_O_3	594	78	70	46	43	38	Brain	3
+Fe_Br_O_4	553	74	69	40	41	33	Brain	4
+Fe_Br_SF_1	247	130	75	34	45	19	Brain	1
+Fe_Br_SF_4	189	167	77	67	42	38	Brain	4
+Fe_Br_SF_5	626	49	67	36	37	25	Brain	5
+Fe_Br_SF_6	612	70	63	46	38	32	Brain	6
+Fe_Br_SF_7	650	79	77	45	43	34	Brain	7
+Fe_Br_SF_8	666	74	75	43	44	32	Brain	8
+Fe_FL_O_1	666	80	61	44	33	27	Forelegs	1
+Fe_FL_O_2	187	180	66	55	41	22	Forelegs	2
+Fe_FL_O_3	168	169	50	32	30	19	Forelegs	3
+Fe_FL_O_4	166	183	58	47	39	22	Forelegs	4
+Fe_FL_O_5	193	168	63	47	34	22	Forelegs	5
+Fe_FL_O_6	649	81	64	39	36	21	Forelegs	6
+Fe_FL_O_7	753	77	62	39	32	25	Forelegs	7
+Fe_FL_SF_1	854	95	72	49	34	32	Forelegs	1
+Fe_FL_SF_2	788	70	64	40	33	29	Forelegs	2
+Fe_FL_SF_3	730	64	62	34	31	20	Forelegs	3
+Fe_HL_BF_1	615	101	65	36	34	15	Hindlegs	1
+Fe_HL_BF_2	509	83	66	41	36	22	Hindlegs	2
+Fe_HL_BF_3	664	87	63	40	30	20	Hindlegs	3
+Fe_HL_BF_4	698	64	59	33	31	18	Hindlegs	4
+Fe_HL_O_1	245	179	56	45	33	22	Hindlegs	1
+Fe_HL_O_2	173	163	52	35	35	17	Hindlegs	2
+Fe_HL_O_3	184	181	59	38	38	19	Hindlegs	3
+Fe_HL_O_4	173	173	54	34	34	15	Hindlegs	4
+Fe_HL_O_5	189	183	57	48	38	19	Hindlegs	5
+Fe_HL_O_6	685	57	53	35	28	22	Hindlegs	6
+Fe_HL_O_7	694	65	55	37	27	25	Hindlegs	7
+Fe_HL_O_8	728	81	63	42	36	24	Hindlegs	8
+FE_HL_SF_1	667	50	57	26	26	16	Hindlegs	1
+FE_HL_SF_2	642	87	63	38	34	21	Hindlegs	2
+FE_HL_SF_3	640	86	68	36	41	21	Hindlegs	3
+FE_HL_SF_4	749	83	60	40	35	22	Hindlegs	4
+FE_HL_SF_5	705	94	69	48	34	25	Hindlegs	5
+FE_HL_SF_6	662	59	54	34	29	22	Hindlegs	6
+Fe_ML_O_1	775	82	61	39	34	25	Midlegs	1
+Fe_ML_O_2	170	147	53	25	36	11	Midlegs	2
+Fe_ML_O_3	175	171	61	45	35	27	Midlegs	3
+Fe_ML_O_4	166	169	54	39	33	19	Midlegs	4
+Fe_ML_O_5	845	76	63	44	32	29	Midlegs	5
+Fe_ML_O_6	755	88	64	44	35	30	Midlegs	6
+Fe_ML_O_7	169	162	55	39	33	17	Midlegs	7
+Fe_ML_SF_1	903	98	72	49	36	27	Midlegs	1
+Fe_ML_SF_2	820	77	69	45	36	28	Midlegs	2
+Fe_ML_SF_3	783	75	64	43	31	29	Midlegs	3
+Fe_Os_SF_1	201	173	88	71	41	31	Proboscis	1
+Fe_Os_SF_2	185	167	81	64	41	28	Proboscis	2
+Fe_Os_SF_3	227	160	81	54	39	27	Proboscis	3
+Fe_Os_SF_4	260	158	98	69	42	25	Proboscis	4
+Fe_Os_SF_5	156	127	51	28	30	18	Proboscis	5
+Fe_Ov_O_1	169	158	58	28	42	17	Ovaries	1
+Fe_Ov_O_2	199	174	65	34	44	17	Ovaries	2
+Fe_Ov_O_3	207	157	61	30	41	16	Ovaries	3
+Fe_Ov_O_4	178	159	47	23	38	16	Ovaries	4
+Fe_Ov_SF_1	163	150	53	32	38	16	Ovaries	1
+Fe_Ov_SF_2	146	189	51	27	38	16	Ovaries	2
+Fe_Ov_SF_3	174	187	66	44	45	22	Ovaries	3
+Fe_Pa_SF_1	236	150	59	33	35	16	Palps	1
+Fe_Pa_SF_2	192	185	96	85	39	38	Palps	2
+Fe_Pa_SF_3	172	188	70	54	37	29	Palps	3
+Fe_Pa_SF_4	195	149	64	37	37	17	Palps	4
+Fe_Rs_BF_1	522	70	56	43	32	31	Rostrum	1
+Fe_Rs_BF_2	514	76	59	43	36	32	Rostrum	2
+Fe_Rs_BF_3	549	72	61	46	37	28	Rostrum	3
+Fe_Rs_SF_1	531	72	59	44	34	27	Rostrum	1
+Fe_Rs_SF_2	602	78	69	47	37	31	Rostrum	2
+Fe_Rs_SF_3	498	84	63	46	34	32	Rostrum	3
+Ma_An_1	167	178	65	45	39	27	Antenna	1
+Ma_An_2	143	184	54	35	35	23	Antenna	2
+Ma_An_3	169	200	63	43	40	27	Antenna	3
+Ma_At_1	213	112	52	33	22	14	Abdominal Tip	1
+Ma_At_2	162	140	49	29	23	15	Abdominal Tip	2
+Ma_At_3	186	142	58	31	24	14	Abdominal Tip	3
+Ma_Br_1	161	159	69	46	43	27	Brain	1
+Ma_Br_2	156	171	70	45	45	23	Brain	2
+Ma_Br_3	154	155	67	36	43	20	Brain	3
+Ma_FL_1	173	152	58	35	39	22	Forelegs	1
+Ma_FL_2	187	183	53	44	34	23	Forelegs	2
+Ma_FL_3	183	155	66	41	38	24	Forelegs	3
+Ma_HL_1	226	154	55	37	33	19	Hindlegs	1
+Ma_HL_2	174	152	64	37	34	17	Hindlegs	2
+Ma_HL_3	192	150	71	36	37	18	Hindlegs	3
+Ma_HL_4	631	64	51	36	29	24	Hindlegs	4
+Ma_HL_5	635	59	54	30	33	22	Hindlegs	5
+Ma_ML_1	173	153	64	40	38	23	Midlegs	1
+Ma_ML_2	173	161	56	38	35	18	Midlegs	2
+Ma_ML_3	182	171	61	37	39	22	Midlegs	3
+Ma_Rs_1	461	78	65	42	37	28	Rostrum	1
+Ma_Rs_2	483	71	65	42	37	28	Rostrum	2
+Ma_Rs_3	359	65	61	34	34	24	Rostrum	3

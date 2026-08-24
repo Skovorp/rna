@@ -1,6 +1,6 @@
 # RNA-seq processing & differential expression — methodology
 
-All datasets on this page (**ovary**, **crop**, **midgut**) were processed with the *identical* pipeline, reference, and parameters described below. The only per-dataset difference is the input samplesheet.
+All reprocessed datasets on this site (**ovary**, **tissue atlas**, **midgut**, **fat body & Malpighian tubules**, and **crop**) used the *identical* pipeline, reference, and parameters described below. The only per-dataset difference is the input samplesheet.
 
 ## 1. Quantification — nf-core/rnaseq 3.14.0
 
@@ -38,7 +38,7 @@ nextflow run nf-core/rnaseq \
 
 ## 2. Differential expression — DESeq2, all pairwise contrasts
 
-DE was run identically for every dataset with ≥2 conditions (ovary, midgut; crop contains a single condition and therefore has no contrasts), using DESeq2 inside the nf-core biocontainer:
+DE was run identically for every dataset with ≥2 conditions (ovary, tissue atlas, midgut, and fat body / Malpighian tubules; crop contains a single condition), using DESeq2 inside the nf-core biocontainer:
 
 ```bash
 Rscript pairwise_de.R \
@@ -49,7 +49,7 @@ Rscript pairwise_de.R \
 Exact procedure (see `pairwise_de.R` for the source):
 
 1. **Input:** Salmon length-scaled gene counts, rounded to integers.
-2. **Condition assignment:** parsed from sample names (`Fe.<Tissue>.<condition>.<replicate>`); every condition has ≥2 biological replicates.
+2. **Condition assignment:** parsed from each dataset's sample names after removing replicate and nf-core duplicate-name suffixes; every tested condition has ≥2 biological replicates.
 3. **Model:** `DESeqDataSetFromMatrix(..., design = ~condition)`; genes with total count < 10 across all samples removed; standard `DESeq()` (median-of-ratios size factors, dispersion shrinkage, Wald test).
 4. **Contrasts:** every pairwise combination of conditions. Log2 fold changes shrunk with `lfcShrink(type = "ashr")` (falling back to unshrunk `results()` if ashr is unavailable in the container).
 5. **Multiple testing:** Benjamini–Hochberg adjusted p-values (`padj`); significance threshold used in summaries: `padj < 0.05`.

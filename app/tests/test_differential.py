@@ -5,10 +5,13 @@ import numpy as np
 
 from expression_explorer.data import load_datasets
 from expression_explorer.differential import (
+    contrast_for_pair,
     contrast_label,
     contrast_sample_counts,
+    contrast_values,
     load_differential_contrasts,
     load_differential_results,
+    orient_differential_results,
 )
 
 
@@ -69,3 +72,32 @@ def test_differential_results_are_loaded_without_recomputing_statistics():
     assert np.isclose(
         results["fold_change"], 2 ** results["log2_fold_change"]
     ).all()
+
+
+def test_precomputed_contrast_can_be_displayed_in_either_direction():
+    contrasts = load_differential_contrasts(EXPRESSION_DIR)["midgut"]
+    contrast = contrasts[0]
+    dataset = load_datasets(EXPRESSION_DIR)["midgut"]
+    results = load_differential_results(dataset, contrast)
+
+    assert len(contrast_values(contrasts)) == 8
+    assert (
+        contrast_for_pair(contrasts, contrast.reference, contrast.target)
+        == contrast
+    )
+
+    reversed_results = orient_differential_results(
+        results, contrast, contrast.reference, contrast.target
+    )
+    assert np.allclose(
+        reversed_results["log2_fold_change"],
+        -results["log2_fold_change"],
+        equal_nan=True,
+    )
+    assert np.allclose(
+        reversed_results["fold_change"],
+        2 ** reversed_results["log2_fold_change"],
+        equal_nan=True,
+    )
+    for column in ("base_mean", "lfc_se", "p_value", "fdr"):
+        assert reversed_results[column].equals(results[column])

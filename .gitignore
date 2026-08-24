@@ -1,4 +1,5 @@
 .DS_Store
+.codex-tmp/
 .pytest_cache/
 .venv/
 __pycache__/
@@ -12,10 +13,11 @@ raw/
 supplementary/
 scripts/*
 !scripts/update_ucsc_cell_atlas_manifest.py
+!scripts/rebuild_atlas_comparison.py
 .staging/
 
-# Derived comparison artifacts; regenerate with scripts/rebuild_ovary_comparison.py.
-# The prepared copies the app serves live in app/assets/ovary_comparison/.
+# Derived comparison artifacts; regenerate with the matching script in scripts/.
+# Prepared copies served live are kept under app/assets/*_comparison/.
 analysis/results/**/*.html
 analysis/results/**/*.png
 

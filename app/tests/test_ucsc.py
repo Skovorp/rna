@@ -18,7 +18,7 @@ MANIFEST = (
 
 def test_cell_browser_url_matches_ucsc_share_format():
     assert cell_browser_url("mosquito/all", "Orco") == (
-        "https://cells.ucsc.edu/?ds=mosquito+all&gene=Orco"
+        "/ucsc/?ds=mosquito+all&gene=Orco"
     )
 
 
@@ -29,14 +29,14 @@ def test_cell_browser_expression_url_supports_multiple_genes_and_grouping():
         "annotation",
         context_gene="Ir25a",
     ) == (
-        "https://cells.ucsc.edu/?ds=mosquito+all&gene=Ir25a&"
+        "/ucsc/?ds=mosquito+all&gene=Ir25a&"
         "exprGene=Ir25a+Orco+AAEL021429&exprMeta=annotation"
     )
 
 
 def test_cell_browser_metadata_url_matches_ucsc_share_format():
     assert cell_browser_metadata_url("mosquito/t012", "sample") == (
-        "https://cells.ucsc.edu/?ds=mosquito+t012&meta=sample"
+        "/ucsc/?ds=mosquito+t012&meta=sample"
     )
 
 

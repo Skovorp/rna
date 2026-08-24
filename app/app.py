@@ -25,10 +25,12 @@ from expression_explorer.data import (
 )
 from expression_explorer.differential import (
     condition_label,
-    contrast_label,
+    contrast_for_pair,
     contrast_sample_counts,
+    contrast_values,
     load_differential_contrasts,
     load_differential_results,
+    orient_differential_results,
 )
 from expression_explorer.ucsc import (
     cell_browser_expression_url,
@@ -1670,8 +1672,8 @@ def render_home() -> None:
         |---|---|---|
         | **Ovary (paper)** | Published TPM supplement from Venkataraman et al., eLife 2023 (`PRJNA796320`) | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
         | **Ovary (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts over the same 33 raw samples | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
-        | **Atlas (paper)** | Published neurotranscriptome matrices (`AaegL.RU` and legacy `AaegL3.3`) from Matthews et al., BMC Genomics 2016 (`PRJNA236239`) | See Atlas (reprocessed) |
-        | **Atlas (reprocessed)** | Our STAR + Salmon gene TPM matrix over the same raw reads and all 378 pairwise DESeq2 contrasts | Same raw data as Atlas (paper) |
+        | **Atlas (paper)** | Published neurotranscriptome matrices (`AaegL.RU` and legacy `AaegL3.3`) from Matthews et al., BMC Genomics 2016 (`PRJNA236239`) | [Paper vs reprocessed](/Atlas_paper_vs_reprocessed) |
+        | **Atlas (reprocessed)** | Our STAR + Salmon gene TPM matrix over the same raw reads and all 378 pairwise DESeq2 contrasts | [Paper vs reprocessed](/Atlas_paper_vs_reprocessed) |
         | **Midgut (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | No published counterpart |
         | **Fat body & Malpighian tubules (reprocessed)** | Our STAR + Salmon gene TPM matrix over the blood-meal time course and all 66 pairwise DESeq2 contrasts | No published counterpart |
         | **Crop (reprocessed)** | Our STAR + Salmon gene TPM matrix. Single condition, so no differential contrasts exist | No published counterpart |
@@ -1689,10 +1691,13 @@ def render_home() -> None:
           agreement, exact zero ↔ non-zero transitions, PCA, and a
           sample-identity check. Pearson r 0.972; 2.8% of gene-sample pairs
           disagree by more than 2 log₂.
+        - [**Tissue atlas: paper vs reprocessed**](/Atlas_paper_vs_reprocessed) —
+          the same checks across 9,605 directly matched genes and all 122 samples
+          present in the published matrix. Pearson r 0.930; 4.1% of gene-sample
+          pairs disagree by more than 2 log₂.
 
-        Atlas (paper) has no comparison yet because its reprocessing is still
-        outstanding. Midgut and crop have no published counterpart to compare
-        against.
+        Midgut, fat body / Malpighian tubules, and crop have no published
+        counterpart to compare against.
 
         ## Other sources
 
@@ -2221,37 +2226,58 @@ elif mode == "Differential expression":
         comparison_dataset = datasets[comparison_key]
         available_contrasts = differential_contrasts.get(comparison_key, [])
         if available_contrasts:
-            selected_contrast_id = st.selectbox(
-                "Contrast: target vs reference",
-                options=[contrast.contrast_id for contrast in available_contrasts],
-                format_func=lambda contrast_id: contrast_label(
-                    comparison_dataset,
-                    next(
-                        contrast
-                        for contrast in available_contrasts
-                        if contrast.contrast_id == contrast_id
+            conditions = contrast_values(available_contrasts)
+            initial_contrast = available_contrasts[0]
+            target_column, reference_column = st.columns(2)
+            with target_column:
+                selected_target = st.selectbox(
+                    "Target",
+                    options=conditions,
+                    index=conditions.index(initial_contrast.target),
+                    format_func=lambda value: condition_label(
+                        comparison_dataset, initial_contrast.variable, value
                     ),
-                ),
-                key="differential_contrast",
+                    key=f"differential_target_{comparison_key}",
+                    help="Positive log₂ fold change means higher expression in this condition.",
+                )
+            reference_options = [
+                value for value in conditions if value != selected_target
+            ]
+            initial_reference = (
+                initial_contrast.reference
+                if initial_contrast.reference in reference_options
+                else reference_options[0]
             )
-            selected_contrast = next(
-                contrast
-                for contrast in available_contrasts
-                if contrast.contrast_id == selected_contrast_id
+            with reference_column:
+                selected_reference = st.selectbox(
+                    "Reference",
+                    options=reference_options,
+                    index=reference_options.index(initial_reference),
+                    format_func=lambda value: condition_label(
+                        comparison_dataset, initial_contrast.variable, value
+                    ),
+                    key=f"differential_reference_{comparison_key}",
+                    help="The target condition is compared against this baseline.",
+                )
+            selected_contrast = contrast_for_pair(
+                available_contrasts, selected_target, selected_reference
             )
-            fdr_threshold = st.number_input(
-                "FDR threshold",
-                min_value=0.001,
-                max_value=1.0,
-                value=0.05,
-                step=0.01,
-                format="%.3f",
-                help="Controls which genes are colored gold, the significant-gene count, and the pass/fail table column.",
-            )
-            filter_text = st.text_input(
-                "Filter results by gene or Stable ID",
-                placeholder="e.g. Ir25a or AAEL005776",
-            ).strip()
+            threshold_column, filter_column = st.columns(2)
+            with threshold_column:
+                fdr_threshold = st.number_input(
+                    "FDR threshold",
+                    min_value=0.001,
+                    max_value=1.0,
+                    value=0.05,
+                    step=0.01,
+                    format="%.3f",
+                    help="Controls which genes are colored gold, the significant-gene count, and the pass/fail table column.",
+                )
+            with filter_column:
+                filter_text = st.text_input(
+                    "Filter results by gene or Stable ID",
+                    placeholder="e.g. Ir25a or AAEL005776",
+                ).strip()
 
     if not available_contrasts:
         st.subheader("NOT AVAILABLE")
@@ -2275,15 +2301,31 @@ elif mode == "Differential expression":
             target_label = condition_label(
                 comparison_dataset,
                 selected_contrast.variable,
-                selected_contrast.target,
+                selected_target,
             )
             reference_label = condition_label(
                 comparison_dataset,
                 selected_contrast.variable,
-                selected_contrast.reference,
+                selected_reference,
             )
-            target_samples, reference_samples = contrast_sample_counts(
+            stored_target_samples, stored_reference_samples = contrast_sample_counts(
                 comparison_dataset, selected_contrast
+            )
+            if selected_target == selected_contrast.target:
+                target_samples, reference_samples = (
+                    stored_target_samples,
+                    stored_reference_samples,
+                )
+            else:
+                target_samples, reference_samples = (
+                    stored_reference_samples,
+                    stored_target_samples,
+                )
+            comparison_results = orient_differential_results(
+                comparison_results,
+                selected_contrast,
+                selected_target,
+                selected_reference,
             )
             plotted_results = comparison_results[comparison_results["ma_plot_eligible"]]
             significant_count = int((plotted_results["fdr"] < fdr_threshold).sum())
@@ -2308,7 +2350,10 @@ elif mode == "Differential expression":
             st.plotly_chart(
                 differential_ma_figure(comparison_results, fdr_threshold),
                 width="stretch",
-                key=f"differential_{comparison_key}_{selected_contrast.contrast_id}",
+                key=(
+                    f"differential_{comparison_key}_"
+                    f"{selected_target}_vs_{selected_reference}"
+                ),
             )
             st.caption(
                 f"{len(plotted_results):,} genes plotted. {omitted_count:,} genes with zero or unavailable DESeq2 base mean / fold change are omitted. The initial view excludes {low_abundance_off_scale:,} extreme low-abundance points and {off_scale_count:,} extreme fold changes; use Plotly zoom to inspect them."
@@ -2401,7 +2446,8 @@ elif mode == "Differential expression":
             ]
             download_table.insert(0, "Reference", reference_label)
             download_table.insert(0, "Target", target_label)
-            download_table.insert(0, "Contrast", selected_contrast.contrast_id)
+            selected_contrast_id = f"{selected_target}_vs_{selected_reference}"
+            download_table.insert(0, "Contrast", selected_contrast_id)
             download_table.insert(0, "Study", comparison_dataset.label)
             download_tsv(
                 "Download all differential-expression results",

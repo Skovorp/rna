@@ -1,4 +1,4 @@
-# eLife ovary TPM comparison
+# Paper-vs-reprocessed TPM comparisons
 
 `compare_elife_tpm.py` compares the authors' published TPM matrix with the
 independent Salmon reanalysis of the same 33 biological samples. It produces a
@@ -23,3 +23,10 @@ The report uses `log2(TPM + 1)` for agreement statistics. By default, PCA uses
 all one-to-one matched genes with no expression or variability cutoff, then
 log-transforms and standardizes each gene across samples. Pass a positive
 `--top-variable-genes` value to run a most-variable-gene sensitivity analysis.
+
+`scripts/rebuild_atlas_comparison.py` adapts the Matthews et al. 2016 AaegL.RU
+paper matrix and the reprocessed tissue-atlas matrix to the same contract. It
+uses the 122 samples present in both sources, collapses 22 repeated historical
+gene identifiers by summing TPM, and matches direct one-to-one stable IDs. The
+three reprocessed libraries without a published counterpart are intentionally
+excluded from the comparison.

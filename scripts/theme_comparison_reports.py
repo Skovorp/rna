@@ -19,7 +19,10 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT_DIR = ROOT / "app" / "assets" / "ovary_comparison"
+REPORT_DIRS = (
+    ROOT / "app" / "assets" / "ovary_comparison",
+    ROOT / "app" / "assets" / "atlas_comparison",
+)
 
 # Matches app/.streamlit/config.toml.
 BACKGROUND = "#0E1518"
@@ -114,9 +117,13 @@ def theme_report(path: Path) -> bool:
 
 
 def main() -> None:
-    reports = sorted(REPORT_DIR.glob("*.html"))
+    reports = sorted(
+        report
+        for report_dir in REPORT_DIRS
+        for report in report_dir.glob("*.html")
+    )
     if not reports:
-        raise SystemExit(f"No reports found in {REPORT_DIR}")
+        raise SystemExit(f"No reports found in {', '.join(map(str, REPORT_DIRS))}")
     for report in reports:
         theme_report(report)
 

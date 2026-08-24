@@ -755,6 +755,7 @@ def add_pair_lines(
 def pca_figure(
     arrays: dict[str, np.ndarray],
     metadata: pd.DataFrame,
+    group_label: str = "Reproductive state",
 ) -> go.Figure:
     pv = arrays["published_variance"] * 100
     rv = arrays["reanalysis_variance"] * 100
@@ -767,7 +768,7 @@ def pca_figure(
         subplot_titles=(
             f"Published PCA (PC1+PC2 {pv.sum():.1f}%)",
             f"Reanalysis PCA (PC1+PC2 {rv.sum():.1f}%)",
-            f"Joint PCA of all 66 profiles (PC1+PC2 {jv.sum():.1f}%)",
+            f"Joint PCA of all {2 * len(metadata)} profiles (PC1+PC2 {jv.sum():.1f}%)",
         ),
         vertical_spacing=0.08,
     )
@@ -830,7 +831,7 @@ def pca_figure(
         height=1750,
         title="Sample-level PCA comparison (joint PCA: circle = published, × = reanalysis)",
         template="plotly_white",
-        legend={"title": "Reproductive state", "orientation": "v"},
+        legend={"title": group_label, "orientation": "v"},
         margin={"l": 65, "r": 285, "t": 105, "b": 65},
     )
     return figure
@@ -961,6 +962,11 @@ def render_report(
     zero_transition_genes: pd.DataFrame,
     pca_plot: go.Figure,
     correlation_plot: go.Figure,
+    report_title: str = "Published versus reanalysed ovary TPM",
+    report_subtitle: str = (
+        "Venkataraman et al. eLife 2023, 33 matched biological samples, "
+        "log expression is <code>log2(TPM + 1)</code>."
+    ),
 ) -> None:
     agreement = summary["agreement"]
     discordance = summary["discordance"]
@@ -1015,7 +1021,7 @@ def render_report(
     output.write_text(
         f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>eLife ovary TPM comparison</title>
+<title>{escape(report_title)}</title>
 <style>
 body {{ margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #0f172a; background: #f8fafc; }}
 main {{ max-width: 1450px; margin: 0 auto; padding: 36px 28px 70px; }}
@@ -1034,8 +1040,8 @@ th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) {{ text-align: 
 th {{ color: #475569; background: #f8fafc; position: sticky; top: 0; }}
 code {{ background: #f1f5f9; padding: 2px 5px; border-radius: 5px; }}
 </style></head><body><main>
-<h1>Published versus reanalysed ovary TPM</h1>
-<div class="subtitle">Venkataraman et al. eLife 2023, 33 matched biological samples, log expression is <code>log2(TPM + 1)</code>.</div>
+<h1>{escape(report_title)}</h1>
+<div class="subtitle">{report_subtitle}</div>
 <div class="cards">{cards}</div>
 <section>{error_html}<p class="note">Errors are reanalysis minus published values. The diagonal bands are forced by the coordinates: when published TPM is zero, error = +2 × average log-expression; when reanalysis TPM is zero, error = −2 × average log-expression. Of the {discordance['abs_log2_error_gt_2_count']:,} pairs with absolute error &gt;2, {discordance['severe_pairs_with_exact_zero_fraction']:.1%} contain an exact zero. Published TPM was ≥10 while reanalysis TPM was zero in {discordance['published_tpm_ge_10_reanalysis_zero_count']:,} pairs; the reverse occurred in {discordance['reanalysis_tpm_ge_10_published_zero_count']:,}. Density plots clip only the outer 0.1% for readable axes; summary metrics use the full distribution.</p></section>
 <section>{zero_transition_html}<p class="note"><strong>Green</strong> denotes published 0 → reanalysis nonzero; <strong>red</strong> denotes published nonzero → reanalysis 0. An exact zero can mean no compatible fragments were assigned under that quantification model; it is not a universal biological absence threshold. Threshold bars therefore ask how large the value is on the nonzero side. There are {zero_transitions['published_zero_to_reanalysis_nonzero_count']:,} exact published 0 → reanalysis nonzero pairs and {zero_transitions['published_nonzero_to_reanalysis_zero_count']:,} published nonzero → reanalysis 0 pairs. At a nonzero-side threshold of 1 TPM these fall to {zero_transitions['published_zero_to_reanalysis_ge_1_count']:,} and {zero_transitions['published_ge_1_to_reanalysis_zero_count']:,}; at 10 TPM, {zero_transitions['published_zero_to_reanalysis_ge_10_count']:,} and {zero_transitions['published_ge_10_to_reanalysis_zero_count']:,}.</p>{zero_tables}</section>
@@ -1201,6 +1207,20 @@ def main() -> None:
         help="Number of most-variable genes for PCA; 0 uses all matched genes",
     )
     parser.add_argument("--min-mean-tpm", type=float, default=0.0)
+    parser.add_argument("--group-label", default="Reproductive state")
+    parser.add_argument(
+        "--report-title", default="Published versus reanalysed ovary TPM"
+    )
+    parser.add_argument(
+        "--report-subtitle",
+        default=(
+            "Venkataraman et al. eLife 2023, 33 matched biological samples, "
+            "log expression is <code>log2(TPM + 1)</code>."
+        ),
+    )
+    parser.add_argument(
+        "--report-filename", default="elife_ovary_tpm_full_report.html"
+    )
     args = parser.parse_args()
 
     published, published_samples = load_matrix(args.published)
@@ -1332,7 +1352,7 @@ def main() -> None:
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     error_plot = error_figure(published_log, reanalysis_log, per_sample)
-    pca_plot = pca_figure(arrays, metadata)
+    pca_plot = pca_figure(arrays, metadata, args.group_label)
     render_report(
         output_dir / "report.html",
         summary,
@@ -1341,6 +1361,8 @@ def main() -> None:
         zero_transition_genes,
         pca_plot,
         correlation_plot,
+        args.report_title,
+        args.report_subtitle,
     )
     export_figure_bundle(
         output_dir / "figures.json",
@@ -1353,7 +1375,7 @@ def main() -> None:
         },
         zero_transition_genes,
     )
-    sendable = output_dir / "elife_ovary_tpm_full_report.html"
+    sendable = output_dir / args.report_filename
     sendable.write_bytes((output_dir / "report.html").read_bytes())
     print(json.dumps(summary, indent=2, sort_keys=True))
     print(f"Wrote sendable report to {sendable}")

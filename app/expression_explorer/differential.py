@@ -107,6 +107,61 @@ def contrast_label(dataset: ExpressionDataset, contrast: DifferentialContrast) -
     return f"{target} vs {reference}"
 
 
+def contrast_values(contrasts: list[DifferentialContrast]) -> list[str]:
+    """Return every condition in stable manifest order."""
+    return list(
+        dict.fromkeys(
+            value
+            for contrast in contrasts
+            for value in (contrast.reference, contrast.target)
+        )
+    )
+
+
+def contrast_for_pair(
+    contrasts: list[DifferentialContrast], target: str, reference: str
+) -> DifferentialContrast:
+    """Find the single precomputed result for an unordered condition pair."""
+    if target == reference:
+        raise ValueError("Target and reference must be different conditions")
+    selected = [
+        contrast
+        for contrast in contrasts
+        if {contrast.target, contrast.reference} == {target, reference}
+    ]
+    if len(selected) != 1:
+        raise ValueError(
+            f"Expected one differential contrast for {target} vs {reference}; "
+            f"found {len(selected)}"
+        )
+    return selected[0]
+
+
+def orient_differential_results(
+    results: pd.DataFrame,
+    contrast: DifferentialContrast,
+    target: str,
+    reference: str,
+) -> pd.DataFrame:
+    """Orient a stored pairwise result to the viewer's chosen direction.
+
+    The bundle stores one DESeq2 result per unordered pair. When the selected
+    target is the stored reference, reversing the sign of log2 fold change is
+    exactly the requested target/reference orientation; inferential statistics,
+    standard errors, and base means are unchanged.
+    """
+    if {target, reference} != {contrast.target, contrast.reference}:
+        raise ValueError(
+            f"{target} vs {reference} does not match {contrast.contrast_id}"
+        )
+    if target == contrast.target:
+        return results
+    oriented = results.copy()
+    oriented["log2_fold_change"] = -oriented["log2_fold_change"]
+    oriented["fold_change"] = np.exp2(oriented["log2_fold_change"])
+    return oriented
+
+
 def contrast_sample_counts(
     dataset: ExpressionDataset, contrast: DifferentialContrast
 ) -> tuple[int, int]:
