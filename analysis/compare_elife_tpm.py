@@ -452,14 +452,25 @@ def select_variable_genes(
     top_genes: int,
 ) -> tuple[np.ndarray, str]:
     """Select the highest-variance genes without scaling gene variance."""
-    variances = transformed[candidates].var(axis=1, ddof=1)
-    variable = candidates[np.isfinite(variances) & (variances > 0)]
+    variances = transformed.var(axis=1, ddof=1)
+    return select_genes_by_variance(variances, candidates, top_genes)
+
+
+def select_genes_by_variance(
+    variances: np.ndarray,
+    candidates: np.ndarray,
+    top_genes: int,
+) -> tuple[np.ndarray, str]:
+    """Select candidate genes from a precomputed per-gene variance score."""
+    candidate_variances = variances[candidates]
+    variable = candidates[
+        np.isfinite(candidate_variances) & (candidate_variances > 0)
+    ]
     if len(variable) < 2:
         raise ValueError("Fewer than two variable matched genes remain for PCA")
     if top_genes <= 0 or top_genes >= len(variable):
         return variable, "all_variable_genes"
-    variable_variance = transformed[variable].var(axis=1, ddof=1)
-    order = np.argsort(variable_variance, kind="stable")
+    order = np.argsort(variances[variable], kind="stable")
     return variable[order[-top_genes:]], "top_variable_genes"
 
 
@@ -485,9 +496,12 @@ def calculate_pca(
     reanalysis_keep, reanalysis_selection = select_variable_genes(
         reanalysis_log, candidates, top_genes
     )
-    joint_log = np.hstack([published_log, reanalysis_log])
-    joint_keep, joint_selection = select_variable_genes(
-        joint_log, candidates, top_genes
+    average_within_source_variance = (
+        published_log.var(axis=1, ddof=1)
+        + reanalysis_log.var(axis=1, ddof=1)
+    ) / 2
+    joint_keep, joint_selection = select_genes_by_variance(
+        average_within_source_variance, candidates, top_genes
     )
 
     published_x = published_log[published_keep].T
@@ -543,6 +557,7 @@ def calculate_pca(
         "published_gene_selection": published_selection,
         "reanalysis_gene_selection": reanalysis_selection,
         "joint_gene_selection": joint_selection,
+        "joint_selection_basis": "average_within_source_variance",
         "min_mean_tpm": float(min_mean_tpm),
         "transformation": "log2_tpm_plus_1",
         "per_gene_standardization": False,
@@ -1035,12 +1050,13 @@ def render_report(
         correlation_plot, include_plotlyjs=False, full_html=False
     )
     pca_description = (
-        "Each panel starts from one-to-one matched gene TPM. Within the published, "
-        "reanalysis, and joint data separately, TPM is transformed with "
-        "<code>log2(TPM + 1)</code>, genes are ranked by variance across samples, and "
-        f"the top {pca['genes_used']:,} are retained. PCA centers those gene columns "
-        "but does not scale them to unit variance, so the three panels can use "
-        "different 500-gene sets. This is not the paper's raw-count VST PCA."
+        "Each panel starts from one-to-one matched gene TPM transformed with "
+        "<code>log2(TPM + 1)</code>. The separate panels retain their own "
+        f"{pca['genes_used']:,} highest-variance genes. The joint panel ranks each "
+        "gene by the average of its variance within the published and reanalysis "
+        "profiles, so a processing-wide mean offset cannot by itself select a gene. "
+        "PCA centers the retained gene columns but does not scale them to unit "
+        "variance. This is not the paper's raw-count VST PCA."
     )
     output.write_text(
         f"""<!doctype html>

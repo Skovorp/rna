@@ -35,6 +35,12 @@ def test_comparison_pca_matches_plotpca_selection_without_gene_scaling():
 
     assert set(arrays["published_keep"]) == {0, 2}
     assert set(arrays["reanalysis_keep"]) == {1, 2}
+    average_within_variance = (
+        published_log.var(axis=1, ddof=1)
+        + reanalysis_log.var(axis=1, ddof=1)
+    ) / 2
+    expected_joint = set(np.argsort(average_within_variance)[-2:])
+    assert set(arrays["joint_keep"]) == expected_joint
     expected = PCA(n_components=2, random_state=42).fit_transform(
         published_log[arrays["published_keep"]].T
     )

@@ -173,13 +173,14 @@ def render_comparison_page(config: ComparisonPage) -> None:
         st.markdown("## Sample PCA")
         st.plotly_chart(figure(bundle, "pca"), width="stretch", theme=None)
         st.markdown(
-            f"Each panel starts from one-to-one matched gene TPM. Within the "
-            f"published, reprocessed, and joint data separately, TPM is transformed "
-            f"with `log₂(TPM + 1)`, genes are ranked by variance across samples, and "
-            f"the **top {pca['genes_used']:,} genes** are retained. PCA centers those "
-            f"gene columns but does not scale them to unit variance, so the three "
-            f"panels can use different 500-gene sets. This is not the paper's "
-            f"raw-count VST PCA. "
+            f"Each panel starts from one-to-one matched gene TPM transformed with "
+            f"`log₂(TPM + 1)`. The separate panels retain their own "
+            f"**{pca['genes_used']:,} highest-variance genes**. The joint panel ranks "
+            f"each gene by the average of its variance within the published and "
+            f"reprocessed profiles, so a processing-wide mean offset cannot by "
+            f"itself select a gene. PCA centers the retained gene columns but does "
+            f"not scale them to unit variance. This is not the paper's raw-count "
+            f"VST PCA. "
             f"{config.pca_grouping} Separate PCAs compare biological geometry; the "
             f"joint PCA also exposes processing-specific shifts, where a circle is "
             f"the published profile and a cross is ours. Pairwise sample distances "
