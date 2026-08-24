@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 from streamlit.testing.v1 import AppTest
@@ -21,21 +20,34 @@ def test_comparison_page_renders_native_figures(
     monkeypatch.syspath_prepend(str(APP_DIR))
     # A page executed by itself has no multipage registry for st.page_link;
     # production does, so stub only that navigation element in this page test.
-    with patch("streamlit.page_link"):
-        app = AppTest.from_file(
-            str(APP_DIR / "pages" / filename), default_timeout=45
-        ).run()
+    monkeypatch.setattr("streamlit.page_link", lambda *args, **kwargs: None)
+    app = AppTest.from_file(
+        str(APP_DIR / "pages" / filename), default_timeout=45
+    ).run()
 
     assert not app.exception, [exception.message for exception in app.exception]
     assert [heading.value for heading in app.title] == [title]
-    assert len(app.get("plotly_chart")) == 4
+    assert len(app.get("plotly_chart")) == 1
     assert len(app.metric) == 4
     rendered = " ".join(element.value for element in app.markdown)
     assert str(sample_count) in rendered
     assert "## TPM agreement" in rendered
-    assert "## Sample PCA" in rendered
-    assert "## Sample identity" in rendered
+    assert "## Sample PCA" not in rendered
+    assert "## Sample identity" not in rendered
+    assert [control.value for control in app.segmented_control] == ["TPM agreement"]
     assert any(
         button.label == "Download the standalone report"
         for button in app.download_button
     )
+
+    for analysis, heading, table_count in (
+        ("Zero transitions", "## Exact zero and non-zero transitions", 2),
+        ("Sample PCA", "## Sample PCA", 0),
+        ("Sample identity", "## Sample identity", 0),
+    ):
+        app.segmented_control[0].set_value(analysis).run()
+        assert not app.exception, [exception.message for exception in app.exception]
+        assert len(app.get("plotly_chart")) == 1
+        assert len(app.dataframe) == table_count
+        rendered = " ".join(element.value for element in app.markdown)
+        assert heading in rendered

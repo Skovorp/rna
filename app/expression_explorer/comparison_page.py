@@ -135,68 +135,76 @@ def render_comparison_page(config: ComparisonPage) -> None:
     )
     st.caption(config.data_caption)
 
-    st.markdown("## TPM agreement")
-    st.plotly_chart(figure(bundle, "error"), use_container_width=True, theme=None)
-    st.markdown(
-        f"Errors are reprocessed minus published values. The diagonal bands are "
-        f"forced by the coordinates: when published TPM is zero the error is "
-        f"+2 × average log-expression, and when reprocessed TPM is zero it is "
-        f"−2 × average log-expression. Of the "
-        f"{discordance['abs_log2_error_gt_2_count']:,} pairs with absolute error "
-        f"above 2, {discordance['severe_pairs_with_exact_zero_fraction']:.1%} "
-        f"contain an exact zero. Density plots clip only the outer 0.1% for "
-        f"readable axes; the summary metrics use the full distribution."
+    analysis = st.segmented_control(
+        "Analysis",
+        (
+            "TPM agreement",
+            "Zero transitions",
+            "Sample PCA",
+            "Sample identity",
+        ),
+        default="TPM agreement",
+        width="stretch",
+        help="Only the selected analysis is loaded, so the page stays responsive.",
     )
 
-    st.markdown("## Exact zero and non-zero transitions")
-    st.plotly_chart(
-        figure(bundle, "zero_transition"), use_container_width=True, theme=None
-    )
-    st.markdown(
-        f"**Green** marks published 0 becoming reprocessed non-zero; **red** marks "
-        f"published non-zero becoming reprocessed 0. An exact zero can mean no "
-        f"compatible fragments were assigned under that quantification model; it is "
-        f"not a universal biological absence threshold. There are "
-        f"{transitions['published_zero_to_reanalysis_nonzero_count']:,} pairs in the "
-        f"first direction and "
-        f"{transitions['published_nonzero_to_reanalysis_zero_count']:,} in the "
-        f"second. At a non-zero-side threshold of 1 TPM these fall to "
-        f"{transitions['published_zero_to_reanalysis_ge_1_count']:,} and "
-        f"{transitions['published_ge_1_to_reanalysis_zero_count']:,}; at 10 TPM, "
-        f"{transitions['published_zero_to_reanalysis_ge_10_count']:,} and "
-        f"{transitions['published_ge_10_to_reanalysis_zero_count']:,}."
-    )
-
-    for table in bundle["zero_transition_tables"]:
-        st.markdown(f"**{table['title']}**")
-        st.dataframe(
-            pd.DataFrame(table["rows"]), use_container_width=True, hide_index=True
+    if analysis == "Zero transitions":
+        st.markdown("## Exact zero and non-zero transitions")
+        st.plotly_chart(figure(bundle, "zero_transition"), width="stretch", theme=None)
+        st.markdown(
+            f"**Green** marks published 0 becoming reprocessed non-zero; **red** marks "
+            f"published non-zero becoming reprocessed 0. An exact zero can mean no "
+            f"compatible fragments were assigned under that quantification model; "
+            f"it is not a universal biological absence threshold. There are "
+            f"{transitions['published_zero_to_reanalysis_nonzero_count']:,} pairs in "
+            f"the first direction and "
+            f"{transitions['published_nonzero_to_reanalysis_zero_count']:,} in the "
+            f"second. At a non-zero-side threshold of 1 TPM these fall to "
+            f"{transitions['published_zero_to_reanalysis_ge_1_count']:,} and "
+            f"{transitions['published_ge_1_to_reanalysis_zero_count']:,}; at 10 TPM, "
+            f"{transitions['published_zero_to_reanalysis_ge_10_count']:,} and "
+            f"{transitions['published_ge_10_to_reanalysis_zero_count']:,}."
         )
 
-    st.markdown("## Sample PCA")
-    st.plotly_chart(figure(bundle, "pca"), use_container_width=True, theme=None)
-    st.markdown(
-        f"PCA uses all {pca['genes_used']:,} one-to-one matched genes, with no "
-        f"expression or variability cutoff. Expression is log-transformed and each "
-        f"gene is standardized across samples. {config.pca_grouping} The separate "
-        f"PCAs compare biological geometry; the joint PCA also exposes "
-        f"method-specific shifts, where a circle is the published profile and a "
-        f"cross is ours. Pairwise sample distances correlate at "
-        f"{pca['pairwise_sample_distance_pearson']:.4f}."
-    )
-
-    st.markdown("## Sample identity")
-    st.plotly_chart(
-        figure(bundle, "correlation"), use_container_width=True, theme=None
-    )
-    st.markdown(
-        f"The diagonal compares the same biological sample across processing "
-        f"methods. A diagonal maximum in each row argues against sample swaps, and "
-        f"that holds for {identity['matching_sample_top1_count']} of "
-        f"{summary['samples']} samples. Matching-sample correlations run from "
-        f"{identity['min_matching_sample_correlation']:.4f} to "
-        f"{identity['max_matching_sample_correlation']:.4f}."
-    )
+        for table in bundle["zero_transition_tables"]:
+            st.markdown(f"**{table['title']}**")
+            st.dataframe(pd.DataFrame(table["rows"]), width="stretch", hide_index=True)
+    elif analysis == "Sample PCA":
+        st.markdown("## Sample PCA")
+        st.plotly_chart(figure(bundle, "pca"), width="stretch", theme=None)
+        st.markdown(
+            f"PCA uses all {pca['genes_used']:,} one-to-one matched genes, with no "
+            f"expression or variability cutoff. Expression is log-transformed and "
+            f"each gene is standardized across samples. {config.pca_grouping} The "
+            f"separate PCAs compare biological geometry; the joint PCA also exposes "
+            f"method-specific shifts, where a circle is the published profile and a "
+            f"cross is ours. Pairwise sample distances correlate at "
+            f"{pca['pairwise_sample_distance_pearson']:.4f}."
+        )
+    elif analysis == "Sample identity":
+        st.markdown("## Sample identity")
+        st.plotly_chart(figure(bundle, "correlation"), width="stretch", theme=None)
+        st.markdown(
+            f"The diagonal compares the same biological sample across processing "
+            f"methods. A diagonal maximum in each row argues against sample swaps, "
+            f"and that holds for {identity['matching_sample_top1_count']} of "
+            f"{summary['samples']} samples. Matching-sample correlations run from "
+            f"{identity['min_matching_sample_correlation']:.4f} to "
+            f"{identity['max_matching_sample_correlation']:.4f}."
+        )
+    else:
+        st.markdown("## TPM agreement")
+        st.plotly_chart(figure(bundle, "error"), width="stretch", theme=None)
+        st.markdown(
+            f"Errors are reprocessed minus published values. The diagonal bands are "
+            f"forced by the coordinates: when published TPM is zero the error is "
+            f"+2 × average log-expression, and when reprocessed TPM is zero it is "
+            f"−2 × average log-expression. Of the "
+            f"{discordance['abs_log2_error_gt_2_count']:,} pairs with absolute error "
+            f"above 2, {discordance['severe_pairs_with_exact_zero_fraction']:.1%} "
+            f"contain an exact zero. Density plots clip only the outer 0.1% for "
+            f"readable axes; the summary metrics use the full distribution."
+        )
 
     if report_path.is_file():
         st.divider()
