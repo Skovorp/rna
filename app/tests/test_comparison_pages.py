@@ -51,3 +51,7 @@ def test_comparison_page_renders_native_figures(
         assert len(app.dataframe) == table_count
         rendered = " ".join(element.value for element in app.markdown)
         assert heading in rendered
+        if analysis == "Sample PCA":
+            assert "DESeq2 `plotPCA`-style TPM approximation" in rendered
+            assert "500 highest-variance matched genes" in rendered
+            assert "without per-gene standardization" in rendered

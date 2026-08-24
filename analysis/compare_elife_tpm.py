@@ -19,7 +19,6 @@ from scipy.spatial import procrustes
 from scipy.spatial.distance import pdist
 from scipy.stats import pearsonr, spearmanr
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 
 
 SOURCE_COLORS = {"Published": "#2563eb", "Reanalysis": "#dc2626"}
@@ -447,6 +446,23 @@ def align_pca_axes(
     return aligned, variance
 
 
+def select_variable_genes(
+    transformed: np.ndarray,
+    candidates: np.ndarray,
+    top_genes: int,
+) -> tuple[np.ndarray, str]:
+    """Select genes as DESeq2's plotPCA does, without scaling gene variance."""
+    variances = transformed[candidates].var(axis=1, ddof=1)
+    variable = candidates[np.isfinite(variances) & (variances > 0)]
+    if len(variable) < 2:
+        raise ValueError("Fewer than two variable matched genes remain for PCA")
+    if top_genes <= 0 or top_genes >= len(variable):
+        return variable, "all_variable_genes"
+    variable_variance = transformed[variable].var(axis=1, ddof=1)
+    order = np.argsort(variable_variance, kind="stable")
+    return variable[order[-top_genes:]], "top_variable_genes"
+
+
 def calculate_pca(
     published_log: np.ndarray,
     reanalysis_log: np.ndarray,
@@ -456,33 +472,35 @@ def calculate_pca(
     reanalysis_tpm: np.ndarray,
 ) -> tuple[dict[str, np.ndarray], dict[str, float | int]]:
     mean_tpm = (published_tpm.mean(axis=1) + reanalysis_tpm.mean(axis=1)) / 2
-    average_profile = (published_log + reanalysis_log) / 2
-    biological_variance = average_profile.var(axis=1)
     candidates = np.flatnonzero(mean_tpm >= min_mean_tpm)
     if len(candidates) < 2:
         raise ValueError("Fewer than two matched genes remain for PCA")
-    if top_genes <= 0 or top_genes >= len(candidates):
-        keep = candidates
-        selection = "all_matched_genes"
-    else:
-        variable = candidates[biological_variance[candidates] > 0]
-        if len(variable) < 2:
-            raise ValueError("Fewer than two variable matched genes remain for PCA")
-        keep_count = min(top_genes, len(variable))
-        order = np.argsort(biological_variance[variable], kind="stable")
-        keep = variable[order[-keep_count:]]
-        selection = "top_variable_genes"
-    keep_count = len(keep)
 
-    published_x = published_log[keep].T
-    reanalysis_x = reanalysis_log[keep].T
-    published_scaled = StandardScaler().fit_transform(published_x)
-    reanalysis_scaled = StandardScaler().fit_transform(reanalysis_x)
+    # DESeq2::plotPCA selects the highest-variance rows from each transformed
+    # assay independently and passes them straight to prcomp. The published
+    # supplements expose TPM rather than the raw count matrices needed for an
+    # exact VST, so both comparison pages use the same honest approximation:
+    # log2(TPM + 1), source-specific top-variable selection, and no per-gene
+    # standardization. The joint panel makes its own selection on the combined
+    # transformed profiles.
+    published_keep, published_selection = select_variable_genes(
+        published_log, candidates, top_genes
+    )
+    reanalysis_keep, reanalysis_selection = select_variable_genes(
+        reanalysis_log, candidates, top_genes
+    )
+    joint_log = np.hstack([published_log, reanalysis_log])
+    joint_keep, joint_selection = select_variable_genes(
+        joint_log, candidates, top_genes
+    )
+
+    published_x = published_log[published_keep].T
+    reanalysis_x = reanalysis_log[reanalysis_keep].T
 
     published_model = PCA(n_components=2, random_state=42)
     reanalysis_model = PCA(n_components=2, random_state=42)
-    published_scores = published_model.fit_transform(published_scaled)
-    reanalysis_scores = reanalysis_model.fit_transform(reanalysis_scaled)
+    published_scores = published_model.fit_transform(published_x)
+    reanalysis_scores = reanalysis_model.fit_transform(reanalysis_x)
     reanalysis_scores, reanalysis_variance = align_pca_axes(
         published_scores,
         reanalysis_scores,
@@ -493,19 +511,23 @@ def calculate_pca(
         published_scores, reanalysis_scores
     )
     distance_pearson = safe_pearson(
-        pdist(published_scaled), pdist(reanalysis_scaled)
+        pdist(published_x), pdist(reanalysis_x)
     )
     distance_spearman = safe_spearman(
-        pdist(published_scaled), pdist(reanalysis_scaled)
+        pdist(published_x), pdist(reanalysis_x)
     )
 
-    joint_x = np.vstack([published_x, reanalysis_x])
-    joint_scaled = StandardScaler().fit_transform(joint_x)
+    joint_x = np.vstack(
+        [published_log[joint_keep].T, reanalysis_log[joint_keep].T]
+    )
     joint_model = PCA(n_components=2, random_state=42)
-    joint_scores = joint_model.fit_transform(joint_scaled)
+    joint_scores = joint_model.fit_transform(joint_x)
 
     arrays = {
-        "keep": keep,
+        "keep": joint_keep,
+        "published_keep": published_keep,
+        "reanalysis_keep": reanalysis_keep,
+        "joint_keep": joint_keep,
         "published_scores": published_scores,
         "reanalysis_scores": reanalysis_scores,
         "published_procrustes": published_proc,
@@ -516,10 +538,20 @@ def calculate_pca(
         "joint_variance": joint_model.explained_variance_ratio_,
     }
     metrics: dict[str, float | int] = {
-        "genes_used": int(keep_count),
+        "genes_used": int(len(joint_keep)),
+        "published_genes_used": int(len(published_keep)),
+        "reanalysis_genes_used": int(len(reanalysis_keep)),
+        "joint_genes_used": int(len(joint_keep)),
         "genes_passing_expression_filter": int(len(candidates)),
-        "gene_selection": selection,
+        "gene_selection": "source_specific_top_variance",
+        "published_gene_selection": published_selection,
+        "reanalysis_gene_selection": reanalysis_selection,
+        "joint_gene_selection": joint_selection,
         "min_mean_tpm": float(min_mean_tpm),
+        "transformation": "log2_tpm_plus_1",
+        "per_gene_standardization": False,
+        "exact_deseq2_vst": False,
+        "protocol": "deseq2_plotpca_style_tpm_approximation",
         "published_pc1_variance_pct": float(
             published_model.explained_variance_ratio_[0] * 100
         ),
@@ -1007,17 +1039,14 @@ def render_report(
     correlation_html = pio.to_html(
         correlation_plot, include_plotlyjs=False, full_html=False
     )
-    if pca["gene_selection"] == "all_matched_genes":
-        pca_description = (
-            f"PCA uses all {pca['genes_used']:,} one-to-one matched genes, with no "
-            "expression or variability cutoff. Genes with zero variance become zero "
-            "after standardization and therefore do not influence the components."
-        )
-    else:
-        pca_description = (
-            f"PCA uses the {pca['genes_used']:,} most-variable matched genes after "
-            f"filtering for mean TPM ≥ {pca['min_mean_tpm']:g}."
-        )
+    pca_description = (
+        "This is a DESeq2 <code>plotPCA</code>-style TPM approximation. The published, "
+        "reanalysis, and joint panels independently select their "
+        f"{pca['genes_used']:,} highest-variance matched genes from "
+        "<code>log2(TPM + 1)</code>, then run ordinary PCA without per-gene "
+        "standardization. An exact DESeq2 PCA would require the unpublished raw count "
+        "matrices for the variance-stabilizing transformation."
+    )
     output.write_text(
         f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1045,7 +1074,7 @@ code {{ background: #f1f5f9; padding: 2px 5px; border-radius: 5px; }}
 <div class="cards">{cards}</div>
 <section>{error_html}<p class="note">Errors are reanalysis minus published values. The diagonal bands are forced by the coordinates: when published TPM is zero, error = +2 × average log-expression; when reanalysis TPM is zero, error = −2 × average log-expression. Of the {discordance['abs_log2_error_gt_2_count']:,} pairs with absolute error &gt;2, {discordance['severe_pairs_with_exact_zero_fraction']:.1%} contain an exact zero. Published TPM was ≥10 while reanalysis TPM was zero in {discordance['published_tpm_ge_10_reanalysis_zero_count']:,} pairs; the reverse occurred in {discordance['reanalysis_tpm_ge_10_published_zero_count']:,}. Density plots clip only the outer 0.1% for readable axes; summary metrics use the full distribution.</p></section>
 <section>{zero_transition_html}<p class="note"><strong>Green</strong> denotes published 0 → reanalysis nonzero; <strong>red</strong> denotes published nonzero → reanalysis 0. An exact zero can mean no compatible fragments were assigned under that quantification model; it is not a universal biological absence threshold. Threshold bars therefore ask how large the value is on the nonzero side. There are {zero_transitions['published_zero_to_reanalysis_nonzero_count']:,} exact published 0 → reanalysis nonzero pairs and {zero_transitions['published_nonzero_to_reanalysis_zero_count']:,} published nonzero → reanalysis 0 pairs. At a nonzero-side threshold of 1 TPM these fall to {zero_transitions['published_zero_to_reanalysis_ge_1_count']:,} and {zero_transitions['published_ge_1_to_reanalysis_zero_count']:,}; at 10 TPM, {zero_transitions['published_zero_to_reanalysis_ge_10_count']:,} and {zero_transitions['published_ge_10_to_reanalysis_zero_count']:,}.</p>{zero_tables}</section>
-<section>{pca_html}<p class="note">{pca_description} Expression is log-transformed and each gene is standardized across samples, matching the atlas PCA convention. Separate PCAs compare biological geometry; the joint PCA also exposes method-specific shifts.</p></section>
+<section>{pca_html}<p class="note">{pca_description} Separate PCAs compare biological geometry; the joint PCA also exposes method-specific shifts.</p></section>
 <section>{correlation_html}<p class="note">The diagonal compares the same biological sample across processing methods. A diagonal maximum in each row argues against sample swaps.</p></section>
 </main></body></html>""",
         encoding="utf-8",
@@ -1203,8 +1232,11 @@ def main() -> None:
     parser.add_argument(
         "--top-variable-genes",
         type=int,
-        default=0,
-        help="Number of most-variable genes for PCA; 0 uses all matched genes",
+        default=500,
+        help=(
+            "Number of highest-variance genes selected independently for each PCA; "
+            "0 uses all variable matched genes"
+        ),
     )
     parser.add_argument("--min-mean-tpm", type=float, default=0.0)
     parser.add_argument("--group-label", default="Reproductive state")
@@ -1286,8 +1318,19 @@ def main() -> None:
         safe_pearson(published_log[index], reanalysis_log[index])
         for index in range(len(gene_map))
     ]
-    gene_map["used_for_pca"] = False
-    gene_map.loc[arrays["keep"], "used_for_pca"] = True
+    gene_map["used_for_published_pca"] = False
+    gene_map["used_for_reanalysis_pca"] = False
+    gene_map["used_for_joint_pca"] = False
+    gene_map.loc[arrays["published_keep"], "used_for_published_pca"] = True
+    gene_map.loc[arrays["reanalysis_keep"], "used_for_reanalysis_pca"] = True
+    gene_map.loc[arrays["joint_keep"], "used_for_joint_pca"] = True
+    gene_map["used_for_pca"] = gene_map[
+        [
+            "used_for_published_pca",
+            "used_for_reanalysis_pca",
+            "used_for_joint_pca",
+        ]
+    ].any(axis=1)
 
     summary: dict[str, object] = {
         "published_genes": int(len(published)),

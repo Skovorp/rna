@@ -173,12 +173,16 @@ def render_comparison_page(config: ComparisonPage) -> None:
         st.markdown("## Sample PCA")
         st.plotly_chart(figure(bundle, "pca"), width="stretch", theme=None)
         st.markdown(
-            f"PCA uses all {pca['genes_used']:,} one-to-one matched genes, with no "
-            f"expression or variability cutoff. Expression is log-transformed and "
-            f"each gene is standardized across samples. {config.pca_grouping} The "
-            f"separate PCAs compare biological geometry; the joint PCA also exposes "
-            f"method-specific shifts, where a circle is the published profile and a "
-            f"cross is ours. Pairwise sample distances correlate at "
+            f"This is a **DESeq2 `plotPCA`-style TPM approximation**. The published, "
+            f"reprocessed, and joint panels independently select their "
+            f"**{pca['genes_used']:,} highest-variance matched genes** from "
+            f"`log₂(TPM + 1)`, then run PCA without per-gene standardization. The "
+            f"published supplements do not include the raw count matrices needed "
+            f"for an exact DESeq2 variance-stabilizing transformation. "
+            f"{config.pca_grouping} Separate PCAs compare biological geometry; the "
+            f"joint PCA also exposes processing-specific shifts, where a circle is "
+            f"the published profile and a cross is ours. Pairwise sample distances "
+            f"correlate at "
             f"{pca['pairwise_sample_distance_pearson']:.4f}."
         )
     elif analysis == "Sample identity":
