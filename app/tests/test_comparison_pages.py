@@ -52,6 +52,7 @@ def test_comparison_page_renders_native_figures(
         rendered = " ".join(element.value for element in app.markdown)
         assert heading in rendered
         if analysis == "Sample PCA":
-            assert "DESeq2 `plotPCA`-style TPM approximation" in rendered
-            assert "500 highest-variance matched genes" in rendered
-            assert "without per-gene standardization" in rendered
+            assert "genes are ranked by variance across samples" in rendered
+            assert "top 500 genes" in rendered
+            assert "does not scale them to unit variance" in rendered
+            assert "DESeq2-style" not in rendered

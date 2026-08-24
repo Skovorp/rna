@@ -40,5 +40,4 @@ def test_comparison_pca_matches_plotpca_selection_without_gene_scaling():
     )
     np.testing.assert_allclose(arrays["published_scores"], expected)
     assert metrics["per_gene_standardization"] is False
-    assert metrics["exact_deseq2_vst"] is False
-    assert metrics["protocol"] == "deseq2_plotpca_style_tpm_approximation"
+    assert metrics["protocol"] == "top_500_variable_log2_tpm_unscaled"

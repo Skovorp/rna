@@ -36,7 +36,6 @@
   "matched_gene_fraction_of_published": 0.5945895753373778,
   "matched_genes": 9605,
   "pca": {
-    "exact_deseq2_vst": false,
     "gene_selection": "source_specific_top_variance",
     "genes_passing_expression_filter": 9605,
     "genes_used": 500,
@@ -49,7 +48,7 @@
     "pairwise_sample_distance_spearman": 0.9917853433877244,
     "per_gene_standardization": false,
     "procrustes_disparity": 0.0023043403865133,
-    "protocol": "deseq2_plotpca_style_tpm_approximation",
+    "protocol": "top_500_variable_log2_tpm_unscaled",
     "published_gene_selection": "top_variable_genes",
     "published_genes_used": 500,
     "published_pc1_variance_pct": 41.40801364610117,

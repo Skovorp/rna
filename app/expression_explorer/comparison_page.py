@@ -173,12 +173,13 @@ def render_comparison_page(config: ComparisonPage) -> None:
         st.markdown("## Sample PCA")
         st.plotly_chart(figure(bundle, "pca"), width="stretch", theme=None)
         st.markdown(
-            f"This is a **DESeq2 `plotPCA`-style TPM approximation**. The published, "
-            f"reprocessed, and joint panels independently select their "
-            f"**{pca['genes_used']:,} highest-variance matched genes** from "
-            f"`log₂(TPM + 1)`, then run PCA without per-gene standardization. The "
-            f"published supplements do not include the raw count matrices needed "
-            f"for an exact DESeq2 variance-stabilizing transformation. "
+            f"Each panel starts from one-to-one matched gene TPM. Within the "
+            f"published, reprocessed, and joint data separately, TPM is transformed "
+            f"with `log₂(TPM + 1)`, genes are ranked by variance across samples, and "
+            f"the **top {pca['genes_used']:,} genes** are retained. PCA centers those "
+            f"gene columns but does not scale them to unit variance, so the three "
+            f"panels can use different 500-gene sets. This is not the paper's "
+            f"raw-count VST PCA. "
             f"{config.pca_grouping} Separate PCAs compare biological geometry; the "
             f"joint PCA also exposes processing-specific shifts, where a circle is "
             f"the published profile and a cross is ours. Pairwise sample distances "

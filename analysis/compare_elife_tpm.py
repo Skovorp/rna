@@ -451,7 +451,7 @@ def select_variable_genes(
     candidates: np.ndarray,
     top_genes: int,
 ) -> tuple[np.ndarray, str]:
-    """Select genes as DESeq2's plotPCA does, without scaling gene variance."""
+    """Select the highest-variance genes without scaling gene variance."""
     variances = transformed[candidates].var(axis=1, ddof=1)
     variable = candidates[np.isfinite(variances) & (variances > 0)]
     if len(variable) < 2:
@@ -476,13 +476,9 @@ def calculate_pca(
     if len(candidates) < 2:
         raise ValueError("Fewer than two matched genes remain for PCA")
 
-    # DESeq2::plotPCA selects the highest-variance rows from each transformed
-    # assay independently and passes them straight to prcomp. The published
-    # supplements expose TPM rather than the raw count matrices needed for an
-    # exact VST, so both comparison pages use the same honest approximation:
-    # log2(TPM + 1), source-specific top-variable selection, and no per-gene
-    # standardization. The joint panel makes its own selection on the combined
-    # transformed profiles.
+    # Both comparison pages use the same procedure: log2(TPM + 1), independent
+    # top-variable selection for each source, and PCA without per-gene variance
+    # scaling. The joint panel makes its own selection on the combined profiles.
     published_keep, published_selection = select_variable_genes(
         published_log, candidates, top_genes
     )
@@ -550,8 +546,7 @@ def calculate_pca(
         "min_mean_tpm": float(min_mean_tpm),
         "transformation": "log2_tpm_plus_1",
         "per_gene_standardization": False,
-        "exact_deseq2_vst": False,
-        "protocol": "deseq2_plotpca_style_tpm_approximation",
+        "protocol": "top_500_variable_log2_tpm_unscaled",
         "published_pc1_variance_pct": float(
             published_model.explained_variance_ratio_[0] * 100
         ),
@@ -1040,12 +1035,12 @@ def render_report(
         correlation_plot, include_plotlyjs=False, full_html=False
     )
     pca_description = (
-        "This is a DESeq2 <code>plotPCA</code>-style TPM approximation. The published, "
-        "reanalysis, and joint panels independently select their "
-        f"{pca['genes_used']:,} highest-variance matched genes from "
-        "<code>log2(TPM + 1)</code>, then run ordinary PCA without per-gene "
-        "standardization. An exact DESeq2 PCA would require the unpublished raw count "
-        "matrices for the variance-stabilizing transformation."
+        "Each panel starts from one-to-one matched gene TPM. Within the published, "
+        "reanalysis, and joint data separately, TPM is transformed with "
+        "<code>log2(TPM + 1)</code>, genes are ranked by variance across samples, and "
+        f"the top {pca['genes_used']:,} are retained. PCA centers those gene columns "
+        "but does not scale them to unit variance, so the three panels can use "
+        "different 500-gene sets. This is not the paper's raw-count VST PCA."
     )
     output.write_text(
         f"""<!doctype html>
