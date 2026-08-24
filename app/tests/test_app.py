@@ -1061,3 +1061,24 @@ def test_cluster_mode_renders_sample_pca(monkeypatch):
         if "Cluster map" in element.value and "section-info-icon" in element.value
     )
     assert "PCA: 2,000 most-variable genes" in reduced_info_html
+
+
+def test_reprocessed_atlas_cluster_colors_match_paper_atlas(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    _select_page(app, "Clusters")
+
+    study = next(selectbox for selectbox in app.selectbox if selectbox.label == "Study")
+    study.set_value("atlas").run()
+
+    assert not app.exception, [exception.message for exception in app.exception]
+    color_by = next(
+        selectbox for selectbox in app.selectbox if selectbox.label == "Color by"
+    )
+    assert color_by.options == [
+        "Tissue",
+        "Feeding / reproductive state",
+        "Sex",
+        "Tissue + condition",
+    ]
+    assert color_by.value == "tissue"

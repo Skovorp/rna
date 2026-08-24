@@ -2477,10 +2477,13 @@ else:
             cluster_method = st.selectbox("Method", METHODS, key="cluster_method")
 
         cluster_dataset = datasets[cluster_key]
-        if cluster_key.startswith("neuro_"):
+        if cluster_key.startswith("neuro_") or cluster_key == "atlas":
+            state_field = (
+                "reproductive_state" if cluster_key == "atlas" else "condition_label"
+            )
             color_candidates = [
                 ("tissue", "Tissue"),
-                ("condition_label", "Feeding / reproductive state"),
+                (state_field, "Feeding / reproductive state"),
                 ("sex", "Sex"),
                 ("tissue_condition", "Tissue + condition"),
             ]
@@ -2505,7 +2508,7 @@ else:
                 "Color by",
                 options=color_options,
                 format_func=lambda field: color_labels[field],
-                key="cluster_color",
+                key=f"cluster_color_{cluster_key}",
             )
         with genes_column:
             available_cluster_genes = len(cluster_dataset.values)
