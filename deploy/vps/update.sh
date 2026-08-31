@@ -24,11 +24,14 @@ fi
   "from expression_explorer.data import load_datasets; load_datasets('$ROOT/expression')") || true
 
 cp deploy/vps/rna-atlas.service deploy/vps/rna-atlas-update.service deploy/vps/rna-atlas-update.timer /etc/systemd/system/
+install -d /etc/systemd/system/nginx.service.d
+cp deploy/vps/nginx-restart.conf /etc/systemd/system/nginx.service.d/rna-atlas.conf
 systemctl daemon-reload
 systemctl restart rna-atlas.service
 
 # /etc/nginx/sites-enabled/rna-atlas is a symlink to the repo's conf, so a
-# pull updates it in place; reload only when it actually changed and validates.
-if ! git diff --quiet "$before" "$after" -- deploy/vps/nginx-rna-atlas.conf; then
-  nginx -t && systemctl reload nginx
+# pull updates it in place; apply it only when it actually changed and validates.
+# reload-or-restart also recovers nginx if a prior restart left it inactive.
+if ! git diff --quiet "$before" "$after" -- deploy/vps/nginx-rna-atlas.conf deploy/vps/nginx-restart.conf; then
+  nginx -t && systemctl reload-or-restart nginx
 fi
