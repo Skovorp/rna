@@ -335,6 +335,14 @@ def ucsc_atlas_resource(path: str):
     return load_manifest(path)
 
 
+def render_iframe(url: str, height: int = 760) -> None:
+    """Use Streamlit's current iframe API with a fallback for local 1.50."""
+    if hasattr(st, "iframe"):
+        st.iframe(url, height=height)
+    else:
+        components.iframe(url, height=height)
+
+
 ordered_dataset_keys = [key for key in DATASET_ORDER if key in datasets] + sorted(
     key for key in datasets if key not in DATASET_ORDER
 )
@@ -691,15 +699,15 @@ def render_ucsc_cell_atlas(
     )
     if split_metadata == "None":
         st.markdown(f"[Open this view in a new tab]({atlas_url})")
-        components.iframe(atlas_url, height=760)
+        render_iframe(atlas_url)
     else:
         split_url = cell_browser_metadata_url(selected_dataset, split_metadata)
         st.caption(f"Expression: {selected_gene}")
         st.markdown(f"[Open expression UMAP in a new tab]({atlas_url})")
-        components.iframe(atlas_url, height=760)
+        render_iframe(atlas_url)
         st.caption(f"Colored by {split_metadata}")
         st.markdown(f"[Open {split_metadata} UMAP in a new tab]({split_url})")
-        components.iframe(split_url, height=760)
+        render_iframe(split_url)
 
     expression_views: dict[str, dict[str, object]] = {}
     for dataset in atlas_datasets:
@@ -794,7 +802,7 @@ def render_ucsc_cell_atlas(
             "Choose another expression view to include them."
         )
     st.markdown(f"[Open this expression plot in a new tab]({expression_url})")
-    components.iframe(expression_url, height=760)
+    render_iframe(expression_url)
 
 
 def mean_expression_by_study(
