@@ -682,14 +682,14 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "ovary_star_salmon_gene_tpm.tsv.gz",
         "elife",
         "ovary",
-        "Ovary (reprocessed), blood-meal time course",
+        "Ovary — reprocessed",
         "Venkataraman et al. raw reads, our nf-core reprocessing",
     )
     midgut = star_salmon_dataset(
         "midgut_star_salmon_gene_tpm.tsv.gz",
         "midgut",
         "midgut",
-        "Midgut (reprocessed), blood-meal time course",
+        "Midgut — reprocessed",
         "Nadav Shai, Vosshall lab midgut RNA-seq",
     )
     atlas_path = expression_dir / "atlas_star_salmon_gene_tpm.tsv.gz"
@@ -703,7 +703,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         atlas_path,
         "atlas",
         crosswalk,
-        label="Atlas (reprocessed), tissue atlas",
+        label="Neurotranscriptome — reprocessed",
         paper="Matthews et al. raw reads, our nf-core reprocessing",
         annotation_version="AaegL5, VectorBase 58 + Jové et al. 2019",
         samples=atlas_samples,
@@ -713,21 +713,21 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "yedlin_star_salmon_gene_tpm.tsv.gz",
         "yedlin",
         "fat body / Malpighian tubules",
-        "Fat body & Malpighian tubules (reprocessed), blood-meal time course",
+        "Fat body & Malpighian tubules — reprocessed",
         "Yedlin, Vosshall lab fat body / Malpighian tubule RNA-seq",
     )
     crop = star_salmon_dataset(
         "crop_star_salmon_gene_tpm.tsv.gz",
         "crop",
         "crop",
-        "Crop (reprocessed), non-blood-fed",
+        "Crop — reprocessed",
         "Vosshall lab crop RNA-seq",
     )
 
     datasets = {
         "ovary_paper": ExpressionDataset(
             key="ovary_paper",
-            label="Ovary (paper), published TPM",
+            label="Ovary — published",
             paper="Venkataraman et al., eLife 2023",
             annotation_version="Published TPM supplement",
             genes=paper_genes,
@@ -737,7 +737,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "elife": ovary,
         "neuro_ru": ExpressionDataset(
             key="neuro_ru",
-            label="Atlas (paper), neurotranscriptome AaegL.RU",
+            label="Neurotranscriptome — published (AaegL.RU)",
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL.RU (recommended)",
             genes=ru_genes,
@@ -746,7 +746,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         ),
         "neuro_legacy": ExpressionDataset(
             key="neuro_legacy",
-            label="Atlas (paper), neurotranscriptome legacy AaegL3.3",
+            label="Neurotranscriptome — published (legacy AaegL3.3)",
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL3.3 (compatibility)",
             genes=legacy_genes,

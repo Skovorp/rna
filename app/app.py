@@ -691,15 +691,15 @@ def render_ucsc_cell_atlas(
     )
     if split_metadata == "None":
         st.markdown(f"[Open this view in a new tab]({atlas_url})")
-        st.iframe(atlas_url, height=760)
+        components.iframe(atlas_url, height=760)
     else:
         split_url = cell_browser_metadata_url(selected_dataset, split_metadata)
         st.caption(f"Expression: {selected_gene}")
         st.markdown(f"[Open expression UMAP in a new tab]({atlas_url})")
-        st.iframe(atlas_url, height=760)
+        components.iframe(atlas_url, height=760)
         st.caption(f"Colored by {split_metadata}")
         st.markdown(f"[Open {split_metadata} UMAP in a new tab]({split_url})")
-        st.iframe(split_url, height=760)
+        components.iframe(split_url, height=760)
 
     expression_views: dict[str, dict[str, object]] = {}
     for dataset in atlas_datasets:
@@ -794,7 +794,7 @@ def render_ucsc_cell_atlas(
             "Choose another expression view to include them."
         )
     st.markdown(f"[Open this expression plot in a new tab]({expression_url})")
-    st.iframe(expression_url, height=760)
+    components.iframe(expression_url, height=760)
 
 
 def mean_expression_by_study(
@@ -1670,16 +1670,16 @@ def render_home() -> None:
 
         | Dataset | What is displayed | Comparison |
         |---|---|---|
-        | **Ovary (paper)** | Published TPM supplement from Venkataraman et al., eLife 2023 (`PRJNA796320`) | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
-        | **Ovary (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts over the same 33 raw samples | [Paper vs reprocessed](/Ovary_paper_vs_reprocessed) |
-        | **Atlas (paper)** | Published neurotranscriptome matrices (`AaegL.RU` and legacy `AaegL3.3`) from Matthews et al., BMC Genomics 2016 (`PRJNA236239`) | [Paper vs reprocessed](/Atlas_paper_vs_reprocessed) |
-        | **Atlas (reprocessed)** | Our STAR + Salmon gene TPM matrix over the same raw reads and all 378 pairwise DESeq2 contrasts | [Paper vs reprocessed](/Atlas_paper_vs_reprocessed) |
-        | **Midgut (reprocessed)** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | No published counterpart |
-        | **Fat body & Malpighian tubules (reprocessed)** | Our STAR + Salmon gene TPM matrix over the blood-meal time course and all 66 pairwise DESeq2 contrasts | No published counterpart |
-        | **Crop (reprocessed)** | Our STAR + Salmon gene TPM matrix. Single condition, so no differential contrasts exist | No published counterpart |
+        | **Ovary — published** | Published TPM supplement from [Venkataraman et al.](https://www.biorxiv.org/content/10.1101/2022.03.01.482582) (`PRJNA796320`) | [Published vs reprocessed](/Ovary_paper_vs_reprocessed) |
+        | **Ovary — reprocessed** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts over the same 33 raw samples | [Published vs reprocessed](/Ovary_paper_vs_reprocessed) |
+        | **Neurotranscriptome — published** | Published `AaegL.RU` and legacy `AaegL3.3` matrices from [Matthews et al.](https://www.biorxiv.org/content/10.1101/026823) (`PRJNA236239`) | [Published vs reprocessed](/Atlas_paper_vs_reprocessed) |
+        | **Neurotranscriptome — reprocessed** | Our STAR + Salmon gene TPM matrix over the same raw reads and all 378 pairwise DESeq2 contrasts | [Published vs reprocessed](/Atlas_paper_vs_reprocessed) |
+        | **Midgut — reprocessed** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | No published counterpart |
+        | **Fat body & Malpighian tubules — reprocessed (private)** | Our STAR + Salmon gene TPM matrix over the blood-meal time course and all 66 pairwise DESeq2 contrasts | No published counterpart |
+        | **Crop — reprocessed (private)** | Our STAR + Salmon gene TPM matrix from three non-blood-fed biological replicates | No published counterpart; one condition, so no differential contrasts |
 
         Every reprocessed dataset above went through the *identical* pipeline,
-        reference, and parameters — see [Methods](/Methods). Paper datasets keep
+        reference, and parameters — see [Methods](/Methods). Published datasets keep
         their published values and are not covered by those methods.
 
         ## Comparisons
@@ -1687,11 +1687,11 @@ def render_home() -> None:
         Where a reprocessed dataset has a published counterpart, a comparison
         page reports how closely the two agree:
 
-        - [**Ovary: paper vs reprocessed**](/Ovary_paper_vs_reprocessed) — TPM
+        - [**Ovary: published vs reprocessed**](/Ovary_paper_vs_reprocessed) — TPM
           agreement, exact zero ↔ non-zero transitions, PCA, and a
           sample-identity check. Pearson r 0.972; 2.8% of gene-sample pairs
           disagree by more than 2 log₂.
-        - [**Tissue atlas: paper vs reprocessed**](/Atlas_paper_vs_reprocessed) —
+        - [**Neurotranscriptome: published vs reprocessed**](/Atlas_paper_vs_reprocessed) —
           the same checks across 9,605 directly matched genes and all 122 samples
           present in the published matrix. Pearson r 0.930; 4.1% of gene-sample
           pairs disagree by more than 2 log₂.
@@ -1701,7 +1701,7 @@ def render_home() -> None:
 
         ## Other sources
 
-        - [Goldman et al., Cell 2025](https://doi.org/10.1016/j.cell.2025.10.008) — embedded UCSC single-nucleus Mosquito Cell Atlas views on the Genes page. External visualization, not a locally reprocessed dataset.
+        - [Goldman et al.](https://www.biorxiv.org/content/10.1101/2025.02.25.639765) — embedded UCSC single-nucleus Mosquito Cell Atlas views on the Genes page. External visualization, not a locally reprocessed dataset.
 
         TPM is descriptive normalized abundance. Differential-expression
         statistics are displayed only from precomputed count-aware pipeline
@@ -1725,7 +1725,52 @@ def navigate_home() -> None:
     st.session_state["site_navigation"] = "Home"
 
 
-navigation_items = ["Home", "Genes", "Families", "Differential expression", "Clusters"]
+def _try_unlock_private_datasets() -> None:
+    entered = st.session_state.get("private_datasets_password", "")
+    digest = hashlib.sha256(entered.encode("utf-8")).hexdigest()
+    if hmac.compare_digest(digest, _PRIVATE_PASSWORD_SHA256):
+        st.session_state["private_datasets_unlocked"] = True
+        st.session_state["private_datasets_error"] = False
+    else:
+        st.session_state["private_datasets_error"] = True
+    st.session_state["private_datasets_password"] = ""
+
+
+def _lock_private_datasets() -> None:
+    st.session_state["private_datasets_unlocked"] = False
+    st.session_state["private_datasets_error"] = False
+
+
+def render_private_datasets() -> None:
+    page_heading(
+        "Private datasets",
+        "Control whether private studies appear in the explorer pages.",
+    )
+    if private_datasets_unlocked():
+        st.success("Private datasets showing")
+        st.button("Hide private datasets", on_click=_lock_private_datasets)
+        return
+
+    st.info("Private datasets hidden")
+    st.text_input(
+        "Password",
+        type="password",
+        key="private_datasets_password",
+        on_change=_try_unlock_private_datasets,
+    )
+    st.button("Show private datasets", on_click=_try_unlock_private_datasets)
+    if st.session_state.get("private_datasets_error"):
+        st.error("Wrong password.")
+
+
+navigation_items = [
+    "Home",
+    "Genes",
+    "Families",
+    "Differential expression",
+    "Clusters",
+    "Private datasets",
+]
 requested_mode = st.query_params.get("page", "Home")
 if isinstance(requested_mode, list):
     requested_mode = requested_mode[-1]
@@ -1754,6 +1799,9 @@ if mode in navigation_items and st.query_params.get("page") != mode:
 
 if mode == "Home":
     render_home()
+
+elif mode == "Private datasets":
+    render_private_datasets()
 
 elif mode == "Genes":
     page_heading(
@@ -1860,7 +1908,6 @@ elif mode == "Genes":
             st.info("Turn on at least one matched gene to show expression results.")
 
         if resolved_for_comparison:
-            render_ucsc_cell_atlas(atlas_entries, enabled_gene_keys)
             section_title_with_info(
                 "Expression across selected genes",
                 "Each study has sample filters, optional condition-label coloring, a replicate plot, and its heatmap. Point colors identify genes; diamonds show each gene's group median.",
@@ -1906,7 +1953,7 @@ elif mode == "Genes":
                         category_colors=label_colors,
                         condition_order=condition_order,
                     ),
-                    width="stretch",
+                    use_container_width=True,
                     key=f"gene_plot_combined_{key}",
                 )
                 grouped = grouped_median(filtered_long, field, condition_order)
@@ -1919,7 +1966,7 @@ elif mode == "Genes":
                         value_scale=x_axis_scale,
                         category_colors=label_colors,
                     ),
-                    width="stretch",
+                    use_container_width=True,
                     key=f"gene_comparison_heatmap_{key}",
                 )
 
@@ -1993,6 +2040,8 @@ elif mode == "Genes":
                     "Maximum TPM": st.column_config.NumberColumn(format="%.2f"),
                 },
             )
+
+            render_ucsc_cell_atlas(atlas_entries, enabled_gene_keys)
 
             with st.expander("Raw values & download"):
                 raw = pd.concat(combined_raw_rows, ignore_index=True)
@@ -2175,7 +2224,7 @@ elif mode == "Families":
             st.markdown(f"## {dataset.label}")
             st.plotly_chart(
                 heatmap_figure(selected_grouped, field, family_label, row_zscore=row_zscore),
-                width="stretch",
+                use_container_width=True,
                 key=f"family_heatmap_{key}",
             )
             concise = ranking.rename(
@@ -2349,7 +2398,7 @@ elif mode == "Differential expression":
             significant_metric.metric(f"Colored genes, FDR < {fdr_threshold:g}", significant_count)
             st.plotly_chart(
                 differential_ma_figure(comparison_results, fdr_threshold),
-                width="stretch",
+                use_container_width=True,
                 key=(
                     f"differential_{comparison_key}_"
                     f"{selected_target}_vs_{selected_reference}"
@@ -2576,47 +2625,9 @@ else:
         )
         st.plotly_chart(
             cluster_figure,
-            width="stretch",
+            use_container_width=True,
             key=f"cluster_plot_{cluster_key}_{cluster_method}_{variable_genes}_{color_field}",
         )
-
-
-def _try_unlock_private_datasets() -> None:
-    entered = st.session_state.get("private_datasets_password", "")
-    digest = hashlib.sha256(entered.encode("utf-8")).hexdigest()
-    if hmac.compare_digest(digest, _PRIVATE_PASSWORD_SHA256):
-        st.session_state["private_datasets_unlocked"] = True
-        st.session_state["private_datasets_error"] = False
-    else:
-        st.session_state["private_datasets_error"] = True
-    st.session_state["private_datasets_password"] = ""
-
-
-def _lock_private_datasets() -> None:
-    st.session_state["private_datasets_unlocked"] = False
-    st.session_state["private_datasets_error"] = False
-
-
-st.divider()
-with st.expander("🔒 Private datasets", expanded=False):
-    if private_datasets_unlocked():
-        st.success("Private datasets are unlocked for this session.")
-        st.button("Lock again", on_click=_lock_private_datasets)
-    else:
-        st.caption(
-            "Some datasets are not public. Enter the access password to include them "
-            "in every page for this session."
-        )
-        st.text_input(
-            "Password",
-            type="password",
-            key="private_datasets_password",
-            on_change=_try_unlock_private_datasets,
-        )
-        st.button("Unlock", on_click=_try_unlock_private_datasets)
-        if st.session_state.get("private_datasets_error"):
-            st.error("Wrong password.")
-
 # Ready marker for the loading overlay that nginx injects into index.html
 # (deploy/vps/nginx-rna-atlas.conf): its script removes the overlay once this
 # element exists. Rendered every run so a marker is always in the DOM.

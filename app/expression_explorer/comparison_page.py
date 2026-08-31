@@ -150,7 +150,9 @@ def render_comparison_page(config: ComparisonPage) -> None:
 
     if analysis == "Zero transitions":
         st.markdown("## Exact zero and non-zero transitions")
-        st.plotly_chart(figure(bundle, "zero_transition"), width="stretch", theme=None)
+        st.plotly_chart(
+            figure(bundle, "zero_transition"), use_container_width=True, theme=None
+        )
         st.markdown(
             f"**Green** marks published 0 becoming reprocessed non-zero; **red** marks "
             f"published non-zero becoming reprocessed 0. An exact zero can mean no "
@@ -171,7 +173,7 @@ def render_comparison_page(config: ComparisonPage) -> None:
             st.dataframe(pd.DataFrame(table["rows"]), width="stretch", hide_index=True)
     elif analysis == "Sample PCA":
         st.markdown("## Sample PCA")
-        st.plotly_chart(figure(bundle, "pca"), width="stretch", theme=None)
+        st.plotly_chart(figure(bundle, "pca"), use_container_width=True, theme=None)
         st.markdown(
             f"Each panel starts from one-to-one matched gene TPM transformed with "
             f"`log₂(TPM + 1)`. The separate panels retain their own "
@@ -189,7 +191,9 @@ def render_comparison_page(config: ComparisonPage) -> None:
         )
     elif analysis == "Sample identity":
         st.markdown("## Sample identity")
-        st.plotly_chart(figure(bundle, "correlation"), width="stretch", theme=None)
+        st.plotly_chart(
+            figure(bundle, "correlation"), use_container_width=True, theme=None
+        )
         st.markdown(
             f"The diagonal compares the same biological sample across processing "
             f"methods. A diagonal maximum in each row argues against sample swaps, "
@@ -200,7 +204,7 @@ def render_comparison_page(config: ComparisonPage) -> None:
         )
     else:
         st.markdown("## TPM agreement")
-        st.plotly_chart(figure(bundle, "error"), width="stretch", theme=None)
+        st.plotly_chart(figure(bundle, "error"), use_container_width=True, theme=None)
         st.markdown(
             f"Errors are reprocessed minus published values. The diagonal bands are "
             f"forced by the coordinates: when published TPM is zero the error is "

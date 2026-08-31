@@ -5,14 +5,15 @@ from expression_explorer.comparison_page import ComparisonPage, render_compariso
 
 render_comparison_page(
     ComparisonPage(
-        page_title="Tissue atlas paper vs reprocessed - Aedes RNA Atlas",
-        heading="Tissue atlas: paper vs reprocessed",
+        page_title="Neurotranscriptome published vs reprocessed - Aedes RNA Atlas",
+        heading="Neurotranscriptome: published vs reprocessed",
         introduction=(
             "Comparison of the **published AaegL.RU TPM matrix** from Matthews et al., "
             "BMC Genomics 2016 against **our reprocessing** of the same raw reads "
             "(`PRJNA236239`). The comparison uses all 122 samples present in the "
             "published matrix. Three additional recovered libraries shown in our "
-            "reprocessed atlas are excluded here because they have no published TPM "
+            "reprocessed neurotranscriptome matrix are excluded here because they "
+            "have no published TPM "
             "counterpart. Repeated historical gene identifiers in the paper matrix "
             "are collapsed by summing TPM before one-to-one identifier matching. See "
             "the [Methods page](/Methods) for the shared reprocessing pipeline."

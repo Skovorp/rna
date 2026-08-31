@@ -7,6 +7,7 @@ Wants=network-online.target
 Type=simple
 WorkingDirectory=/opt/rna-atlas/app
 Environment=RNA_ATLAS_PUBLIC=1
+Environment=UCSC_CELL_BROWSER_BASE=/ucsc/
 Environment=PYTHONUNBUFFERED=1
 ExecStart=/opt/rna-venv/bin/streamlit run app.py \
     --server.address 127.0.0.1 \

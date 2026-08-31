@@ -5,15 +5,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 import gzip
 import json
+import os
 from pathlib import Path
 import re
 from urllib.parse import urlencode
 
 
-# Served through our own nginx proxy (deploy/vps/nginx-rna-atlas.conf), which
-# patches out the cell browser's first-visit tutorial popup. The path is
-# relative so iframes and links resolve against the deployed origin.
-UCSC_CELL_BROWSER = "/ucsc/"
+UCSC_CELL_BROWSER_DEFAULT = "https://cells.ucsc.edu/"
+
+
+def _cell_browser_base() -> str:
+    """Use the public UCSC host unless deployment config selects our proxy."""
+    configured = os.environ.get(
+        "UCSC_CELL_BROWSER_BASE", UCSC_CELL_BROWSER_DEFAULT
+    ).strip()
+    return f"{configured.rstrip('/')}/"
 
 
 def _normalize(value: object) -> str:
@@ -110,7 +116,7 @@ def cell_browser_url(dataset_name: str, gene_query: str) -> str:
             "gene": gene_query,
         }
     )
-    return f"{UCSC_CELL_BROWSER}?{query}"
+    return f"{_cell_browser_base()}?{query}"
 
 
 def cell_browser_metadata_url(dataset_name: str, metadata_field: str) -> str:
@@ -121,7 +127,7 @@ def cell_browser_metadata_url(dataset_name: str, metadata_field: str) -> str:
             "meta": metadata_field,
         }
     )
-    return f"{UCSC_CELL_BROWSER}?{query}"
+    return f"{_cell_browser_base()}?{query}"
 
 
 def cell_browser_expression_url(
@@ -142,4 +148,4 @@ def cell_browser_expression_url(
             "exprMeta": metadata_field,
         }
     )
-    return f"{UCSC_CELL_BROWSER}?{urlencode(parameters)}"
+    return f"{_cell_browser_base()}?{urlencode(parameters)}"

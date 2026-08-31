@@ -15,17 +15,22 @@ Small Streamlit prototype for exploring *Aedes aegypti* RNA-seq TPM matrices.
 
 ## Datasets
 
+User-facing names follow one rule: **biological scope — provenance — optional
+version**. “Published” means values released by the paper authors; “reprocessed”
+means raw reads run through our shared pipeline.
+
 | Dataset | Source | Differential expression |
 | --- | --- | --- |
-| Ovary (paper) | Venkataraman et al., eLife 2023 published TPM | — |
-| Ovary (reprocessed) | Our STAR + Salmon run over the same 33 raw samples | 55 pairwise contrasts |
-| Atlas (paper) | Matthews et al., BMC Genomics 2016 neurotranscriptome, `AaegL.RU` + legacy `AaegL3.3` | — |
-| Atlas (reprocessed) | Our STAR + Salmon run over the same raw reads | 378 pairwise contrasts |
-| Midgut (reprocessed) | Vosshall lab midgut RNA-seq | 28 pairwise contrasts |
-| Fat body & Malpighian tubules (reprocessed, private) | Vosshall lab blood-meal time course | 66 pairwise contrasts |
-| Crop (reprocessed, private) | Vosshall lab crop RNA-seq | — (single condition) |
+| Ovary — published | Venkataraman et al. published TPM | — |
+| Ovary — reprocessed | Our STAR + Salmon run over the same 33 raw samples | 55 pairwise contrasts |
+| Neurotranscriptome — published (AaegL.RU + legacy AaegL3.3) | Matthews et al. published TPM | — |
+| Neurotranscriptome — reprocessed | Our STAR + Salmon run over the same raw reads | 378 pairwise contrasts |
+| Midgut — reprocessed | Vosshall lab midgut RNA-seq | 28 pairwise contrasts |
+| Fat body & Malpighian tubules — reprocessed (private) | Vosshall lab blood-meal time course | 66 pairwise contrasts |
+| Crop — reprocessed (private) | Vosshall lab crop RNA-seq | — (single condition) |
 
-The tissue-atlas comparison uses the 122 samples present in the paper matrix.
+The neurotranscriptome comparison uses the 122 samples present in the
+published matrix.
 Three additional recovered libraries remain visible in the reprocessed dataset
 but are excluded from the comparison because they have no published counterpart.
 

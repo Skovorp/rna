@@ -3,10 +3,18 @@ from pathlib import Path
 
 import numpy as np
 from streamlit.testing.v1 import AppTest
+from streamlit.testing.v1.element_tree import ButtonGroup
 
 
 APP = Path(__file__).resolve().parents[1] / "app.py"
-NAVIGATION_ITEMS = ["Home", "Genes", "Families", "Differential expression", "Clusters"]
+NAVIGATION_ITEMS = [
+    "Home",
+    "Genes",
+    "Families",
+    "Differential expression",
+    "Clusters",
+    "Private datasets",
+]
 MATCHED_GENE_COLUMNS = {
     "Include",
     "Gene",
@@ -16,13 +24,43 @@ MATCHED_GENE_COLUMNS = {
 }
 
 
+# Streamlit 1.50 exposes segmented controls as ButtonGroup in AppTest, whose
+# index serializer incorrectly iterates a single selected string character by
+# character. Newer AppTest versions provide a dedicated segmented-control type.
+_button_group_indices = ButtonGroup.indices.fget
+
+
+def _compatible_button_group_indices(self):
+    if isinstance(self.value, str):
+        return [self.options.index(self.format_func(self.value))]
+    return _button_group_indices(self)
+
+
+ButtonGroup.indices = property(_compatible_button_group_indices)
+
+
 def _widgets_with_options(app, expected_options):
     matches = []
     for widget_type in ("segmented_control", "radio", "pills", "selectbox"):
-        for widget in getattr(app, widget_type):
-            if list(widget.options) == expected_options:
+        element_type = "button_group" if widget_type == "segmented_control" else widget_type
+        widgets = (
+            getattr(app, widget_type)
+            if hasattr(app, widget_type)
+            else app.get(element_type)
+        )
+        for widget in widgets:
+            options = [
+                option if isinstance(option, str) else option.content
+                for option in widget.options
+            ]
+            if options == expected_options:
                 matches.append(widget)
     return matches
+
+
+def _set_widget_value(widget, value):
+    widget.set_value([value] if type(widget).__name__ == "ButtonGroup" else value)
+    return widget
 
 
 def _rendered_gene_names(app):
@@ -98,7 +136,7 @@ def _set_matched_gene_enabled(app, gene, enabled):
 def _select_page(app, page):
     navigation = _widgets_with_options(app, NAVIGATION_ITEMS)
     assert len(navigation) == 1
-    navigation[0].set_value(page).run()
+    _set_widget_value(navigation[0], page).run()
     return app
 
 
@@ -119,12 +157,19 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "Use the menu above to:" in home_html
     assert "## Datasets" in home_html
     assert "## Comparisons" in home_html
-    assert "**Ovary (paper)**" in home_html
-    assert "**Ovary (reprocessed)**" in home_html
-    assert "**Atlas (paper)**" in home_html
-    assert "**Atlas (reprocessed)**" in home_html
-    assert "**Midgut (reprocessed)**" in home_html
-    assert "**Crop (reprocessed)**" in home_html
+    assert "**Ovary — published**" in home_html
+    assert "**Ovary — reprocessed**" in home_html
+    assert "**Neurotranscriptome — published**" in home_html
+    assert "**Neurotranscriptome — reprocessed**" in home_html
+    assert "**Midgut — reprocessed**" in home_html
+    assert "**Fat body & Malpighian tubules — reprocessed (private)**" in home_html
+    assert "**Crop — reprocessed (private)**" in home_html
+    assert "eLife" not in home_html
+    assert "BMC Genomics" not in home_html
+    assert "Cell 2025" not in home_html
+    assert "10.1101/2022.03.01.482582" in home_html
+    assert "10.1101/026823" in home_html
+    assert "10.1101/2025.02.25.639765" in home_html
     assert "identical* pipeline" in home_html
     assert "never recomputed from TPM" in home_html
     # Comparisons and Methods are reachable as inline links, not just from the
@@ -133,7 +178,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert home_html.count("(/Atlas_paper_vs_reprocessed)") >= 3
     assert "(/Methods)" in home_html
     # The bottom page-link duplicate of the ovary comparison was removed.
-    assert "Ovary: paper vs reprocessed comparison" not in APP.read_text()
+    assert "Ovary: published vs reprocessed comparison" not in APP.read_text()
     # Pipeline parameters live only in METHODS.md, rendered by the Methods page.
     assert "nextflow run" not in home_html
     assert "skip_alignment" not in home_html
@@ -231,7 +276,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
     assert len(studies.options) == 5
-    assert "Midgut (reprocessed), blood-meal time course" in studies.options
+    assert "Midgut — reprocessed" in studies.options
     assert all("legacy" not in option.casefold() for option in studies.options)
     assert studies.value == ["elife", "neuro_ru"]
 
@@ -270,9 +315,21 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert len(expression_view.options) == 24
     assert expression_grouping.value == "annotation"
     assert include_dataset_genes.value is False
+    markdown_values = [element.value for element in app.markdown]
+    selected_details_index = next(
+        index
+        for index, value in enumerate(markdown_values)
+        if "## Selected gene details" in value
+    )
+    single_cell_index = next(
+        index
+        for index, value in enumerate(markdown_values)
+        if "Single-cell context: UCSC Mosquito Cell Atlas" in value
+    )
+    assert selected_details_index < single_cell_index
     assert any(
-        "/ucsc/?ds=mosquito+all&amp;gene=Ir25a" in element.value
-        or "/ucsc/?ds=mosquito+all&gene=Ir25a" in element.value
+        "https://cells.ucsc.edu/?ds=mosquito+all&amp;gene=Ir25a" in element.value
+        or "https://cells.ucsc.edu/?ds=mosquito+all&gene=Ir25a" in element.value
         for element in app.markdown
     )
     assert any(
@@ -298,16 +355,48 @@ def test_default_app_renders_without_exceptions(monkeypatch):
         "text_input",
         "toggle",
     )
-    widget_count = sum(len(getattr(app, widget_type)) for widget_type in widget_types)
+    widget_count = sum(
+        len(getattr(app, widget_type))
+        if hasattr(app, widget_type)
+        else len(app.get("button_group" if widget_type == "segmented_control" else widget_type))
+        for widget_type in widget_types
+    )
     table_count = len(app.dataframe) + len(app.table)
     # UMAP and expression controls stay focused despite embedding two atlas views.
-    # +1 for the private-datasets unlock password input.
     assert widget_count + table_count <= 27
 
     logo = next(button for button in app.button if button.label == "🧬 Aedes RNA Atlas")
+    navigation = _widgets_with_options(app, NAVIGATION_ITEMS)
+    _set_widget_value(navigation[0], "Genes")
     logo.click().run()
     assert _widgets_with_options(app, NAVIGATION_ITEMS)[0].value == "Home"
     assert any("# Aedes RNA Atlas" in element.value for element in app.markdown)
+
+
+def test_private_dataset_control_is_a_top_level_page(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+
+    assert not any(widget.label == "Password" for widget in app.text_input)
+    _select_page(app, "Private datasets")
+    assert not app.exception
+    assert any("Private datasets hidden" in message.value for message in app.info)
+    assert [widget.label for widget in app.text_input] == ["Password"]
+    assert any(button.label == "Show private datasets" for button in app.button)
+
+    app.session_state["private_datasets_unlocked"] = True
+    navigation = _widgets_with_options(app, NAVIGATION_ITEMS)
+    _set_widget_value(navigation[0], "Private datasets").run()
+    assert not app.exception
+    assert any("Private datasets showing" in message.value for message in app.success)
+    assert not any(widget.label == "Password" for widget in app.text_input)
+    assert any(button.label == "Hide private datasets" for button in app.button)
+
+    _select_page(app, "Genes")
+    studies = next(widget for widget in app.multiselect if widget.label == "Studies")
+    assert "Fat body & Malpighian tubules — reprocessed" in studies.options
+    assert "Crop — reprocessed" in studies.options
+    assert not any(widget.label == "Password" for widget in app.text_input)
 
 
 def test_url_page_state_restores_genes_after_a_fresh_session(monkeypatch):
@@ -370,7 +459,7 @@ def test_gene_atlas_umap_can_add_sample_metadata_plot_below(monkeypatch):
         if "Open sample UMAP in a new tab" in element.value
     ]
     assert split_links == [
-        "[Open sample UMAP in a new tab](/ucsc/?ds=mosquito+t012&meta=sample)"
+        "[Open sample UMAP in a new tab](https://cells.ucsc.edu/?ds=mosquito+t012&meta=sample)"
     ]
     captions = " ".join(element.value for element in app.caption)
     assert "Expression: Ir25a" in captions
@@ -382,7 +471,7 @@ def test_home_has_no_import_controls(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     assert not app.exception
-    assert not app.file_uploader
+    assert not app.get("file_uploader")
     assert all("import" not in button.label.casefold() for button in app.button)
     source = APP.read_text()
     assert "import_nfcore_dialog" not in source
@@ -559,7 +648,7 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
         if "Samples ≥1 TPM" in frame.value.columns
     )
     ovary_summary = summary[
-        summary["Study"] == "Ovary (reprocessed), blood-meal time course"
+        summary["Study"] == "Ovary — reprocessed"
     ]
     assert all(value.endswith("/33") for value in ovary_summary["Samples ≥1 TPM"])
 
@@ -680,7 +769,7 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     warnings = " ".join(element.value for element in app.warning)
     assert "Gene not found:" in warnings
     assert "ir7a" in warnings
-    assert "Atlas (paper), neurotranscriptome AaegL.RU" in warnings
+    assert "Neurotranscriptome — published (AaegL.RU)" in warnings
     matched_genes = _matched_gene_editor(app).value
     assert len(_mean_tpm_columns(matched_genes)) == 2
     assert any(
@@ -967,7 +1056,7 @@ def test_differential_expression_uses_bundled_nfcore_results(monkeypatch):
     ]
     assert any(
         button.label == "Download all differential-expression results"
-        for button in app.download_button
+        for button in app.get("download_button")
     )
 
 

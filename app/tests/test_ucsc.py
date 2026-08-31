@@ -16,27 +16,37 @@ MANIFEST = (
 )
 
 
-def test_cell_browser_url_matches_ucsc_share_format():
+def test_cell_browser_url_matches_ucsc_share_format(monkeypatch):
+    monkeypatch.delenv("UCSC_CELL_BROWSER_BASE", raising=False)
     assert cell_browser_url("mosquito/all", "Orco") == (
-        "/ucsc/?ds=mosquito+all&gene=Orco"
+        "https://cells.ucsc.edu/?ds=mosquito+all&gene=Orco"
     )
 
 
-def test_cell_browser_expression_url_supports_multiple_genes_and_grouping():
+def test_cell_browser_expression_url_supports_multiple_genes_and_grouping(monkeypatch):
+    monkeypatch.delenv("UCSC_CELL_BROWSER_BASE", raising=False)
     assert cell_browser_expression_url(
         "mosquito/all",
         ["Ir25a", "Orco", "AAEL021429"],
         "annotation",
         context_gene="Ir25a",
     ) == (
-        "/ucsc/?ds=mosquito+all&gene=Ir25a&"
+        "https://cells.ucsc.edu/?ds=mosquito+all&gene=Ir25a&"
         "exprGene=Ir25a+Orco+AAEL021429&exprMeta=annotation"
     )
 
 
-def test_cell_browser_metadata_url_matches_ucsc_share_format():
+def test_cell_browser_metadata_url_matches_ucsc_share_format(monkeypatch):
+    monkeypatch.delenv("UCSC_CELL_BROWSER_BASE", raising=False)
     assert cell_browser_metadata_url("mosquito/t012", "sample") == (
-        "/ucsc/?ds=mosquito+t012&meta=sample"
+        "https://cells.ucsc.edu/?ds=mosquito+t012&meta=sample"
+    )
+
+
+def test_cell_browser_url_can_use_the_production_proxy(monkeypatch):
+    monkeypatch.setenv("UCSC_CELL_BROWSER_BASE", "/ucsc/")
+    assert cell_browser_url("mosquito/all", "Orco") == (
+        "/ucsc/?ds=mosquito+all&gene=Orco"
     )
 
 

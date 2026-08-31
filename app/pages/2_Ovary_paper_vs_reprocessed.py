@@ -5,8 +5,8 @@ from expression_explorer.comparison_page import ComparisonPage, render_compariso
 
 render_comparison_page(
     ComparisonPage(
-        page_title="Ovary paper vs reprocessed - Aedes RNA Atlas",
-        heading="Ovary: paper vs reprocessed",
+        page_title="Ovary published vs reprocessed - Aedes RNA Atlas",
+        heading="Ovary: published vs reprocessed",
         introduction=(
             "Comparison of the **published TPM supplement** from Venkataraman et al., "
             "eLife 2023 against **our reprocessing** of the same raw reads "

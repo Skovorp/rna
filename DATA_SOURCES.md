@@ -20,21 +20,21 @@ released them) from **reprocessed** datasets (raw reads run through our own
 pipeline). Where both exist for the same samples, a comparison page reports how
 closely they agree.
 
-| Atlas dataset | Displayed values | Differential expression |
+| Dataset | Displayed values | Differential expression |
 | --- | --- | --- |
-| Ovary (paper) | Venkataraman et al. published TPM supplement | Not available |
-| Ovary (reprocessed) | Our STAR + Salmon gene TPM from all 33 `PRJNA796320` raw samples | All 55 pairwise DESeq2 contrasts |
-| Atlas (paper), AaegL.RU | Matthews et al. published `AaegL.RU` TPM matrix | Not available |
-| Atlas (paper), legacy AaegL3.3 | Matthews et al. published legacy matrix, retained for identifier compatibility | Not available |
-| Atlas (reprocessed) | Our STAR + Salmon gene TPM from 125 `PRJNA236239` raw libraries | All 378 pairwise DESeq2 contrasts |
-| Midgut (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab midgut raw reads | All 28 pairwise DESeq2 contrasts |
-| Fat body & Malpighian tubules (reprocessed, private) | Our STAR + Salmon gene TPM from the Vosshall lab raw reads | All 66 pairwise DESeq2 contrasts |
-| Crop (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab crop raw reads | Not applicable — a single condition, so no contrasts exist |
+| Ovary — published | Venkataraman et al. published TPM supplement | Not available |
+| Ovary — reprocessed | Our STAR + Salmon gene TPM from all 33 `PRJNA796320` raw samples | All 55 pairwise DESeq2 contrasts |
+| Neurotranscriptome — published (AaegL.RU) | Matthews et al. published `AaegL.RU` TPM matrix | Not available |
+| Neurotranscriptome — published (legacy AaegL3.3) | Matthews et al. published legacy matrix, retained for identifier compatibility | Not available |
+| Neurotranscriptome — reprocessed | Our STAR + Salmon gene TPM from 125 `PRJNA236239` raw libraries | All 378 pairwise DESeq2 contrasts |
+| Midgut — reprocessed | Our STAR + Salmon gene TPM from the Vosshall lab midgut raw reads | All 28 pairwise DESeq2 contrasts |
+| Fat body & Malpighian tubules — reprocessed (private) | Our STAR + Salmon gene TPM from the Vosshall lab raw reads | All 66 pairwise DESeq2 contrasts |
+| Crop — reprocessed (private) | Our STAR + Salmon gene TPM from the Vosshall lab crop raw reads | Not applicable — a single condition, so no contrasts exist |
 
 The paper-vs-reprocessed tissue-atlas comparison uses all 122 samples present in
 the published matrix. The reprocessing recovered three additional libraries
 (`Fe_An_O_1`, `Fe_Br_SF_2`, and `Fe_Br_SF_3`); the app displays them in the
-reprocessed atlas, but the comparison excludes them because no published TPM
+reprocessed neurotranscriptome, but the comparison excludes them because no published TPM
 profiles exist for those samples. Twenty-two repeated historical identifiers in
 the paper matrix are collapsed by summing TPM before direct one-to-one gene-ID
 matching.
