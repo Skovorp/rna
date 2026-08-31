@@ -1093,6 +1093,8 @@ def default_grouping(dataset) -> tuple[str, str]:
         return "condition_label", "Sex + blood-meal time"
     if dataset.key == "yedlin":
         return "condition_label", "Tissue + blood-meal time"
+    if dataset.key == "crop":
+        return "condition_label", "Condition"
     if dataset.key == "atlas":
         return "tissue_condition", "Tissue + condition"
     return "sample", "Sample"

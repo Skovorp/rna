@@ -399,6 +399,28 @@ def test_private_dataset_control_is_a_top_level_page(monkeypatch):
     assert not any(widget.label == "Password" for widget in app.text_input)
 
 
+def test_crop_replicates_share_one_condition_row(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    app = AppTest.from_file(str(APP), default_timeout=45)
+    app.query_params["page"] = "Genes"
+    app.session_state["private_datasets_unlocked"] = True
+    app.run()
+
+    studies = next(widget for widget in app.multiselect if widget.label == "Studies")
+    studies.set_value(["crop"]).run()
+
+    assert not app.exception, [exception.message for exception in app.exception]
+    plots = _plotly_specs_by_type(app, "box")
+    assert len(plots) == 1
+    assert plots[0]["layout"]["yaxis"]["categoryarray"] == ["Non-blood-fed"]
+    replicate_traces = [
+        trace for trace in plots[0]["data"] if trace["type"] == "box"
+    ]
+    assert {trace["name"] for trace in replicate_traces} == {"Ir25a", "Orco"}
+    assert all(len(trace["y"]) == 3 for trace in replicate_traces)
+    assert all(set(trace["y"]) == {"Non-blood-fed"} for trace in replicate_traces)
+
+
 def test_url_page_state_restores_genes_after_a_fresh_session(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45)
