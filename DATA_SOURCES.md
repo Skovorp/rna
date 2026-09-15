@@ -20,6 +20,12 @@ Goldman raw reads are at [PRJNA1223381](https://www.ncbi.nlm.nih.gov/bioproject/
 
 Completed Home reprocessed rows show a **Download TPM tables** text link serving the exact bundled `.tsv.gz` file. Pending reprocessing rows show their status without download or explorer links. Raw-read links appear on published rows. Private catalog rows and their download links appear only after the session is unlocked; the server checks the catalog's private flag before resolving a download file. Home does not parse any expression matrix.
 
+Pending reprocessing rows cover Basrur brain, Morita legs (`PRJNA1020561`), and
+Jové mouthparts (`PRJNA605870`). Morita and Jové pending rows appear directly
+after their published counterparts. Their existing published TPM matrices
+remain the values used in the explorers; no reprocessing jobs have been started
+for these placeholders.
+
 The files under `expression/` contain the validated gene-level Salmon matrices for every completed reprocessed dataset, faithful tabular extracts of the published matrices, and all precomputed pairwise DESeq2 results: 55 ovary contrasts, 378 tissue-atlas contrasts, 28 midgut contrasts, and 66 private fat-body / Malpighian-tubule contrasts. TPM values are descriptive normalized abundance, not raw read counts; the app displays differential-expression statistics only from the precomputed count-aware pipeline outputs.
 
 `expression/ucsc_mosquito_cell_atlas_genes.json.gz` is a compact routing manifest derived from each UCSC view's public `exprMatrix.json` and `dataset.json`. It records which exact identifiers can be passed as `gene=` for all 24 leaf datasets, plus the categorical metadata fields and author-curated default genes used to configure the embedded multi-gene dot plot. Refresh it with `scripts/update_ucsc_cell_atlas_manifest.py`; no UCSC expression matrix is downloaded or analyzed by the app.

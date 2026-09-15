@@ -61,10 +61,22 @@ CATALOG = (
         explorer="/?page=Genes&study=morita",
     ),
     CatalogEntry(
+        "morita_reprocessed", "Legs, wild type & Orco mutants (reprocessed, pending)",
+        "[Morita et al. (2025)](https://www.science.org/doi/full/10.1126/sciadv.adn5758): the same ten female leg samples (wild type and Orco mutants).",
+        (("PRJNA1020561", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1020561"),),
+        pending_reprocessing=True,
+    ),
+    CatalogEntry(
         "jove", "Mouthparts (published)",
         "[Jové et al. (2020)](https://www.cell.com/neuron/fulltext/S0896-6273(20)30719-4): published stylet and labium TPM, with four replicates per group.",
         (("PRJNA605870", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA605870"),),
         explorer="/?page=Genes&study=jove",
+    ),
+    CatalogEntry(
+        "jove_reprocessed", "Mouthparts (reprocessed, pending)",
+        "[Jové et al. (2020)](https://www.cell.com/neuron/fulltext/S0896-6273(20)30719-4): the same female stylet, female labium, and male stylet samples (four replicates per group).",
+        (("PRJNA605870", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA605870"),),
+        pending_reprocessing=True,
     ),
     CatalogEntry(
         "yedlin", "Fat body & Malpighian tubules (reprocessed, private)",

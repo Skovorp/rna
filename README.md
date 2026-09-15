@@ -31,7 +31,9 @@ means raw reads run through our shared pipeline.
 | Midgut (reprocessed) | Vosshall lab midgut RNA-seq | 28 pairwise contrasts |
 | Brain (reprocessed, pending) | Basrur et al. PRJNA612100: three female and three male Aedes brain samples; TPM processing pending | Not yet available |
 | Legs, wild type & Orco mutants (published) | Morita et al. Salmon TPM, summed by gene | — |
+| Legs, wild type & Orco mutants (reprocessed, pending) | Morita et al. PRJNA1020561; TPM processing pending | Not yet available |
 | Mouthparts (published) | Jové et al. published TPM | — |
+| Mouthparts (reprocessed, pending) | Jové et al. PRJNA605870; TPM processing pending | Not yet available |
 | Fat body & Malpighian tubules (reprocessed, private) | Vosshall lab blood-meal time course | 66 pairwise contrasts |
 | Crop (reprocessed, private) | Vosshall lab crop RNA-seq | — (single condition) |
 
@@ -43,6 +45,10 @@ but are excluded from the comparison because they have no published counterpart.
 The Basrur brain row reserves a separate dataset for future reprocessing. Its six
 libraries are distinct from Matthews; no expression values, explorer option, or
 TPM download are available yet.
+
+Morita legs and Jové mouthparts also have pending reprocessed rows immediately
+after their published counterparts. Their published TPM remains available in
+the explorers; the pending rows reserve future shared-pipeline results.
 
 ## Run locally
 
