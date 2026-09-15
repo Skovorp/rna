@@ -1,8 +1,10 @@
-"""Responsive catalog rows with native Streamlit download controls."""
+"""Responsive catalog rows with links to source reads and calculated TPM."""
 
+from html import escape
 from pathlib import Path
 
 import streamlit as st
+from streamlit import runtime
 
 from .catalog import tpm_download_path, visible_catalog
 
@@ -20,9 +22,6 @@ def render_catalog(expression_dir: Path, unlocked: bool, on_unlock) -> None:
         .st-key-dataset_catalog [class*="st-key-dataset_row_"] {
             border-bottom: 1px solid rgba(148, 163, 184, .25);
             padding: .9rem 0;
-        }
-        .st-key-dataset_catalog [data-testid="stDownloadButton"] button {
-            text-align: left;
         }
         @media (max-width: 640px) {
             .st-key-dataset_catalog_header { display: none; }
@@ -60,23 +59,28 @@ def render_catalog(expression_dir: Path, unlocked: bool, on_unlock) -> None:
                 else:
                     explore.markdown("No published counterpart")
                 with downloads:
-                    for source, url in entry.raw_sources:
-                        st.markdown(f'[Download raw data]({url} "{source}")')
-                        if len(entry.raw_sources) > 1:
-                            st.caption(source)
-                    if not entry.raw_sources:
-                        st.caption("Lab-provided raw reads")
                     if entry.tpm_file:
                         path = tpm_download_path(entry.key, expression_dir, unlocked)
-                        st.download_button(
-                            "Download TPM tables",
+                        # Use the same session-managed file delivery as
+                        # st.download_button, rendered as an ordinary link.
+                        url = runtime.get_instance().media_file_mgr.add(
                             _file_bytes(str(path), path.stat().st_mtime_ns),
+                            mimetype="application/gzip",
+                            coordinates=f"catalog.tpm.{entry.key}",
                             file_name=path.name,
-                            mime="application/gzip",
-                            key=f"download_tpm_{entry.key}",
-                            help="Complete gene-by-sample TPM table (TSV, gzip compressed).",
-                            on_click="ignore",
+                            is_for_static_download=True,
                         )
+                        st.markdown(
+                            f'<a href="{escape(url, quote=True)}" '
+                            f'download="{escape(path.name, quote=True)}" target="_self">'
+                            'Download TPM tables</a>',
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        for source, url in entry.raw_sources:
+                            st.markdown(f'[Download raw data]({url} "{source}")')
+                            if len(entry.raw_sources) > 1:
+                                st.caption(source)
         if not unlocked:
             with st.container(key="dataset_row_private_prompt"):
                 st.button(

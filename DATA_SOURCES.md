@@ -16,7 +16,7 @@ The Genes page also embeds the [UCSC Aedes aegypti Mosquito Cell Atlas](https://
 
 Goldman raw reads are at [PRJNA1223381](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1223381), with reused antenna / palp reads at [PRJNA794050](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA794050). The Home catalog links both accessions. Lab-provided midgut and private reads have no verified public raw-data link in this bundle.
 
-Home download buttons serve the exact bundled reprocessed `.tsv.gz` TPM files. Private catalog rows and their download controls appear only after the session is unlocked; the server checks the catalog's private flag before resolving a download file. Home does not parse any expression matrix.
+Home reprocessed rows show a **Download TPM tables** text link serving the exact bundled `.tsv.gz` file. Raw-read links appear on published rows. Private catalog rows and their download links appear only after the session is unlocked; the server checks the catalog's private flag before resolving a download file. Home does not parse any expression matrix.
 
 The files under `expression/` contain the validated gene-level Salmon matrices for every reprocessed dataset, faithful tabular extracts of the published matrices, and all precomputed pairwise DESeq2 results: 55 ovary contrasts, 378 tissue-atlas contrasts, 28 midgut contrasts, and 66 private fat-body / Malpighian-tubule contrasts. TPM values are descriptive normalized abundance, not raw read counts; the app displays differential-expression statistics only from the precomputed count-aware pipeline outputs.
 

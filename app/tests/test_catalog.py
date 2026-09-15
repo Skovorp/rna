@@ -30,9 +30,11 @@ def test_home_downloads_and_private_prompt(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
     app = AppTest.from_file(str(APP), default_timeout=45).run()
     assert not app.exception
-    downloads = app.get("download_button")
-    assert {item.key for item in downloads} == {"download_tpm_elife", "download_tpm_atlas", "download_tpm_midgut"}
+    assert not app.get("download_button")
     html = " ".join(element.value for element in app.markdown)
+    assert html.count('>Download TPM tables</a>') == 3
+    assert 'download="crop_star_salmon_gene_tpm.tsv.gz"' not in html
+    assert 'download="yedlin_star_salmon_gene_tpm.tsv.gz"' not in html
     assert html.index("## Datasets") < html.index("Mouthparts (published)") < html.index("Methodology →")
     assert "Basrur et al. (2020)" in html
     assert "Fruitless exons" not in html
@@ -47,10 +49,11 @@ def test_home_downloads_and_private_prompt(monkeypatch):
     app.session_state["site_navigation"] = "Home"
     app.run()
     assert not app.exception
-    assert {item.key for item in app.get("download_button")} == {
-        "download_tpm_elife", "download_tpm_atlas", "download_tpm_midgut",
-        "download_tpm_crop", "download_tpm_yedlin",
-    }
+    html = " ".join(element.value for element in app.markdown)
+    assert not app.get("download_button")
+    assert html.count('>Download TPM tables</a>') == 5
+    assert 'download="crop_star_salmon_gene_tpm.tsv.gz"' in html
+    assert 'download="yedlin_star_salmon_gene_tpm.tsv.gz"' in html
     assert not any(button.key == "catalog_unlock_private" for button in app.button)
 
 
