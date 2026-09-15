@@ -7,7 +7,6 @@ archives are read by the app. Source URLs and checksums are written with outputs
 from __future__ import annotations
 
 import argparse
-import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -26,7 +25,6 @@ SOURCES = {
     "morita_chemoreceptors.tsv": f"https://raw.githubusercontent.com/VosshallLab/Morita_Vosshall2023/{MORITA_COMMIT}/figure8/chemoreceptor_gene_list.tsv",
     "jove_2020_tpm.csv": f"https://raw.githubusercontent.com/VosshallLab/Jove_Vosshall_2020/{JOVE_COMMIT}/RNAseq_merged_annotation/merge_19_2_3_TPM_final.csv",
     "jove_data_file_1.xlsx": f"https://raw.githubusercontent.com/VosshallLab/Jove_Vosshall_2020/{JOVE_COMMIT}/Data_File_1_Neuron.xlsx",
-    "basrur-fig1.xlsx": "https://cdn.elifesciences.org/articles/63982/elife-63982-fig1-data1-v3.xlsx",
 }
 
 
@@ -129,47 +127,6 @@ def build_jove(source: Path, out: Path) -> dict:
             "max_workbook_rounding_difference": float(np.abs(values.to_numpy() - workbook_values).max())}
 
 
-def build_basrur(source: Path, out: Path) -> dict:
-    workbook = pd.ExcelFile(source / "basrur-fig1.xlsx")
-    brain = pd.read_excel(workbook, "Figure 1G", header=None)
-    rows = []
-    for _, row in brain.iloc[4:].iterrows():
-        if pd.isna(row[0]):
-            continue
-        exon_number = int(row[0])
-        exon = str(row[1]) if pd.notna(row[1]) else f"Exon {exon_number}"
-        for sex, columns in (("female", range(3, 7)), ("male", range(8, 11))):
-            for replicate, column in enumerate(columns, 1):
-                value = pd.to_numeric(row[column], errors="coerce")
-                if pd.notna(value):
-                    rows.append(dict(panel="Figure 1G", tissue="Brain", sex=sex,
-                                     exon=exon, exon_number=exon_number, replicate=replicate,
-                                     normalized_count=float(value)))
-    tissues = pd.read_excel(workbook, "Figure 1H", header=None)
-    for _, row in tissues.iloc[5:].iterrows():
-        if pd.isna(row[0]):
-            continue
-        for exon, female_start, male_start in (("m", 1, 6), ("f", 11, 16), ("c1", 21, 26)):
-            for sex, start in (("female", female_start), ("male", male_start)):
-                for replicate in range(1, 5):
-                    value = pd.to_numeric(row[start + replicate - 1], errors="coerce")
-                    # Missing fourth replicates and male ovaries are absent,
-                    # never converted to a measured zero.
-                    if pd.notna(value):
-                        rows.append(dict(panel="Figure 1H", tissue=str(row[0]), sex=sex,
-                                         exon=exon, exon_number=None, replicate=replicate,
-                                         normalized_count=float(value)))
-    frame = pd.DataFrame(rows)
-    assert not frame.duplicated(["panel", "tissue", "sex", "exon", "replicate"]).any()
-    assert np.isfinite(frame.normalized_count).all() and frame.normalized_count.ge(0).all()
-    assert not ((frame.tissue.str.lower() == "ovary") & (frame.sex == "male")).any()
-    write_tsv(frame, out / "basrur_2020_fruitless_exon_counts.tsv.gz")
-    return {"observations": len(frame), "unit": "Normalized exon counts",
-            "panels": frame.groupby("panel").size().to_dict(),
-            "scope": "Aedes aegypti fruitless exons; reuses Matthews 2016 reads (PRJNA236239).",
-            "other_species_raw_accession": "PRJNA612100"}
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sources", type=Path, required=True)
@@ -178,7 +135,7 @@ def main() -> None:
     args.output.mkdir(parents=True, exist_ok=True)
     report = {"sources": {name: {"url": url, "sha256": hashlib.sha256((args.sources / name).read_bytes()).hexdigest()}
                           for name, url in SOURCES.items()}}
-    for key, builder in (("morita", build_morita), ("jove", build_jove), ("basrur", build_basrur)):
+    for key, builder in (("morita", build_morita), ("jove", build_jove)):
         report[key] = builder(args.sources, args.output)
         print(key, report[key], flush=True)
     (args.output / "published_2020_2025_provenance.json").write_text(json.dumps(report, indent=2) + "\n")

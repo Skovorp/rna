@@ -38,7 +38,7 @@ CATALOG = (
     ),
     CatalogEntry(
         "atlas", "Neurotranscriptome (reprocessed)",
-        "Our STAR + Salmon gene TPM from the same raw reads, with 378 pairwise DESeq2 contrasts.",
+        "Our STAR + Salmon gene TPM from the same raw reads, with 378 pairwise DESeq2 contrasts. [Basrur et al. (2020)](https://www.rockefeller.edu/research/uploads/www.rockefeller.edu/sites/8/2021/11/BasrurVosshall2020.pdf) also used these Aedes RNA-seq data.",
         NEURO_RAW, "/Atlas_paper_vs_reprocessed",
         tpm_file="atlas_star_salmon_gene_tpm.tsv.gz",
     ),
@@ -58,15 +58,6 @@ CATALOG = (
         "[Jové et al. (2020)](https://www.cell.com/neuron/fulltext/S0896-6273(20)30719-4): published stylet and labium TPM, with four replicates per group.",
         (("PRJNA605870", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA605870"),),
         explorer="/?page=Genes&study=jove",
-    ),
-    CatalogEntry(
-        "basrur", "Fruitless exons (published)",
-        "[Basrur et al. (2020)](https://www.rockefeller.edu/research/uploads/www.rockefeller.edu/sites/8/2021/11/BasrurVosshall2020.pdf): normalized fruitless exon counts from Figure 1G–H. A separate view in Genes preserves the original count units.",
-        (
-            ("Aedes exon data: PRJNA236239", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA236239"),
-            ("Other mosquito species: PRJNA612100", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA612100"),
-        ),
-        explorer="/?page=Genes&view=fruitless",
     ),
     CatalogEntry(
         "goldman", "Mosquito Cell Atlas (published)",

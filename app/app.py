@@ -16,7 +16,6 @@ import streamlit.components.v1 as components
 from expression_explorer.clustering import METHODS, sample_embedding
 from expression_explorer.catalog import PRIVATE_DATASET_KEYS
 from expression_explorer.catalog_ui import render_catalog
-from expression_explorer.fruitless import render_fruitless
 from expression_explorer.data import (
     DATASET_ORDER,
     expression_long,
@@ -1784,16 +1783,7 @@ if mode in navigation_items and st.query_params.get("page") != mode:
 
 # The introduction and private-access controls do not need expression data.
 # Render navigation first and load matrices only when an explorer is opened.
-gene_view = "Gene TPM"
-if mode == "Genes":
-    gene_views = ["Gene TPM", "Fruitless exon counts"]
-    if "gene_expression_view" not in st.session_state:
-        st.session_state["gene_expression_view"] = (
-            "Fruitless exon counts" if st.query_params.get("view") == "fruitless" else "Gene TPM"
-        )
-    gene_view = st.segmented_control("Expression view", gene_views, key="gene_expression_view")
-
-if mode not in ("Home", "Private datasets") and gene_view != "Fruitless exon counts":
+if mode not in ("Home", "Private datasets"):
     datasets = datasets_resource(DATA_SCHEMA_VERSION)
     if not private_datasets_unlocked():
         datasets = {
@@ -1820,10 +1810,6 @@ elif mode == "Private datasets":
     render_private_datasets()
 
 elif mode == "Genes":
-    if gene_view == "Fruitless exon counts":
-        render_fruitless(EXPRESSION_DIR)
-        st.markdown('<div class="bzz-done"></div>', unsafe_allow_html=True)
-        st.stop()
     page_heading(
         "Gene explorer",
         "Search genes and historical identifiers, then compare all resolved genes across the selected experiments.",
@@ -1831,6 +1817,10 @@ elif mode == "Genes":
     default_selected_keys = [
         key for key in ("elife", "neuro_ru") if key in study_keys
     ] or study_keys[:1]
+    # Older Basrur links now open the shared, reprocessed gene-TPM dataset.
+    if st.query_params.get("view") == "fruitless":
+        st.query_params["study"] = "atlas"
+        del st.query_params["view"]
     requested_study = st.query_params.get("study")
     if requested_study in study_keys:
         default_selected_keys = [requested_study]

@@ -390,7 +390,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     )
     table_count = len(app.dataframe) + len(app.table)
     # UMAP and expression controls stay focused despite embedding two atlas views.
-    assert widget_count + table_count <= 28
+    assert widget_count + table_count <= 27
 
     logo = next(button for button in app.button if button.label == "🧬 Aedes RNA Atlas")
     navigation = _widgets_with_options(app, NAVIGATION_ITEMS)

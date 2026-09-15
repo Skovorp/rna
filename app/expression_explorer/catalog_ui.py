@@ -49,8 +49,7 @@ def render_catalog(expression_dir: Path, unlocked: bool, on_unlock) -> None:
                     explore.markdown(f"[Published vs reprocessed]({entry.comparison})")
                 elif entry.explorer:
                     label = (
-                        "Explore fruitless exons" if entry.key == "basrur"
-                        else "Open UCSC atlas" if entry.key == "goldman"
+                        "Open UCSC atlas" if entry.key == "goldman"
                         else "Open in Genes"
                     )
                     # Same-tab links preserve a straightforward route into the app.

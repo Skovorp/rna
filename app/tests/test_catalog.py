@@ -33,8 +33,10 @@ def test_home_downloads_and_private_prompt(monkeypatch):
     downloads = app.get("download_button")
     assert {item.key for item in downloads} == {"download_tpm_elife", "download_tpm_atlas", "download_tpm_midgut"}
     html = " ".join(element.value for element in app.markdown)
-    assert html.index("## Datasets") < html.index("Fruitless exons (published)") < html.index("Methodology →")
-    assert all(accession in html for accession in ("PRJNA796320", "PRJNA236239", "PRJNA1020561", "PRJNA605870", "PRJNA612100"))
+    assert html.index("## Datasets") < html.index("Mouthparts (published)") < html.index("Methodology →")
+    assert "Basrur et al. (2020)" in html
+    assert "Fruitless exons" not in html
+    assert all(accession in html for accession in ("PRJNA796320", "PRJNA236239", "PRJNA1020561", "PRJNA605870"))
     app.button(key="catalog_unlock_private").click().run()
     assert not app.exception
     assert app.text_input[0].label == "Password"
@@ -92,21 +94,13 @@ def test_published_studies_work_in_other_tpm_explorers(monkeypatch, key, page):
     assert app.get("plotly_chart")
 
 
-def test_basrur_preserves_missing_replicates_and_exon_units(monkeypatch):
+def test_old_basrur_link_opens_reprocessed_gene_tpm(monkeypatch):
     monkeypatch.syspath_prepend(str(APP.parent))
-    data = pd.read_csv(EXPRESSION / "basrur_2020_fruitless_exon_counts.tsv.gz", sep="\t")
-    assert data.groupby("panel").size().to_dict() == {"Figure 1G": 273, "Figure 1H": 144}
-    brain = data[data.panel.eq("Figure 1G")]
-    assert brain.groupby(["exon", "sex"]).size().unstack()[["female", "male"]].eq([4, 3]).all().all()
-    first = brain[(brain.exon_number == 1) & brain.sex.eq("female") & brain.replicate.eq(1)]
-    assert first.normalized_count.iloc[0] == pytest.approx(153.846153846154)
-    assert not (data.tissue.str.contains("ovar", case=False) & data.sex.eq("male")).any()
     app = AppTest.from_file(str(APP), default_timeout=45)
     app.query_params.update({"page": "Genes", "view": "fruitless"})
     app.run()
     assert not app.exception, [item.message for item in app.exception]
-    assert len(app.get("plotly_chart")) == 1
-    assert not any(widget.label == "TPM scale" for widget in app.selectbox)
-    app.radio[0].set_value("Brain (all exons)").run()
-    assert not app.exception
-    assert len(app.dataframe[0].value) == 273
+    assert app.multiselect(key="gene_studies").value == ["atlas"]
+    assert any(widget.label == "TPM scale" for widget in app.selectbox)
+    assert "Fruitless exon" not in " ".join(element.value for element in app.markdown)
+    assert app.get("plotly_chart")

@@ -22,7 +22,7 @@ Open `http://localhost:8501`.
 
 The primary workflows are available from the persistent menu at the top of every page. The Streamlit sidebar and developer toolbar are hidden from the interface.
 
-Morita (2025) leg and Jové (2020) mouthpart TPM tables are available throughout the TPM explorers. The Genes page also offers **Fruitless exon counts**, a separate view of Basrur (2020) Figure 1G–H in the original normalized-count units. Catalog links open the matching study or view directly.
+Morita (2025) leg and Jové (2020) mouthpart TPM tables are available throughout the TPM explorers. Catalog links open the matching study directly. Basrur (2020) reused the Matthews Aedes RNA-seq; the catalog cites it with the existing reprocessed neurotranscriptome. Older exon-view links now open that gene-TPM dataset in Genes.
 
 The alias layer maps `Orco`, `AaegOr7`, and `AAEL005776` to the same gene. It also strips the historical `Aaeg` prefix for cross-paper matching such as `AaegIr25a` → `Ir25a`.
 
