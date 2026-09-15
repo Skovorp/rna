@@ -1,6 +1,6 @@
 ## RNA-seq processing
 
-**Quantification:** all reprocessed datasets use nf-core/rnaseq 3.14.0 (Nextflow 23.10.1, Apptainer), TrimGalore, STAR + Salmon, and automatic strandedness. Reference: AaegL5 / VectorBase 68 genome with the VB58/Jové GTF, mitochondrial genes included and gene names patched. Published datasets retain the authors' expression values.
+**Quantification:** all completed reprocessed datasets use nf-core/rnaseq 3.14.0 (Nextflow 23.10.1, Apptainer), TrimGalore, STAR + Salmon, and automatic strandedness. Reference: AaegL5 / VectorBase 68 genome with the VB58/Jové GTF, mitochondrial genes included and gene names patched. Published datasets retain the authors' expression values.
 
 **Differential expression:** DESeq2 on rounded Salmon length-scaled counts; genes with total count <10 removed; design `~condition`; all pairwise contrasts with ≥2 biological replicates per condition. Wald tests, Benjamini–Hochberg `padj <0.05`, and ashr fold-change shrinkage when available. PCA uses blind variance-stabilized counts. Full commands and parameters are in the mapping ZIP.
 

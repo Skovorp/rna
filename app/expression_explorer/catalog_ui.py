@@ -44,7 +44,9 @@ def render_catalog(expression_dir: Path, unlocked: bool, on_unlock) -> None:
                 name, description, explore, downloads = st.columns(widths)
                 name.markdown(f"**{entry.label}**")
                 description.markdown(entry.description)
-                if entry.comparison:
+                if entry.pending_reprocessing:
+                    explore.markdown("Not yet available")
+                elif entry.comparison:
                     explore.markdown(f"[Published vs reprocessed]({entry.comparison})")
                 elif entry.explorer:
                     # Same-tab links preserve a straightforward route into the app.
@@ -55,7 +57,9 @@ def render_catalog(expression_dir: Path, unlocked: bool, on_unlock) -> None:
                 else:
                     explore.markdown("No published counterpart")
                 with downloads:
-                    if entry.tpm_file:
+                    if entry.pending_reprocessing:
+                        st.markdown("TPM processing pending")
+                    elif entry.tpm_file:
                         path = tpm_download_path(entry.key, expression_dir, unlocked)
                         # Use the same session-managed file delivery as
                         # st.download_button, rendered as an ordinary link.

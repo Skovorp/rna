@@ -10,7 +10,7 @@ Small Streamlit prototype for exploring *Aedes aegypti* RNA-seq TPM matrices.
 - Browse every pairwise DESeq2 contrast for our reprocessed datasets: 55 ovary, 378 tissue-atlas, 28 midgut, and 66 private fat-body / Malpighian-tubule contrasts. Separate target and reference selectors expose either fold-change direction without recomputing the underlying DESeq2 test. Paper datasets and the single-condition crop dataset are marked `NOT AVAILABLE` rather than being tested from TPM values in the app.
 - Read the **Methods** page for the exact shared pipeline and the **Ovary paper vs reprocessed** and **Tissue atlas paper vs reprocessed** pages for direct comparisons with the published matrices.
 - Use the Home dataset catalog to open raw-read sources and download complete reprocessed TPM tables. Private studies appear only after unlocking them from the catalog's last row.
-- Explore the published Morita (2025) leg and Jové (2020) mouthpart TPM tables in Genes, Families, and Clusters. Basrur (2020) reused the Matthews Aedes RNA-seq already available in the reprocessed neurotranscriptome.
+- Explore the published Morita (2025) leg and Jové (2020) mouthpart TPM tables in Genes, Families, and Clusters. Six additional Basrur (2020) brain samples are listed in the catalog with TPM processing pending.
 - Explore IR, OR, GR, and OBP gene families with replicate-aware plots and heatmaps, using one sortable table with a mean-expression column per study to control visibility for predefined and custom families.
 - Map biological samples with PCA, UMAP, or t-SNE using all expression genes by default or a smaller most-variable subset.
 - Inspect available paper annotations, orthologs, aliases, and raw per-sample TPM values.
@@ -27,8 +27,9 @@ means raw reads run through our shared pipeline.
 | Ovary (published) | Venkataraman et al. published TPM | — |
 | Ovary (reprocessed) | Our STAR + Salmon run over the same 33 raw samples | 55 pairwise contrasts |
 | Neurotranscriptome (published, AaegL.RU + legacy AaegL3.3) | Matthews et al. published TPM | — |
-| Neurotranscriptome (reprocessed) | Our STAR + Salmon run over the Matthews raw reads, also used by Basrur (2020) | 378 pairwise contrasts |
+| Neurotranscriptome (reprocessed) | Our STAR + Salmon run over the Matthews raw reads, reused for Basrur (2020) Figure 1G–H | 378 pairwise contrasts |
 | Midgut (reprocessed) | Vosshall lab midgut RNA-seq | 28 pairwise contrasts |
+| Brain (reprocessed, pending) | Basrur et al. PRJNA612100: three female and three male Aedes brain samples; TPM processing pending | Not yet available |
 | Legs, wild type & Orco mutants (published) | Morita et al. Salmon TPM, summed by gene | — |
 | Mouthparts (published) | Jové et al. published TPM | — |
 | Fat body & Malpighian tubules (reprocessed, private) | Vosshall lab blood-meal time course | 66 pairwise contrasts |
@@ -38,6 +39,10 @@ The neurotranscriptome comparison uses the 122 samples present in the
 published matrix.
 Three additional recovered libraries remain visible in the reprocessed dataset
 but are excluded from the comparison because they have no published counterpart.
+
+The Basrur brain row reserves a separate dataset for future reprocessing. Its six
+libraries are distinct from Matthews; no expression values, explorer option, or
+TPM download are available yet.
 
 ## Run locally
 

@@ -14,6 +14,7 @@ class CatalogEntry:
     explorer: str | None = None
     tpm_file: str | None = None
     private: bool = False
+    pending_reprocessing: bool = False
 
 
 OVARY_RAW = (("PRJNA796320", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA796320"),)
@@ -38,7 +39,7 @@ CATALOG = (
     ),
     CatalogEntry(
         "atlas", "Neurotranscriptome (reprocessed)",
-        "Our STAR + Salmon gene TPM from the same raw reads, with 378 pairwise DESeq2 contrasts. [Basrur et al. (2020)](https://www.rockefeller.edu/research/uploads/www.rockefeller.edu/sites/8/2021/11/BasrurVosshall2020.pdf) also used these Aedes RNA-seq data.",
+        "Our STAR + Salmon gene TPM from the same raw reads, with 378 pairwise DESeq2 contrasts. [Basrur et al. (2020)](https://elifesciences.org/articles/63982) reused these reads for the fruitless exon measurements in Figure 1G–H.",
         NEURO_RAW, "/Atlas_paper_vs_reprocessed",
         tpm_file="atlas_star_salmon_gene_tpm.tsv.gz",
     ),
@@ -46,6 +47,12 @@ CATALOG = (
         "midgut", "Midgut (reprocessed)",
         "Vosshall lab midgut RNA-seq: our STAR + Salmon gene TPM and 28 pairwise DESeq2 contrasts.",
         tpm_file="midgut_star_salmon_gene_tpm.tsv.gz",
+    ),
+    CatalogEntry(
+        "basrur", "Brain (reprocessed, pending)",
+        "[Basrur et al. (2020)](https://elifesciences.org/articles/63982): six Aedes aegypti brain samples (three female, three male).",
+        (("PRJNA612100", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA612100"),),
+        pending_reprocessing=True,
     ),
     CatalogEntry(
         "morita", "Legs, wild type & Orco mutants (published)",

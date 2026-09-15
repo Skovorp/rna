@@ -1683,7 +1683,7 @@ def render_home() -> None:
         """
         <h2><a href="/Methods" target="_self">Methodology →</a></h2>
 
-        Every reprocessed dataset above went through the *identical* pipeline,
+        Every completed reprocessed dataset above went through the *identical* pipeline,
         reference, and parameters — see [Methods](/Methods). Published datasets keep
         their published values and are not covered by those methods.
 

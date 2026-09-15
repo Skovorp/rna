@@ -22,7 +22,7 @@ Open `http://localhost:8501`.
 
 The primary workflows are available from the persistent menu at the top of every page. The Streamlit sidebar and developer toolbar are hidden from the interface.
 
-Morita (2025) leg and Jové (2020) mouthpart TPM tables are available throughout the TPM explorers. Catalog links open the matching study directly. Basrur (2020) reused the Matthews Aedes RNA-seq; the catalog cites it with the existing reprocessed neurotranscriptome. Older exon-view links now open that gene-TPM dataset in Genes.
+Morita (2025) leg and Jové (2020) mouthpart TPM tables are available throughout the TPM explorers. Catalog links open the matching study directly. Basrur (2020) reused Matthews reads for Figure 1G–H and deposited six additional Aedes brain libraries at PRJNA612100. Those new libraries have a separate catalog row marked **Brain (reprocessed, pending)**, without an explorer or download until TPM reprocessing is complete. Older exon-view links still open the existing reprocessed Matthews gene-TPM dataset in Genes.
 
 Gene links use only Goldman Table S1.4 and explicit identifiers supplied in the
 bundled papers. This connects `Orco`, `AaegOr7`, and `AAEL005776`, and connects
