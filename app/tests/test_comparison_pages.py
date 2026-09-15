@@ -56,6 +56,7 @@ def test_comparison_page_renders_native_figures(
         button.label == "Download the standalone report"
         for button in app.get("download_button")
     )
+    assert any(button.label == "Download comparison data (ZIP)" for button in app.get("download_button"))
 
     for analysis, heading, table_count in (
         ("Zero transitions", "## Exact zero and non-zero transitions", 2),
@@ -73,3 +74,18 @@ def test_comparison_page_renders_native_figures(
             assert "average of its variance within" in rendered
             assert "does not scale them to unit variance" in rendered
             assert "DESeq2-style" not in rendered
+
+
+@pytest.mark.parametrize(("page", "archive"), [
+    ("2_Ovary_paper_vs_reprocessed.py", "ovary_comparison_data.zip"),
+    ("4_Atlas_paper_vs_reprocessed.py", "neurotranscriptome_comparison_data.zip"),
+])
+def test_production_comparison_download_has_a_permanent_link(monkeypatch, page, archive):
+    monkeypatch.syspath_prepend(str(APP_DIR))
+    monkeypatch.setattr("streamlit.page_link", lambda *args, **kwargs: None)
+    monkeypatch.setenv("RNA_ATLAS_DOWNLOAD_BASE", "/downloads")
+    links = []
+    monkeypatch.setattr("streamlit.link_button", lambda label, url: links.append((label, url)))
+    app = AppTest.from_file(str(APP_DIR / "pages" / page), default_timeout=45).run()
+    assert not app.exception, [item.message for item in app.exception]
+    assert links == [("Download comparison data (ZIP)", f"/downloads/{archive}")]

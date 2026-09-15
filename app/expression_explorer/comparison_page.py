@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -27,6 +28,7 @@ class ComparisonPage:
     introduction: str
     asset_dir: Path
     report_filename: str
+    data_filename: str
     rebuild_command: str
     matched_genes_help: str
     data_caption: str
@@ -135,6 +137,21 @@ def render_comparison_page(config: ComparisonPage) -> None:
     )
     st.caption(config.data_caption)
     st.caption(summary.get("mapping_policy", ""))
+
+    data_path = config.asset_dir / config.data_filename
+    if data_path.is_file():
+        download_base = os.environ.get("RNA_ATLAS_DOWNLOAD_BASE", "").rstrip("/")
+        if download_base:
+            st.link_button("Download comparison data (ZIP)", f"{download_base}/{config.data_filename}")
+        else:
+            st.download_button(
+                "Download comparison data (ZIP)", data_path.read_bytes(),
+                file_name=config.data_filename, mime="application/zip", on_click="ignore",
+            )
+        st.caption(
+            "Both full TPM tables, gene and sample matching, metadata, and analysis summary. "
+            f"{data_path.stat().st_size / 1_000_000:.1f} MB."
+        )
 
     analysis = st.segmented_control(
         "Analysis",

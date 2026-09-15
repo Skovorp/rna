@@ -6,10 +6,8 @@ supplement's shape: `IDs`/`Symbols` columns followed by identically named
 sample columns. The reprocessed STAR + Salmon matrix uses `gene_id`/`gene_name`
 and nf-core sample names, so this adapts it before delegating to that script.
 
-Run this whenever the reprocessed ovary matrix changes, or the comparison page
-will keep describing a matrix the atlas no longer displays. Afterwards run
-`scripts/theme_comparison_reports.py` and copy the full report into
-`app/assets/ovary_comparison/`.
+Run this whenever the reprocessed ovary matrix or published gene mappings change.
+It updates the live figures, report and downloadable source-data ZIP together.
 
 The app shows only `elife_ovary_tpm_full_report.html`. The generator also emits
 a standalone zero-transition report, but that is a strict subset of the full
@@ -103,6 +101,7 @@ def main() -> None:
     for filename in ("figures.json", "elife_ovary_tpm_full_report.html"):
         shutil.copy2(OUTPUT_DIR / filename, asset_dir / filename)
     subprocess.run([sys.executable, str(ROOT / "scripts" / "theme_comparison_reports.py")], check=True)
+    subprocess.run([sys.executable, "-m", "analysis.comparison_downloads", "ovary"], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":

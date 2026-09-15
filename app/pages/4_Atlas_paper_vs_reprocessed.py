@@ -21,6 +21,7 @@ render_comparison_page(
         ),
         asset_dir=Path(__file__).resolve().parents[1] / "assets" / "atlas_comparison",
         report_filename="matthews_2016_atlas_tpm_full_report.html",
+        data_filename="neurotranscriptome_comparison_data.zip",
         rebuild_command="scripts/rebuild_atlas_comparison.py",
         matched_genes_help=(
             "Identical IDs or explicit published identifier links shared by the "

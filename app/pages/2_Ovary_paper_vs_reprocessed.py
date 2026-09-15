@@ -17,12 +17,13 @@ render_comparison_page(
         ),
         asset_dir=Path(__file__).resolve().parents[1] / "assets" / "ovary_comparison",
         report_filename="elife_ovary_tpm_full_report.html",
+        data_filename="ovary_comparison_data.zip",
         rebuild_command="scripts/rebuild_ovary_comparison.py",
         matched_genes_help="Unambiguous published identifier links, out of 18,473 genes in the published matrix.",
         data_caption=(
             "This comparison covers the subset supported by published identifiers. "
             "Its gene coverage differs from earlier coordinate-based comparisons. "
-            "Download the exact gene pairs from Methods."
+            "The download includes every source gene and the exact pairs used here."
         ),
         pca_grouping="Points are colored by reproductive state.",
     )

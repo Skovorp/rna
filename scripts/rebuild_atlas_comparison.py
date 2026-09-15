@@ -163,6 +163,7 @@ def main() -> None:
         [sys.executable, str(ROOT / "scripts" / "theme_comparison_reports.py")],
         check=True,
     )
+    subprocess.run([sys.executable, "-m", "analysis.comparison_downloads", "neurotranscriptome"], cwd=ROOT, check=True)
     print(f"prepared live comparison assets in {ASSET_DIR}")
 
 
