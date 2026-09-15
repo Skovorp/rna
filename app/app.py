@@ -309,8 +309,6 @@ def datasets_resource(schema_version: str):
     return load_datasets(EXPRESSION_DIR)
 
 
-datasets = datasets_resource(DATA_SCHEMA_VERSION)
-
 # Datasets hidden until the viewer unlocks them from the footer. The password is
 # checked server-side against a SHA-256 digest, so private data is never sent to
 # the browser for a locked session.
@@ -320,14 +318,6 @@ _PRIVATE_PASSWORD_SHA256 = "a7e70ed2033498dc9e9852fb666b72bf7a6abcff8dd22d86f165
 
 def private_datasets_unlocked() -> bool:
     return bool(st.session_state.get("private_datasets_unlocked"))
-
-
-if not private_datasets_unlocked():
-    datasets = {
-        key: dataset
-        for key, dataset in datasets.items()
-        if key not in PRIVATE_DATASET_KEYS
-    }
 
 
 @st.cache_resource(show_spinner=False)
@@ -341,17 +331,6 @@ def render_iframe(url: str, height: int = 760) -> None:
         st.iframe(url, height=height)
     else:
         components.iframe(url, height=height)
-
-
-ordered_dataset_keys = [key for key in DATASET_ORDER if key in datasets] + sorted(
-    key for key in datasets if key not in DATASET_ORDER
-)
-study_keys = [key for key in ordered_dataset_keys if key != "neuro_legacy"]
-differential_contrasts = load_differential_contrasts(EXPRESSION_DIR)
-differential_study_keys = sorted(
-    study_keys,
-    key=lambda key: (key not in differential_contrasts, study_keys.index(key)),
-)
 
 
 @st.cache_data(show_spinner="Computing sample map…")
@@ -1669,6 +1648,10 @@ def render_home() -> None:
         This site brings together *Aedes aegypti* RNA-seq expression data
         across tissues, feeding conditions, and reproductive states.
 
+        <h2><a href="/Methods" target="_self">Methodology →</a></h2>
+
+        Pipeline, reference, and parameters used for the reprocessed datasets.
+
         Use the menu above to:
 
         - **Genes** — search gene symbols and historical identifiers, then compare expression across studies.
@@ -1717,13 +1700,9 @@ def render_home() -> None:
         statistics are displayed only from precomputed count-aware pipeline
         outputs, never recomputed from TPM in the app.
         """,
+        unsafe_allow_html=True,
     )
 
-    st.page_link(
-        "pages/3_Methods.py",
-        label="Methods — pipeline, reference, and parameters",
-        icon="\U0001F9EA",
-    )
     st.page_link(
         "pages/1_Mosquito_cheatsheet.py",
         label="Mosquito basics — tissues and reproductive states",
@@ -1806,6 +1785,28 @@ with st.container(key="site_nav"):
         )
 if mode in navigation_items and st.query_params.get("page") != mode:
     st.query_params["page"] = mode
+
+# The introduction and private-access controls do not need expression data.
+# Render navigation first and load matrices only when an explorer is opened.
+if mode not in ("Home", "Private datasets"):
+    datasets = datasets_resource(DATA_SCHEMA_VERSION)
+    if not private_datasets_unlocked():
+        datasets = {
+            key: dataset
+            for key, dataset in datasets.items()
+            if key not in PRIVATE_DATASET_KEYS
+        }
+    ordered_dataset_keys = [key for key in DATASET_ORDER if key in datasets] + sorted(
+        key for key in datasets if key not in DATASET_ORDER
+    )
+    study_keys = [key for key in ordered_dataset_keys if key != "neuro_legacy"]
+
+if mode == "Differential expression":
+    differential_contrasts = load_differential_contrasts(EXPRESSION_DIR)
+    differential_study_keys = sorted(
+        study_keys,
+        key=lambda key: (key not in differential_contrasts, study_keys.index(key)),
+    )
 
 if mode == "Home":
     render_home()

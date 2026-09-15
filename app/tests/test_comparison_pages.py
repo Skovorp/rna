@@ -16,7 +16,11 @@ def _segmented_controls(app):
 
 
 def _set_segmented_value(control, value):
-    control.set_value([value] if type(control).__name__ == "ButtonGroup" else value)
+    legacy_button_group = (
+        type(control).__name__ == "ButtonGroup"
+        and not hasattr(control, "formatted_values")
+    )
+    control.set_value([value] if legacy_button_group else value)
     return control
 
 

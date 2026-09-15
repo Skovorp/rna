@@ -59,7 +59,14 @@ def _widgets_with_options(app, expected_options):
 
 
 def _set_widget_value(widget, value):
-    widget.set_value([value] if type(widget).__name__ == "ButtonGroup" else value)
+    # Streamlit 1.61 still calls this ButtonGroup, but its string-based
+    # serializer accepts a scalar for single selection. Only the old index
+    # serializer needs the list workaround.
+    legacy_button_group = (
+        type(widget).__name__ == "ButtonGroup"
+        and not hasattr(widget, "formatted_values")
+    )
+    widget.set_value([value] if legacy_button_group else value)
     return widget
 
 
@@ -138,6 +145,26 @@ def _select_page(app, page):
     assert len(navigation) == 1
     _set_widget_value(navigation[0], page).run()
     return app
+
+
+def test_informational_pages_do_not_load_expression_data(monkeypatch):
+    monkeypatch.syspath_prepend(str(APP.parent))
+    import streamlit as st
+    from expression_explorer import data, differential
+
+    def unexpected_load(*args, **kwargs):
+        raise AssertionError("Informational pages must not load analysis data")
+
+    st.cache_resource.clear()
+    monkeypatch.setattr(data, "load_datasets", unexpected_load)
+    monkeypatch.setattr(differential, "load_differential_contrasts", unexpected_load)
+    app = AppTest.from_file(str(APP), default_timeout=45).run()
+    assert not app.exception, [exception.message for exception in app.exception]
+    _select_page(app, "Private datasets")
+    assert not app.exception, [exception.message for exception in app.exception]
+    assert app.text_input[0].label == "Password"
+    _select_page(app, "Home")
+    assert not app.exception, [exception.message for exception in app.exception]
 
 
 def test_default_app_renders_without_exceptions(monkeypatch):
