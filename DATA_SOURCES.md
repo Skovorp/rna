@@ -14,7 +14,7 @@ It also includes the Nadav Shai / Vosshall lab midgut RNA-seq dataset: 24 paired
 
 The Genes page also embeds the [UCSC Aedes aegypti Mosquito Cell Atlas](https://cells.ucsc.edu/?ds=mosquito+all), from Goldman OV et al. (2025), *A single-nucleus transcriptomic atlas of the adult Aedes aegypti mosquito*, Cell 188:7267–7290.e26, DOI [10.1016/j.cell.2025.10.008](https://doi.org/10.1016/j.cell.2025.10.008). This is a deep-linked external visualization, not a locally reprocessed expression dataset. Its values are normalized single-nucleus expression rather than TPM.
 
-Goldman raw reads are at [PRJNA1223381](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1223381), with reused antenna / palp reads at [PRJNA794050](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA794050). The Home catalog links both accessions. Lab-provided midgut and private reads have no verified public raw-data link in this bundle.
+Goldman raw reads are at [PRJNA1223381](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1223381), with reused antenna / palp reads at [PRJNA794050](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA794050). This external atlas is embedded in Genes and is excluded from the Home dataset table. Lab-provided midgut and private reads have no verified public raw-data link in this bundle.
 
 Home reprocessed rows show a **Download TPM tables** text link serving the exact bundled `.tsv.gz` file. Raw-read links appear on published rows. Private catalog rows and their download links appear only after the session is unlocked; the server checks the catalog's private flag before resolving a download file. Home does not parse any expression matrix.
 
@@ -39,7 +39,6 @@ closely they agree.
 | Midgut (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab midgut raw reads | All 28 pairwise DESeq2 contrasts |
 | Legs, wild type & Orco mutants (published) | Morita et al. author Salmon TPM summed by gene, 10 samples | Not available |
 | Mouthparts (published) | Jové et al. published gene TPM, 12 samples | Not available |
-| Mosquito Cell Atlas (published) | Goldman et al. normalized single-nucleus expression, embedded from UCSC | Not available |
 | Fat body & Malpighian tubules (reprocessed, private) | Our STAR + Salmon gene TPM from the Vosshall lab raw reads | All 66 pairwise DESeq2 contrasts |
 | Crop (reprocessed, private) | Our STAR + Salmon gene TPM from the Vosshall lab crop raw reads | Not applicable — a single condition, so no contrasts exist |
 

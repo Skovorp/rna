@@ -196,7 +196,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "Cell 2025" not in home_html
     assert "10.1101/2022.03.01.482582" in home_html
     assert "10.1101/026823" in home_html
-    assert "10.1101/2025.02.25.639765" in home_html
+    assert "Mosquito Cell Atlas (published)" not in home_html
+    assert "10.1101/2025.02.25.639765" not in home_html
     assert "identical* pipeline" in home_html
     assert "never recomputed from TPM" in home_html
     # Comparisons and Methods are reachable as inline links, not just from the

@@ -60,15 +60,6 @@ CATALOG = (
         explorer="/?page=Genes&study=jove",
     ),
     CatalogEntry(
-        "goldman", "Mosquito Cell Atlas (published)",
-        "[Goldman et al. (2025)](https://www.biorxiv.org/content/10.1101/2025.02.25.639765): UCSC single-nucleus views embedded in Genes. These show normalized single-nucleus expression.",
-        (
-            ("PRJNA1223381", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1223381"),
-            ("Reused antenna / palp data: PRJNA794050", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA794050"),
-        ),
-        explorer="https://cells.ucsc.edu/?ds=mosquito+all",
-    ),
-    CatalogEntry(
         "yedlin", "Fat body & Malpighian tubules (reprocessed, private)",
         "Our STAR + Salmon gene TPM over the blood-meal time course, with 66 pairwise DESeq2 contrasts.",
         tpm_file="yedlin_star_salmon_gene_tpm.tsv.gz", private=True,

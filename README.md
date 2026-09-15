@@ -30,7 +30,6 @@ means raw reads run through our shared pipeline.
 | Midgut (reprocessed) | Vosshall lab midgut RNA-seq | 28 pairwise contrasts |
 | Legs, wild type & Orco mutants (published) | Morita et al. Salmon TPM, summed by gene | — |
 | Mouthparts (published) | Jové et al. published TPM | — |
-| Mosquito Cell Atlas (published) | Goldman et al. embedded UCSC single-nucleus views | — |
 | Fat body & Malpighian tubules (reprocessed, private) | Vosshall lab blood-meal time course | 66 pairwise contrasts |
 | Crop (reprocessed, private) | Vosshall lab crop RNA-seq | — (single condition) |
 
