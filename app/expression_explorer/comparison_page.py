@@ -134,6 +134,7 @@ def render_comparison_page(config: ComparisonPage) -> None:
         help="Share of gene-sample pairs agreeing to within one log₂ unit.",
     )
     st.caption(config.data_caption)
+    st.caption(summary.get("mapping_policy", ""))
 
     analysis = st.segmented_control(
         "Analysis",

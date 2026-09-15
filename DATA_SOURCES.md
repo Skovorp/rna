@@ -69,7 +69,24 @@ comparison bundles rendered by the atlas:
 Each asset directory also contains `figures.json`, which lets Streamlit render
 the charts natively instead of embedding the standalone report in an iframe.
 
-The generating ovary analysis, its summary statistics, and the identifier
-crosswalk live under `analysis/results/elife_tpm_comparison/`. The corresponding
-tissue-atlas outputs live under `analysis/results/atlas_tpm_comparison/`; that
-comparison uses direct AaegL.RU identifiers rather than a coordinate crosswalk.
+The generating ovary analysis and its exact matched pairs live under
+`analysis/results/elife_tpm_comparison/`; tissue-atlas outputs live under
+`analysis/results/atlas_tpm_comparison/`. Both now use identical original IDs or
+explicit paper-provided identifier links. The coordinate-generated crosswalk
+has been removed and the comparison outputs regenerated.
+
+## Gene mappings and descriptions
+
+`expression/published_gene_aliases.json.gz` preserves literal assertions from
+the user-supplied `GoldmanVosshallShai_TableS1.xlsx`, sheet **Table S1.4 - Gene
+Look Up**, plus the Matthews, Morita, Venkataraman, and Jové tables listed above.
+It records source filenames, SHA-256 checksums, citations, and source-table row
+numbers. Rebuild with `scripts/import_gene_aliases.py --goldman <workbook>` after
+updating any paper table. No shared-symbol, coordinate, sequence, or orthology
+inference creates gene links. Original dataset IDs and expression rows remain
+intact. Goldman supplies the separately displayed VectorBase and NCBI descriptions.
+
+The Methods page documents all sources and offers a complete mapping ZIP:
+every accessible gene row including unmapped rows, searchable aliases, evidence,
+both descriptions, source assertions, and the exact comparison pairs. Private
+dataset rows remain restricted to unlocked sessions.

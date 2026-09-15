@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import cached_property
 import hashlib
 from pathlib import Path
@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from .catalog import DATASET_LABELS
+from .gene_aliases import DESCRIPTION_COLUMNS, PublishedAliases
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,7 @@ class ExpressionDataset:
     genes: pd.DataFrame
     values: pd.DataFrame
     samples: pd.DataFrame
+    source_file: str = ""
 
     @property
     def sample_columns(self) -> list[str]:
@@ -143,8 +145,6 @@ PAPER_FAMILY_LABELS = {
     "OBP": "Odorant-binding proteins (OBP)",
 }
 
-ORCO_ALIASES = ("Orco", "AaegOr7", "Or7", "AAEL005776")
-
 # Bump when a change alters derived dataset content without touching this file.
 _CACHE_VERSION = 2
 _CACHE_DIR = ".cache"
@@ -179,15 +179,8 @@ def normalize_alias(value: object) -> str:
 
 
 def canonical_symbol(symbol: object, stable_id: object = "") -> str:
-    """Normalize known historical naming conventions without discarding IDs."""
-    raw = _clean(symbol)
-    stable = _clean(stable_id).upper()
-    normalized = normalize_alias(raw)
-    if stable == "AAEL005776" or normalized in {"orco", "aaegor7"}:
-        return "Orco"
-    if raw.casefold().startswith("aaeg") and len(raw) > 4:
-        raw = raw[4:]
-    return raw or _clean(stable_id)
+    """Keep the supplied symbol; published aliases are added after loading."""
+    return _clean(symbol) or _clean(stable_id)
 
 
 # Compiled once: these were rebuilt from an f-string on every call, which cost
@@ -252,8 +245,6 @@ def _finalize_genes(
         genes["canonical_symbol"],
     ):
         values = {stable, internal, raw, canonical}
-        if canonical.casefold() == "orco":
-            values.update(ORCO_ALIASES)
         row = tuple(sorted(value for value in values if value))
         alias_rows.append(row)
         search_text.append(" | ".join(row))
@@ -486,7 +477,6 @@ def _read_matrix(path: Path, annotation_columns: list[str]) -> tuple[pd.DataFram
 def load_nfcore_dataset(
     path: Path | str,
     key: str,
-    symbol_crosswalk: dict[str, str] | None = None,
     *,
     label: str | None = None,
     paper: str = "Local nf-core/rnaseq import",
@@ -504,14 +494,12 @@ def load_nfcore_dataset(
         raise ValueError(f"nf-core TPM matrix needs a gene column and samples: {path}")
     gene_column = frame.columns[0]
     stable_ids = frame[gene_column].map(_clean)
-    crosswalk = symbol_crosswalk or {}
     matrix_symbols = (
         frame["gene_name"].map(_clean)
         if "gene_name" in frame.columns
         else pd.Series([""] * len(frame))
     )
-    symbols = stable_ids.map(crosswalk).fillna("")
-    symbols = symbols.where(symbols.ne(""), matrix_symbols)
+    symbols = matrix_symbols
     annotation_columns = [gene_column]
     if "gene_name" in frame.columns and "gene_name" != gene_column:
         annotation_columns.append("gene_name")
@@ -554,12 +542,14 @@ def load_nfcore_dataset(
         genes=genes,
         values=values,
         samples=samples,
+        source_file=path.name,
     )
 
 
 def _cache_signature(expression_dir: Path) -> str:
     """Identify the inputs and the code that derive the dataset objects."""
-    parts = [f"v{_CACHE_VERSION}", str(Path(__file__).stat().st_mtime_ns)]
+    parts = [f"v{_CACHE_VERSION}", str(Path(__file__).stat().st_mtime_ns),
+             str(Path(__file__).with_name("gene_aliases.py").stat().st_mtime_ns)]
     for path in sorted(expression_dir.rglob("*")):
         if path.is_file() and not path.is_relative_to(expression_dir / _CACHE_DIR):
             stat = path.stat()
@@ -624,11 +614,6 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
     )
     annotation_path = expression_dir / "neurotranscriptome_2016_gene_annotations.tsv"
     ru_genes = _add_paper_annotations(ru_genes, annotation_path)
-    crosswalk = {
-        stable: symbol
-        for stable, symbol in zip(ru_genes["stable_id"], ru_genes["raw_symbol"])
-        if stable and symbol
-    }
     bmc_samples = _load_bmc_samples(
         expression_dir / "neurotranscriptome_2016_samples.tsv", ru_values.columns
     )
@@ -637,7 +622,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         expression_dir / "neurotranscriptome_2016_aaegl_3_3_tpm.tsv.gz",
         ["gene"],
     )
-    legacy_symbols = legacy_annotations["gene"].map(crosswalk).fillna("")
+    legacy_symbols = pd.Series([""] * len(legacy_annotations))
     legacy_genes = _finalize_genes(
         legacy_annotations,
         legacy_annotations["gene"],
@@ -675,7 +660,6 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         return load_nfcore_dataset(
             path,
             key,
-            crosswalk,
             label=label,
             paper=paper,
             annotation_version="AaegL5, VectorBase 58 + Jové et al. 2019",
@@ -706,7 +690,6 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
     atlas = load_nfcore_dataset(
         atlas_path,
         "atlas",
-        crosswalk,
         label=DATASET_LABELS["atlas"],
         paper="Matthews et al. raw reads, our nf-core reprocessing",
         annotation_version="AaegL5, VectorBase 58 + Jové et al. 2019",
@@ -737,6 +720,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
             genes=paper_genes,
             values=paper_values,
             samples=paper_samples,
+            source_file="elife_80489_tpm.tsv.gz",
         ),
         "elife": ovary,
         "neuro_ru": ExpressionDataset(
@@ -747,6 +731,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
             genes=ru_genes,
             values=ru_values,
             samples=bmc_samples,
+            source_file="neurotranscriptome_2016_aaegl_ru_tpm.tsv.gz",
         ),
         "neuro_legacy": ExpressionDataset(
             key="neuro_legacy",
@@ -756,6 +741,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
             genes=legacy_genes,
             values=legacy_values,
             samples=legacy_samples,
+            source_file="neurotranscriptome_2016_aaegl_3_3_tpm.tsv.gz",
         ),
         "atlas": atlas,
         "midgut": midgut,
@@ -763,10 +749,6 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "crop": crop,
     }
 
-    symbol_to_stable = {
-        canonical_symbol(symbol, stable).casefold(): stable
-        for stable, symbol in crosswalk.items() if symbol
-    }
     for key, year, paper, annotation in (
         ("morita", 2025, "Morita et al., Science Advances 2025", "Authors' AaegLVP_VB58-Jove19 GTF; Salmon transcript TPM summed by gene"),
         ("jove", 2020, "Jové et al., Neuron 2020", "Authors' merged RefSeq AaegL5 / manual chemoreceptor annotation"),
@@ -775,16 +757,14 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         identifiers = frame[["gene_id", "gene_name"]].copy()
         if key == "morita":
             stable_ids = identifiers["gene_id"]
-            symbols = identifiers["gene_name"].where(
-                identifiers["gene_name"].ne(""), stable_ids.map(crosswalk).fillna("")
-            )
+            symbols = identifiers["gene_name"]
         else:
             # Receptors use names such as Ir25a as GeneID, while their second
             # column spells out "Ionotropic receptor 25a". Keep the symbol.
             symbols = identifiers["gene_name"].where(
                 identifiers["gene_id"].str.fullmatch(r"gene\d+"), identifiers["gene_id"]
             )
-            stable_ids = symbols.str.casefold().map(symbol_to_stable).fillna(symbols)
+            stable_ids = identifiers["gene_id"]
         genes = _finalize_genes(identifiers, stable_ids, identifiers["gene_id"], symbols)
         values = frame.drop(columns=["gene_id", "gene_name"]).apply(pd.to_numeric, errors="raise")
         samples = pd.read_csv(expression_dir / f"{key}_{year}_samples.tsv", sep="\t").set_index("sample", drop=False)
@@ -794,6 +774,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         datasets[key] = ExpressionDataset(
             key=key, label=DATASET_LABELS[key], paper=paper,
             annotation_version=annotation, genes=genes, values=values, samples=samples,
+            source_file=f"{key}_{year}_gene_tpm.tsv.gz",
         )
 
     import_dir = expression_dir / "imports"
@@ -808,8 +789,28 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
             while key in used_keys:
                 key = f"{key}_{position}"
             used_keys.add(key)
-            datasets[key] = load_nfcore_dataset(path, key, crosswalk)
-    return datasets
+            datasets[key] = load_nfcore_dataset(path, key)
+    aliases = PublishedAliases.load(expression_dir)
+    return {key: _add_published_aliases(dataset, aliases) for key, dataset in datasets.items()}
+
+
+def _add_published_aliases(dataset: ExpressionDataset, registry: PublishedAliases) -> ExpressionDataset:
+    genes = dataset.genes.copy()
+    details = [registry.describe(row.stable_id, row.raw_symbol) for row in genes.itertuples()]
+    for column in ("display_name", "mapping_identity", "mapping_status", "mapping_sources",
+                   "mapping_evidence", "ambiguous_aliases", *DESCRIPTION_COLUMNS):
+        genes[column] = [detail[column] for detail in details]
+    genes["canonical_symbol"] = genes["display_name"]
+    genes["aliases"] = [tuple(sorted(set(original) | set(detail["aliases"])))
+                        for original, detail in zip(genes["aliases"], details)]
+    genes["search_text"] = genes["aliases"].map(lambda values: " | ".join(values))
+    genes["search_normalized"] = genes["aliases"].map(
+        lambda values: " | ".join(dict.fromkeys(normalize_alias(v) for v in values)))
+    # Published family assignments are retained; otherwise use the displayed
+    # symbol only to classify the family, never to establish gene identity.
+    classified = genes["canonical_symbol"].map(classify_family)
+    genes.loc[classified.ne("Other"), "family"] = classified[classified.ne("Other")]
+    return replace(dataset, genes=genes)
 
 
 def search_genes(dataset: ExpressionDataset, query: str, mode: str = "exact") -> pd.DataFrame:
@@ -879,6 +880,8 @@ def gene_statistics(dataset: ExpressionDataset, genes: pd.DataFrame) -> pd.DataF
                 "drosophila_ortholog": gene.drosophila_ortholog,
                 "drosophila_blastx_hits": gene.drosophila_blastx_hits,
                 "naming_evidence": gene.naming_evidence,
+                **{column: getattr(gene, column, "") for column in (*DESCRIPTION_COLUMNS,
+                   "mapping_status", "mapping_sources", "ambiguous_aliases")},
                 "mean_tpm": float(expression.mean()),
                 "median_tpm": float(expression.median()),
                 "max_tpm": float(expression.max()),

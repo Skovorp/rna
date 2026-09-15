@@ -24,6 +24,15 @@ The primary workflows are available from the persistent menu at the top of every
 
 Morita (2025) leg and Jové (2020) mouthpart TPM tables are available throughout the TPM explorers. Catalog links open the matching study directly. Basrur (2020) reused the Matthews Aedes RNA-seq; the catalog cites it with the existing reprocessed neurotranscriptome. Older exon-view links now open that gene-TPM dataset in Genes.
 
-The alias layer maps `Orco`, `AaegOr7`, and `AAEL005776` to the same gene. It also strips the historical `Aaeg` prefix for cross-paper matching such as `AaegIr25a` → `Ir25a`.
+Gene links use only Goldman Table S1.4 and explicit identifiers supplied in the
+bundled papers. This connects `Orco`, `AaegOr7`, and `AAEL005776`, and connects
+`ppk317`, `ppk00873`, `AAEL000873`, and `LOC5567199`. No prefix stripping,
+coordinate, sequence, or shared-symbol inference establishes identity.
+
+Gene details show VectorBase and NCBI descriptions separately. **Methods**
+documents the sources and offers a ZIP containing every accessible gene row,
+unmatched rows, original IDs, all searchable aliases, both descriptions,
+source-table evidence, and the exact comparison pairs. Ambiguous published
+aliases remain visible; private study rows require an unlocked session.
 
 This UI reads normalized gene-by-sample matrices. Additional matrices can be added to `expression_explorer/data.py` using the same dataset contract.

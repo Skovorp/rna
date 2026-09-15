@@ -15,15 +15,16 @@ render_comparison_page(
             "reprocessed neurotranscriptome matrix are excluded here because they "
             "have no published TPM "
             "counterpart. Repeated historical gene identifiers in the paper matrix "
-            "are collapsed by summing TPM before one-to-one identifier matching. See "
+            "are collapsed by summing TPM before one-to-one identifier matching. "
+            "Additional identifier links come only from paper tables. See "
             "the [Methods page](/Methods) for the shared reprocessing pipeline."
         ),
         asset_dir=Path(__file__).resolve().parents[1] / "assets" / "atlas_comparison",
         report_filename="matthews_2016_atlas_tpm_full_report.html",
         rebuild_command="scripts/rebuild_atlas_comparison.py",
         matched_genes_help=(
-            "Direct one-to-one AaegL.RU identifiers shared by the published and "
-            "reprocessed gene-level matrices."
+            "Identical IDs or explicit published identifier links shared by the "
+            "published and reprocessed gene-level matrices; ambiguous pairs excluded."
         ),
         data_caption=(
             "The published matrix has 16,154 unique historical gene identifiers; "

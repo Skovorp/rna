@@ -105,7 +105,9 @@ def test_orco_historical_aliases_resolve_in_every_dataset():
 def test_ir_family_and_expression_long():
     dataset = load_datasets(EXPRESSION_DIR)["neuro_ru"]
     members = family_members(dataset, "Ionotropic receptors (IR)")
-    assert len(members) == 74
+    # Goldman supplies six additional named IR rows beyond the older paper.
+    assert len(members) == 80
+    assert members["paper_gene_family"].eq("IR").sum() == 74
     selected = members[members["canonical_symbol"].eq("Ir25a")]
     long = expression_long(dataset, selected)
     assert len(long) == 122
@@ -132,7 +134,6 @@ def test_nfcore_merged_gene_tpm_import(tmp_path):
     dataset = load_nfcore_dataset(
         matrix,
         "nfcore_test",
-        {"AAEL005776": "AaegOr7", "AAEL009813": "AaegIr25a"},
     )
     assert dataset.values.shape == (2, 2)
     assert search_genes(dataset, "Orco", "exact").iloc[0]["stable_id"] == "AAEL005776"

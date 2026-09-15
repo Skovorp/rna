@@ -11,16 +11,18 @@ render_comparison_page(
             "Comparison of the **published TPM supplement** from Venkataraman et al., "
             "eLife 2023 against **our reprocessing** of the same raw reads "
             "(`PRJNA796320`). Both matrices cover the same 33 ovary samples; genes "
-            "are matched through an identifier crosswalk. See the [Methods page](/Methods) "
+            "are paired only by identical IDs or links explicitly supplied in paper tables. "
+            "Genes without an unambiguous published link are excluded. See the [Methods page](/Methods) "
             "for the exact pipeline and parameters used for every reprocessed dataset."
         ),
         asset_dir=Path(__file__).resolve().parents[1] / "assets" / "ovary_comparison",
         report_filename="elife_ovary_tpm_full_report.html",
         rebuild_command="scripts/rebuild_ovary_comparison.py",
-        matched_genes_help="Out of 18,304 genes in the published matrix.",
+        matched_genes_help="Unambiguous published identifier links, out of 18,473 genes in the published matrix.",
         data_caption=(
-            "Regenerated from the current reprocessed matrix, so these figures track "
-            "what the atlas actually displays."
+            "This comparison covers the subset supported by published identifiers. "
+            "Its gene coverage differs from earlier coordinate-based comparisons. "
+            "Download the exact gene pairs from Methods."
         ),
         pca_grouping="Points are colored by reproductive state.",
     )

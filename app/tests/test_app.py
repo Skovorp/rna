@@ -653,7 +653,7 @@ def test_gene_plots_are_horizontal_and_scaled(monkeypatch):
     three_gene_plots = _plotly_specs_by_type(app, "box")
     assert len(three_gene_plots) == 2
     assert _scatter_genes(three_gene_plots[0]) == {"Ir25a", "Orco", "Ir7a"}
-    assert _scatter_genes(three_gene_plots[1]) == {"Ir25a", "Orco"}
+    assert _scatter_genes(three_gene_plots[1]) == {"Ir25a", "Orco", "Ir7a"}
 
 
 def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
@@ -817,16 +817,14 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
     assert query.value == "ir7a"
     warnings = " ".join(element.value for element in app.warning)
-    assert "Gene not found:" in warnings
-    assert "ir7a" in warnings
-    assert "Neurotranscriptome (published, AaegL.RU)" in warnings
+    assert "Gene not found:" not in warnings
     matched_genes = _matched_gene_editor(app).value
     assert len(_mean_tpm_columns(matched_genes)) == 2
-    assert any(
-        matched_genes[column].isna().all()
+    assert all(
+        matched_genes[column].notna().all()
         for column in _mean_tpm_columns(matched_genes)
     )
-    assert matched_genes["Alternative names"].item() == "No alternative names found"
+    assert "AAEL" in matched_genes["Alternative names"].item()
 
     query.set_value("definitely_not_a_gene").run()
     assert not app.exception

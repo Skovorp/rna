@@ -14,6 +14,7 @@ Small Streamlit prototype for exploring *Aedes aegypti* RNA-seq TPM matrices.
 - Explore IR, OR, GR, and OBP gene families with replicate-aware plots and heatmaps, using one sortable table with a mean-expression column per study to control visibility for predefined and custom families.
 - Map biological samples with PCA, UMAP, or t-SNE using all expression genes by default or a smaller most-variable subset.
 - Inspect available paper annotations, orthologs, aliases, and raw per-sample TPM values.
+- Gene mappings use Goldman Table S1.4 and explicit paper-provided identifier links. Gene details show both VectorBase and NCBI descriptions; Methods offers a complete mapping audit ZIP with original IDs, aliases, sources, unmatched genes, and comparison pairs.
 
 ## Datasets
 

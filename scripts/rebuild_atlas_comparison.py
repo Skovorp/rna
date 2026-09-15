@@ -121,15 +121,11 @@ def main() -> None:
     published_path = STAGING_DIR / "published_gene_tpm.tsv.gz"
     reprocessed_path = STAGING_DIR / "reprocessed_gene_tpm.tsv.gz"
     metadata_path = STAGING_DIR / "samples.tsv"
-    crosswalk_path = STAGING_DIR / "empty_crosswalk.tsv"
     published.to_csv(published_path, sep="\t", index=False, compression="gzip")
     reprocessed.to_csv(
         reprocessed_path, sep="\t", index=False, compression="gzip"
     )
     metadata.to_csv(metadata_path, sep="\t", index=False)
-    pd.DataFrame(
-        columns=["source_gene_id", "source_gene_name", "target_gene_id"]
-    ).to_csv(crosswalk_path, sep="\t", index=False)
 
     print(
         f"prepared {len(published):,} unique published genes and "
@@ -144,8 +140,6 @@ def main() -> None:
         str(reprocessed_path),
         "--metadata",
         str(metadata_path),
-        "--crosswalk",
-        str(crosswalk_path),
         "--output-dir",
         str(OUTPUT_DIR),
         "--group-label",

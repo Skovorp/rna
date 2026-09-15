@@ -8,7 +8,9 @@ import base64
 from collections import Counter, defaultdict
 from html import escape
 import json
+import re
 from pathlib import Path
+import sys
 
 import numpy as np
 import pandas as pd
@@ -19,6 +21,9 @@ from scipy.spatial import procrustes
 from scipy.spatial.distance import pdist
 from scipy.stats import pearsonr, spearmanr
 from sklearn.decomposition import PCA
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
+from expression_explorer.gene_aliases import PublishedAliases
 
 
 SOURCE_COLORS = {"Published": "#2563eb", "Reanalysis": "#dc2626"}
@@ -54,31 +59,34 @@ def load_matrix(path: Path) -> tuple[pd.DataFrame, list[str]]:
 def build_gene_map(
     published: pd.DataFrame,
     reanalysis: pd.DataFrame,
-    crosswalk: pd.DataFrame,
+    published_aliases: PublishedAliases,
 ) -> tuple[pd.DataFrame, dict[str, int]]:
     target_ids = set(reanalysis["IDs"])
-    aliases: dict[str, set[str]] = defaultdict(set)
-    for row in crosswalk.itertuples(index=False):
-        if row.target_gene_id not in target_ids:
-            continue
-        for alias in (row.source_gene_id, row.source_gene_name):
-            alias = str(alias).strip()
-            if alias:
-                aliases[alias].add(row.target_gene_id)
+    targets_by_identity: dict[str, set[str]] = defaultdict(set)
+    for target_id in target_ids:
+        identity = published_aliases.identity(target_id)
+        if identity is not None:
+            targets_by_identity[identity].add(target_id)
 
     candidates_by_source: dict[str, set[str]] = {}
     method_by_source: dict[str, str] = {}
     ambiguous_aliases = 0
+    scoped_internal_ids = 0
     for source_id in published["IDs"]:
-        candidates = set(aliases.get(source_id, set()))
+        if re.fullmatch(r"gene\d+", source_id, re.I):
+            scoped_internal_ids += 1
+            continue
         if source_id in target_ids:
-            candidates.add(source_id)
+            candidates = {source_id}
+        else:
+            identity = published_aliases.identity(source_id)
+            candidates = targets_by_identity.get(identity, set())
         if len(candidates) == 1:
             candidates_by_source[source_id] = candidates
             method_by_source[source_id] = (
                 "direct_identifier"
                 if candidates == {source_id}
-                else "exact_coordinate_crosswalk"
+                else "explicit_published_identifiers"
             )
         elif len(candidates) > 1:
             ambiguous_aliases += 1
@@ -103,14 +111,20 @@ def build_gene_map(
                 "reanalysis_id": target_id,
                 "reanalysis_symbol": reanalysis_lookup.at[target_id, "Symbols"],
                 "mapping_method": method_by_source[source_id],
+                "mapping_evidence": (
+                    "Identical original identifier in both input matrices"
+                    if method_by_source[source_id] == "direct_identifier"
+                    else published_aliases.describe(source_id)["mapping_evidence"]
+                ),
             }
         )
     gene_map = pd.DataFrame(rows)
     if gene_map.empty:
-        raise ValueError("The annotation crosswalk produced no comparable genes")
+        raise ValueError("No unambiguous identical or explicitly published gene pairs")
     diagnostics = {
         "ambiguous_source_aliases": ambiguous_aliases,
         "sources_removed_for_duplicate_target": duplicate_targets,
+        "scoped_internal_ids_excluded": scoped_internal_ids,
     }
     return gene_map, diagnostics
 
@@ -1082,6 +1096,7 @@ code {{ background: #f1f5f9; padding: 2px 5px; border-radius: 5px; }}
 </style></head><body><main>
 <h1>{escape(report_title)}</h1>
 <div class="subtitle">{report_subtitle}</div>
+<p class="note">{escape(str(summary.get('mapping_policy', '')))} The comparison covers only this matched subset. The Methods page provides the exact pairs and paper evidence.</p>
 <div class="cards">{cards}</div>
 <section>{error_html}<p class="note">Errors are reanalysis minus published values. The diagonal bands are forced by the coordinates: when published TPM is zero, error = +2 × average log-expression; when reanalysis TPM is zero, error = −2 × average log-expression. Of the {discordance['abs_log2_error_gt_2_count']:,} pairs with absolute error &gt;2, {discordance['severe_pairs_with_exact_zero_fraction']:.1%} contain an exact zero. Published TPM was ≥10 while reanalysis TPM was zero in {discordance['published_tpm_ge_10_reanalysis_zero_count']:,} pairs; the reverse occurred in {discordance['reanalysis_tpm_ge_10_published_zero_count']:,}. Density plots clip only the outer 0.1% for readable axes; summary metrics use the full distribution.</p></section>
 <section>{zero_transition_html}<p class="note"><strong>Green</strong> denotes published 0 → reanalysis nonzero; <strong>red</strong> denotes published nonzero → reanalysis 0. An exact zero can mean no compatible fragments were assigned under that quantification model; it is not a universal biological absence threshold. Threshold bars therefore ask how large the value is on the nonzero side. There are {zero_transitions['published_zero_to_reanalysis_nonzero_count']:,} exact published 0 → reanalysis nonzero pairs and {zero_transitions['published_nonzero_to_reanalysis_zero_count']:,} published nonzero → reanalysis 0 pairs. At a nonzero-side threshold of 1 TPM these fall to {zero_transitions['published_zero_to_reanalysis_ge_1_count']:,} and {zero_transitions['published_ge_1_to_reanalysis_zero_count']:,}; at 10 TPM, {zero_transitions['published_zero_to_reanalysis_ge_10_count']:,} and {zero_transitions['published_ge_10_to_reanalysis_zero_count']:,}.</p>{zero_tables}</section>
@@ -1234,7 +1249,8 @@ def main() -> None:
         type=Path,
         default=root / "expression/elife_80489_samples.tsv",
     )
-    parser.add_argument("--crosswalk", type=Path, required=True)
+    parser.add_argument("--published-aliases", type=Path,
+                        default=root / "expression/published_gene_aliases.json.gz")
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -1272,9 +1288,11 @@ def main() -> None:
         raise ValueError("Published and reanalysis sample columns are not identical")
     metadata = pd.read_csv(args.metadata, sep="\t", dtype=str).fillna("")
     metadata = metadata.set_index("sample").loc[published_samples].reset_index()
-    crosswalk = pd.read_csv(args.crosswalk, sep="\t", dtype=str).fillna("")
+    import gzip
+    with gzip.open(args.published_aliases, "rt") as handle:
+        published_aliases = PublishedAliases(json.load(handle))
     gene_map, mapping_diagnostics = build_gene_map(
-        published, reanalysis, crosswalk
+        published, reanalysis, published_aliases
     )
 
     published_lookup = published.set_index("IDs")
@@ -1354,6 +1372,7 @@ def main() -> None:
             for key, value in gene_map["mapping_method"].value_counts().items()
         },
         "mapping_diagnostics": mapping_diagnostics,
+        "mapping_policy": "Identical original IDs or explicit published identifier links only; ambiguous pairs excluded.",
         "published_sample_tpm_sum_min": float(
             published[published_samples].sum().min()
         ),

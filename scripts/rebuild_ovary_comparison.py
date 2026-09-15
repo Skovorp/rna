@@ -18,6 +18,7 @@ one (same figure, without the per-gene tables), so it is not bundled.
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -27,7 +28,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 PUBLISHED = ROOT / "expression" / "elife_80489_tpm.tsv.gz"
 REPROCESSED = ROOT / "expression" / "ovary_star_salmon_gene_tpm.tsv.gz"
-CROSSWALK = ROOT / "analysis" / "results" / "elife_tpm_comparison" / "annotation_crosswalk.tsv.gz"
+PUBLISHED_ALIASES = ROOT / "expression" / "published_gene_aliases.json.gz"
 OUTPUT_DIR = ROOT / "analysis" / "results" / "elife_tpm_comparison"
 ADAPTED = ROOT / ".staging" / "ovary_reprocessed_as_published_shape.tsv.gz"
 
@@ -93,11 +94,15 @@ def main() -> None:
         str(ROOT / "analysis" / "compare_elife_tpm.py"),
         "--published", str(PUBLISHED),
         "--reanalysis", str(ADAPTED),
-        "--crosswalk", str(CROSSWALK),
+        "--published-aliases", str(PUBLISHED_ALIASES),
         "--output-dir", str(OUTPUT_DIR),
     ]
     print("running:", " ".join(command))
     subprocess.run(command, check=True)
+    asset_dir = ROOT / "app" / "assets" / "ovary_comparison"
+    for filename in ("figures.json", "elife_ovary_tpm_full_report.html"):
+        shutil.copy2(OUTPUT_DIR / filename, asset_dir / filename)
+    subprocess.run([sys.executable, str(ROOT / "scripts" / "theme_comparison_reports.py")], check=True)
 
 
 if __name__ == "__main__":

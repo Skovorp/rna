@@ -1,733 +1,733 @@
 embedding	source	sample	reproductive_state	component_1	component_2
-separate_pca	Published	Fe_An_BF_1	Antenna	-25.28699945244832	51.31556746074816
-separate_pca	Published	Fe_An_BF_2	Antenna	-24.662766841248025	50.67355190072973
-separate_pca	Published	Fe_An_BF_3	Antenna	-24.32853481544503	50.37117854530088
-separate_pca	Published	Fe_An_BF_4	Antenna	-20.22254259487841	48.03913810880718
-separate_pca	Published	Fe_An_O_2	Antenna	-21.360355522188176	50.64387948986639
-separate_pca	Published	Fe_An_O_3	Antenna	-21.520933692045624	51.01465862143178
-separate_pca	Published	Fe_An_O_4	Antenna	-21.57743616630409	51.28982228949927
-separate_pca	Published	Fe_An_SF_1	Antenna	-26.26129414826263	49.74175669058895
-separate_pca	Published	Fe_An_SF_2	Antenna	-25.20991412898843	45.195354870106556
-separate_pca	Published	Fe_An_SF_3	Antenna	-25.7703060131223	45.26867920726978
-separate_pca	Published	Fe_An_SF_4	Antenna	-24.532234863156663	46.42625108148523
-separate_pca	Published	Fe_An_SF_5	Antenna	-22.049601098584787	49.77592677603804
-separate_pca	Published	Fe_An_SF_6	Antenna	-22.159836281248953	49.32941882642027
-separate_pca	Published	Fe_An_SF_7	Antenna	-20.135293673273384	49.15776635883205
-separate_pca	Published	Fe_An_SF_8	Antenna	-20.021738137072866	48.68194465843185
-separate_pca	Published	Fe_At_O_1	Abdominal Tip	-13.460815715899495	-16.03466716741456
-separate_pca	Published	Fe_At_O_2	Abdominal Tip	-16.600616880542134	-15.757261217895266
-separate_pca	Published	Fe_At_O_3	Abdominal Tip	-16.84803950143225	-20.173504387035116
-separate_pca	Published	Fe_At_O_4	Abdominal Tip	-19.000211715500537	-21.507451059048396
-separate_pca	Published	Fe_At_O_5	Abdominal Tip	-21.45150737729256	-21.450480509122038
-separate_pca	Published	Fe_At_O_6	Abdominal Tip	-17.692698041199886	-22.1170242215087
-separate_pca	Published	Fe_At_O_7	Abdominal Tip	-16.078717830778075	-18.494713519784405
-separate_pca	Published	Fe_At_SF_1	Abdominal Tip	-18.184632578672247	-18.134023740082036
-separate_pca	Published	Fe_At_SF_2	Abdominal Tip	-17.910254973377963	-17.34674933582046
-separate_pca	Published	Fe_At_SF_3	Abdominal Tip	-17.348366490667196	-17.49685439237558
-separate_pca	Published	Fe_Br_BF_1	Brain	-68.5644329951763	-17.715734168667378
-separate_pca	Published	Fe_Br_BF_2	Brain	-72.9348163168201	-17.092925057243324
-separate_pca	Published	Fe_Br_BF_3	Brain	-72.295951797364	-21.77255387651324
-separate_pca	Published	Fe_Br_BF_4	Brain	-69.26636485425222	-14.556841919331568
-separate_pca	Published	Fe_Br_O_1	Brain	-70.58386923682885	-20.27121198069986
-separate_pca	Published	Fe_Br_O_2	Brain	-71.53264412220653	-19.790674536089536
-separate_pca	Published	Fe_Br_O_3	Brain	-72.50845135325457	-21.572806530494038
-separate_pca	Published	Fe_Br_O_4	Brain	-72.08079229534997	-19.919411679179934
-separate_pca	Published	Fe_Br_SF_1	Brain	-70.51056128831705	-11.883456518229982
-separate_pca	Published	Fe_Br_SF_4	Brain	-71.24617714621233	-23.06689213781269
-separate_pca	Published	Fe_Br_SF_5	Brain	-67.36581578845475	-15.950179156249057
-separate_pca	Published	Fe_Br_SF_6	Brain	-67.29388831976442	-13.302442134798298
-separate_pca	Published	Fe_Br_SF_7	Brain	-70.04989193504029	-23.561865164675044
-separate_pca	Published	Fe_Br_SF_8	Brain	-69.60217505419365	-6.7163382333505295
-separate_pca	Published	Fe_FL_O_1	Forelegs	42.61072944988164	-8.166035016779265
-separate_pca	Published	Fe_FL_O_2	Forelegs	43.65998547351924	-2.0790700826330637
-separate_pca	Published	Fe_FL_O_3	Forelegs	44.935444250428354	-0.46413389256772813
-separate_pca	Published	Fe_FL_O_4	Forelegs	42.27126036129408	-3.329437340012771
-separate_pca	Published	Fe_FL_O_5	Forelegs	40.90933830017085	-6.007230802923358
-separate_pca	Published	Fe_FL_O_6	Forelegs	41.40060286429087	-10.402357340770472
-separate_pca	Published	Fe_FL_O_7	Forelegs	41.36178504787461	-11.665953775578068
-separate_pca	Published	Fe_FL_SF_1	Forelegs	43.47843724153809	-9.424920449111072
-separate_pca	Published	Fe_FL_SF_2	Forelegs	44.34114474716254	-5.9445906156762165
-separate_pca	Published	Fe_FL_SF_3	Forelegs	37.86375253912421	-16.5265417767542
-separate_pca	Published	Fe_HL_BF_1	Hindlegs	43.094763133873485	-5.623064841813583
-separate_pca	Published	Fe_HL_BF_2	Hindlegs	38.80541037330156	-12.91541477686417
-separate_pca	Published	Fe_HL_BF_3	Hindlegs	42.21346594219436	-2.9573902003627452
-separate_pca	Published	Fe_HL_BF_4	Hindlegs	40.6552717263076	-6.796332740063978
-separate_pca	Published	Fe_HL_O_1	Hindlegs	46.61353176691409	-2.541442278434788
-separate_pca	Published	Fe_HL_O_2	Hindlegs	47.67971906598139	-1.250392361758058
-separate_pca	Published	Fe_HL_O_3	Hindlegs	44.41994592192284	-1.2916530838194449
-separate_pca	Published	Fe_HL_O_4	Hindlegs	44.59473756472693	-4.293800875701769
-separate_pca	Published	Fe_HL_O_5	Hindlegs	44.75407061432492	-1.9676356319891735
-separate_pca	Published	Fe_HL_O_6	Hindlegs	45.603454498056955	-4.964401699655531
-separate_pca	Published	Fe_HL_O_7	Hindlegs	41.82607460959824	-4.776019552514437
-separate_pca	Published	Fe_HL_O_8	Hindlegs	44.44160167258246	-2.7303604238472436
-separate_pca	Published	FE_HL_SF_1	Hindlegs	44.6555830179271	-6.78010784570335
-separate_pca	Published	FE_HL_SF_2	Hindlegs	43.42236610324957	-6.318024325222444
-separate_pca	Published	FE_HL_SF_3	Hindlegs	44.09151394648203	-3.136088497298737
-separate_pca	Published	FE_HL_SF_4	Hindlegs	44.46890214011302	-3.327299276586663
-separate_pca	Published	FE_HL_SF_5	Hindlegs	43.124997984413056	-5.423227836824052
-separate_pca	Published	FE_HL_SF_6	Hindlegs	43.90309316771273	-4.033079844104824
-separate_pca	Published	Fe_ML_O_1	Midlegs	36.333732606230534	-18.10670182050875
-separate_pca	Published	Fe_ML_O_2	Midlegs	44.42269176788794	-3.0175223313234993
-separate_pca	Published	Fe_ML_O_3	Midlegs	44.94178068785231	-3.4661670496573582
-separate_pca	Published	Fe_ML_O_4	Midlegs	43.27845062448437	-5.24563228047131
-separate_pca	Published	Fe_ML_O_5	Midlegs	42.3226457633285	-9.88320339950374
-separate_pca	Published	Fe_ML_O_6	Midlegs	43.90785486707271	-7.0098607890935805
-separate_pca	Published	Fe_ML_O_7	Midlegs	42.37079529507756	-9.291093610771311
-separate_pca	Published	Fe_ML_SF_1	Midlegs	40.70447640782681	-12.759359964771432
-separate_pca	Published	Fe_ML_SF_2	Midlegs	39.907026284082264	-13.952820389075995
-separate_pca	Published	Fe_ML_SF_3	Midlegs	42.18267039475998	-10.463388828551476
-separate_pca	Published	Fe_Os_SF_1	Proboscis	4.377112671010674	18.83700581311572
-separate_pca	Published	Fe_Os_SF_2	Proboscis	5.142497505876062	19.111991003370633
-separate_pca	Published	Fe_Os_SF_3	Proboscis	4.5180032009610125	20.128562078566446
-separate_pca	Published	Fe_Os_SF_4	Proboscis	4.517695012363613	22.761662815952104
-separate_pca	Published	Fe_Os_SF_5	Proboscis	5.689396761476592	20.02206315349587
-separate_pca	Published	Fe_Ov_O_1	Ovaries	-20.591886022791186	-60.799710499224574
-separate_pca	Published	Fe_Ov_O_2	Ovaries	-18.299516182681938	-61.41436612022152
-separate_pca	Published	Fe_Ov_O_3	Ovaries	-20.53192042222667	-61.95123105398325
-separate_pca	Published	Fe_Ov_O_4	Ovaries	-20.760131986518783	-61.78057227687325
-separate_pca	Published	Fe_Ov_SF_1	Ovaries	-14.682993585234952	-58.5766177018147
-separate_pca	Published	Fe_Ov_SF_2	Ovaries	-18.52209164487515	-59.93548535774192
-separate_pca	Published	Fe_Ov_SF_3	Ovaries	-18.09676959940554	-60.498912380799396
-separate_pca	Published	Fe_Pa_SF_1	Palps	-18.57378952718112	21.16694472147243
-separate_pca	Published	Fe_Pa_SF_2	Palps	-23.319168941225957	21.555719557557488
-separate_pca	Published	Fe_Pa_SF_3	Palps	-22.872934346577924	21.809123943731947
-separate_pca	Published	Fe_Pa_SF_4	Palps	-21.784335914623856	22.09619608765087
-separate_pca	Published	Fe_Rs_BF_1	Rostrum	-14.55681044106079	26.150316166946414
-separate_pca	Published	Fe_Rs_BF_2	Rostrum	-7.8018781757237345	28.159086812311656
-separate_pca	Published	Fe_Rs_BF_3	Rostrum	-6.2427880062187535	23.783035247596686
-separate_pca	Published	Fe_Rs_SF_1	Rostrum	-0.8709746568972996	24.03402522851575
-separate_pca	Published	Fe_Rs_SF_2	Rostrum	-1.8824413727859537	22.866741417454318
-separate_pca	Published	Fe_Rs_SF_3	Rostrum	-1.9706818960079462	23.820980832782517
-separate_pca	Published	Ma_An_1	Antenna	-16.98856583167603	41.24397787018623
-separate_pca	Published	Ma_An_2	Antenna	-17.539877577141443	41.368517926835864
-separate_pca	Published	Ma_An_3	Antenna	-17.72621960098808	41.675799685060205
-separate_pca	Published	Ma_At_1	Abdominal Tip	-10.79211687186812	-18.04165328618142
-separate_pca	Published	Ma_At_2	Abdominal Tip	-12.548632492726764	-18.46775021168037
-separate_pca	Published	Ma_At_3	Abdominal Tip	-8.270291692052401	-16.55503998777586
-separate_pca	Published	Ma_Br_1	Brain	-70.24854899323557	-23.109842036621224
-separate_pca	Published	Ma_Br_2	Brain	-71.1850528747834	-22.655182144861705
-separate_pca	Published	Ma_Br_3	Brain	-68.47196625092354	-20.61899005981445
-separate_pca	Published	Ma_FL_1	Forelegs	42.15711745217367	-2.1996978749635177
-separate_pca	Published	Ma_FL_2	Forelegs	42.037739092272076	-0.8161885006626973
-separate_pca	Published	Ma_FL_3	Forelegs	41.678491023991384	-1.7404119440580943
-separate_pca	Published	Ma_HL_1	Hindlegs	42.750405439636395	-2.5844595723763617
-separate_pca	Published	Ma_HL_2	Hindlegs	42.65928023003426	-2.176537058701123
-separate_pca	Published	Ma_HL_3	Hindlegs	43.09611993913916	-3.052999101033681
-separate_pca	Published	Ma_HL_4	Hindlegs	40.181925990849635	-2.171598649127559
-separate_pca	Published	Ma_HL_5	Hindlegs	43.50958351752816	-2.0904549223888265
-separate_pca	Published	Ma_ML_1	Midlegs	42.983277520888095	-0.2721597834849593
-separate_pca	Published	Ma_ML_2	Midlegs	40.51779607412124	-2.419853242937612
-separate_pca	Published	Ma_ML_3	Midlegs	40.748079484404045	-5.189673109128657
-separate_pca	Published	Ma_Rs_1	Rostrum	-22.507811508954106	17.48224522269145
-separate_pca	Published	Ma_Rs_2	Rostrum	-26.44938091768904	18.8469314161723
-separate_pca	Published	Ma_Rs_3	Rostrum	-18.536570769354803	19.291385281954557
-separate_pca	Reanalysis	Fe_An_BF_1	Antenna	-25.9073879775973	49.82830959746524
-separate_pca	Reanalysis	Fe_An_BF_2	Antenna	-25.200355828747547	51.33581676787318
-separate_pca	Reanalysis	Fe_An_BF_3	Antenna	-25.17070634062656	50.239175567180006
-separate_pca	Reanalysis	Fe_An_BF_4	Antenna	-21.44203001355953	47.28299589983931
-separate_pca	Reanalysis	Fe_An_O_2	Antenna	-22.768519826683622	50.63596607046668
-separate_pca	Reanalysis	Fe_An_O_3	Antenna	-23.167692495828312	50.90947643315746
-separate_pca	Reanalysis	Fe_An_O_4	Antenna	-23.33580002863396	51.91405968789694
-separate_pca	Reanalysis	Fe_An_SF_1	Antenna	-26.342930199951056	52.12398648111275
-separate_pca	Reanalysis	Fe_An_SF_2	Antenna	-25.11895383052328	48.13599307034773
-separate_pca	Reanalysis	Fe_An_SF_3	Antenna	-25.378488592915577	48.03671862813065
-separate_pca	Reanalysis	Fe_An_SF_4	Antenna	-24.21231404814126	49.01171176246499
-separate_pca	Reanalysis	Fe_An_SF_5	Antenna	-23.309377843974385	49.400020231167524
-separate_pca	Reanalysis	Fe_An_SF_6	Antenna	-23.35774572504894	49.58641475210424
-separate_pca	Reanalysis	Fe_An_SF_7	Antenna	-21.570683690333386	50.29264817430624
-separate_pca	Reanalysis	Fe_An_SF_8	Antenna	-21.525056435710443	48.71226178293509
-separate_pca	Reanalysis	Fe_At_O_1	Abdominal Tip	-11.715350518187146	-16.287827350543296
-separate_pca	Reanalysis	Fe_At_O_2	Abdominal Tip	-14.773648794590496	-16.012611341177784
-separate_pca	Reanalysis	Fe_At_O_3	Abdominal Tip	-15.817650437651675	-20.089291064333395
-separate_pca	Reanalysis	Fe_At_O_4	Abdominal Tip	-17.79419790766998	-21.887495885428624
-separate_pca	Reanalysis	Fe_At_O_5	Abdominal Tip	-20.67015755397123	-20.96367383899431
-separate_pca	Reanalysis	Fe_At_O_6	Abdominal Tip	-17.881047484375355	-21.224604515942794
-separate_pca	Reanalysis	Fe_At_O_7	Abdominal Tip	-16.165213418354686	-18.16932142888049
-separate_pca	Reanalysis	Fe_At_SF_1	Abdominal Tip	-17.92822475551856	-17.783084183031296
-separate_pca	Reanalysis	Fe_At_SF_2	Abdominal Tip	-17.54432633145586	-16.5922176377599
-separate_pca	Reanalysis	Fe_At_SF_3	Abdominal Tip	-17.103133258657078	-16.92332163062801
-separate_pca	Reanalysis	Fe_Br_BF_1	Brain	-65.49684012197262	-17.39966415882522
-separate_pca	Reanalysis	Fe_Br_BF_2	Brain	-70.2081130924763	-16.597218666941703
-separate_pca	Reanalysis	Fe_Br_BF_3	Brain	-70.15757020173835	-20.74384212535013
-separate_pca	Reanalysis	Fe_Br_BF_4	Brain	-66.63273829499974	-12.607319292802464
-separate_pca	Reanalysis	Fe_Br_O_1	Brain	-67.61514612992453	-19.790877973767973
-separate_pca	Reanalysis	Fe_Br_O_2	Brain	-69.03313829494174	-19.192889990934336
-separate_pca	Reanalysis	Fe_Br_O_3	Brain	-70.49685352421457	-20.751644944627188
-separate_pca	Reanalysis	Fe_Br_O_4	Brain	-69.68708199459543	-18.848795403826617
-separate_pca	Reanalysis	Fe_Br_SF_1	Brain	-68.20906682475835	-11.032197606841823
-separate_pca	Reanalysis	Fe_Br_SF_4	Brain	-69.09114180925803	-22.53802327253186
-separate_pca	Reanalysis	Fe_Br_SF_5	Brain	-63.96262378009217	-14.5339996318545
-separate_pca	Reanalysis	Fe_Br_SF_6	Brain	-64.07991800011935	-11.714274609909872
-separate_pca	Reanalysis	Fe_Br_SF_7	Brain	-67.83606666583147	-21.504953289293848
-separate_pca	Reanalysis	Fe_Br_SF_8	Brain	-67.47690421127267	-4.2578669359776224
-separate_pca	Reanalysis	Fe_FL_O_1	Forelegs	39.61723148982555	-8.53858122125466
-separate_pca	Reanalysis	Fe_FL_O_2	Forelegs	43.89630849877716	-3.145522076265925
-separate_pca	Reanalysis	Fe_FL_O_3	Forelegs	45.72263656102188	-0.6942442459968493
-separate_pca	Reanalysis	Fe_FL_O_4	Forelegs	42.67861040770676	-4.026013818868679
-separate_pca	Reanalysis	Fe_FL_O_5	Forelegs	40.633773037289764	-6.640524360770845
-separate_pca	Reanalysis	Fe_FL_O_6	Forelegs	37.85415635930168	-11.411742813280387
-separate_pca	Reanalysis	Fe_FL_O_7	Forelegs	37.21691715231931	-12.356358865163289
-separate_pca	Reanalysis	Fe_FL_SF_1	Forelegs	39.801304833078134	-9.370618041646008
-separate_pca	Reanalysis	Fe_FL_SF_2	Forelegs	41.45177950547394	-5.850056877589368
-separate_pca	Reanalysis	Fe_FL_SF_3	Forelegs	32.785866510896	-17.31985669131144
-separate_pca	Reanalysis	Fe_HL_BF_1	Hindlegs	41.39578297325194	-5.975898840442143
-separate_pca	Reanalysis	Fe_HL_BF_2	Hindlegs	38.10560071774804	-13.022449159020017
-separate_pca	Reanalysis	Fe_HL_BF_3	Hindlegs	41.328897227873526	-3.152927423446258
-separate_pca	Reanalysis	Fe_HL_BF_4	Hindlegs	39.560826606906325	-6.896562409129704
-separate_pca	Reanalysis	Fe_HL_O_1	Hindlegs	47.61445553760755	-1.9705524437428872
-separate_pca	Reanalysis	Fe_HL_O_2	Hindlegs	47.97583666098406	-1.3696907982158817
-separate_pca	Reanalysis	Fe_HL_O_3	Hindlegs	44.748107793752894	-2.3695263293883677
-separate_pca	Reanalysis	Fe_HL_O_4	Hindlegs	44.905929495007285	-3.993063507085887
-separate_pca	Reanalysis	Fe_HL_O_5	Hindlegs	45.08504114132919	-2.1804795499096885
-separate_pca	Reanalysis	Fe_HL_O_6	Hindlegs	43.28425397652777	-4.395139700982143
-separate_pca	Reanalysis	Fe_HL_O_7	Hindlegs	40.38803593280664	-4.122639050228098
-separate_pca	Reanalysis	Fe_HL_O_8	Hindlegs	42.301550761604155	-2.9484712610250194
-separate_pca	Reanalysis	FE_HL_SF_1	Hindlegs	42.28159284502353	-5.734385839643441
-separate_pca	Reanalysis	FE_HL_SF_2	Hindlegs	41.635107740868776	-6.624831488728623
-separate_pca	Reanalysis	FE_HL_SF_3	Hindlegs	42.89538875531051	-3.72323174196417
-separate_pca	Reanalysis	FE_HL_SF_4	Hindlegs	43.213303949994895	-3.475510569588606
-separate_pca	Reanalysis	FE_HL_SF_5	Hindlegs	40.836992034345954	-6.605481704050191
-separate_pca	Reanalysis	FE_HL_SF_6	Hindlegs	42.19671963658962	-3.136095804932417
-separate_pca	Reanalysis	Fe_ML_O_1	Midlegs	31.124993437485255	-19.067770701087973
-separate_pca	Reanalysis	Fe_ML_O_2	Midlegs	44.6399537635654	-3.1217446362059
-separate_pca	Reanalysis	Fe_ML_O_3	Midlegs	45.624069555047456	-3.278032694326067
-separate_pca	Reanalysis	Fe_ML_O_4	Midlegs	43.57218240041841	-5.415916511373689
-separate_pca	Reanalysis	Fe_ML_O_5	Midlegs	38.6618928329202	-9.918473607587753
-separate_pca	Reanalysis	Fe_ML_O_6	Midlegs	40.404570670558655	-7.917598328906659
-separate_pca	Reanalysis	Fe_ML_O_7	Midlegs	41.651995153306814	-9.104468339858517
-separate_pca	Reanalysis	Fe_ML_SF_1	Midlegs	36.695650694466416	-13.005538264306205
-separate_pca	Reanalysis	Fe_ML_SF_2	Midlegs	36.56206328159823	-13.478841803093546
-separate_pca	Reanalysis	Fe_ML_SF_3	Midlegs	39.11665170287165	-10.176137972183906
-separate_pca	Reanalysis	Fe_Os_SF_1	Proboscis	6.914369873069173	18.337480737968253
-separate_pca	Reanalysis	Fe_Os_SF_2	Proboscis	7.678914247251752	19.250370135462475
-separate_pca	Reanalysis	Fe_Os_SF_3	Proboscis	7.442934813542592	19.69506807643765
-separate_pca	Reanalysis	Fe_Os_SF_4	Proboscis	7.0288821902699725	22.32028418195589
-separate_pca	Reanalysis	Fe_Os_SF_5	Proboscis	8.037755908483794	20.338127344739494
-separate_pca	Reanalysis	Fe_Ov_O_1	Ovaries	-23.6359890025439	-61.47229442619484
-separate_pca	Reanalysis	Fe_Ov_O_2	Ovaries	-21.628227861112453	-61.99789046426436
-separate_pca	Reanalysis	Fe_Ov_O_3	Ovaries	-24.11104085729778	-62.64214789738142
-separate_pca	Reanalysis	Fe_Ov_O_4	Ovaries	-24.11257899811504	-62.60245698921385
-separate_pca	Reanalysis	Fe_Ov_SF_1	Ovaries	-15.879649462736257	-58.15205629749653
-separate_pca	Reanalysis	Fe_Ov_SF_2	Ovaries	-21.113895935878098	-60.203367735909126
-separate_pca	Reanalysis	Fe_Ov_SF_3	Ovaries	-20.95053945115095	-60.591244875544
-separate_pca	Reanalysis	Fe_Pa_SF_1	Palps	-15.46716755486077	18.700758543044884
-separate_pca	Reanalysis	Fe_Pa_SF_2	Palps	-19.902801544027678	17.908855642220207
-separate_pca	Reanalysis	Fe_Pa_SF_3	Palps	-19.976250576838698	18.20345101394301
-separate_pca	Reanalysis	Fe_Pa_SF_4	Palps	-18.112718374397073	20.548865741579558
-separate_pca	Reanalysis	Fe_Rs_BF_1	Rostrum	-10.961856511570048	25.86248994812981
-separate_pca	Reanalysis	Fe_Rs_BF_2	Rostrum	-5.4816580167991455	28.20095135045114
-separate_pca	Reanalysis	Fe_Rs_BF_3	Rostrum	-3.4998288612453043	23.550977500070257
-separate_pca	Reanalysis	Fe_Rs_SF_1	Rostrum	1.1695959418341981	23.035491049317528
-separate_pca	Reanalysis	Fe_Rs_SF_2	Rostrum	0.6523482360186109	22.40408531751195
-separate_pca	Reanalysis	Fe_Rs_SF_3	Rostrum	0.046271610202951674	23.79400137819186
-separate_pca	Reanalysis	Ma_An_1	Antenna	-17.354648454197253	42.95116846149075
-separate_pca	Reanalysis	Ma_An_2	Antenna	-18.731352385140124	42.38758733655397
-separate_pca	Reanalysis	Ma_An_3	Antenna	-18.729808744514553	42.44031051871156
-separate_pca	Reanalysis	Ma_At_1	Abdominal Tip	-10.678699046795305	-21.935342514067592
-separate_pca	Reanalysis	Ma_At_2	Abdominal Tip	-12.308728018062386	-22.257765987883722
-separate_pca	Reanalysis	Ma_At_3	Abdominal Tip	-9.20349173174763	-20.4846881321389
-separate_pca	Reanalysis	Ma_Br_1	Brain	-68.60080556010602	-22.854398682092892
-separate_pca	Reanalysis	Ma_Br_2	Brain	-69.73702959818519	-22.248526944256437
-separate_pca	Reanalysis	Ma_Br_3	Brain	-66.83600123805634	-19.37480708259222
-separate_pca	Reanalysis	Ma_FL_1	Forelegs	42.166160532806494	-1.9794728654223788
-separate_pca	Reanalysis	Ma_FL_2	Forelegs	42.2940005948475	-1.131969778726935
-separate_pca	Reanalysis	Ma_FL_3	Forelegs	41.72020881893479	-1.8113551168542488
-separate_pca	Reanalysis	Ma_HL_1	Hindlegs	42.952715737818345	-1.956135810281198
-separate_pca	Reanalysis	Ma_HL_2	Hindlegs	42.649315025896456	-2.0468136628017533
-separate_pca	Reanalysis	Ma_HL_3	Hindlegs	43.2011443440647	-2.75567774805011
-separate_pca	Reanalysis	Ma_HL_4	Hindlegs	38.16166365972008	-2.1773848139412046
-separate_pca	Reanalysis	Ma_HL_5	Hindlegs	41.32464940921108	-2.0342379934934196
-separate_pca	Reanalysis	Ma_ML_1	Midlegs	42.707110196458096	-0.6082292369682819
-separate_pca	Reanalysis	Ma_ML_2	Midlegs	41.0602471565665	-2.3973127628621156
-separate_pca	Reanalysis	Ma_ML_3	Midlegs	41.02067804131756	-4.7529307794338385
-separate_pca	Reanalysis	Ma_Rs_1	Rostrum	-18.69211717229809	18.139409885013364
-separate_pca	Reanalysis	Ma_Rs_2	Rostrum	-22.074336094626442	18.77371690409653
-separate_pca	Reanalysis	Ma_Rs_3	Rostrum	-14.729580636570699	19.161498897339634
-procrustes_aligned_separate_pca	Published	Fe_An_BF_1	Antenna	-0.047658371321595484	0.09671437582864069
-procrustes_aligned_separate_pca	Published	Fe_An_BF_2	Antenna	-0.04648188102144829	0.09550437003055703
-procrustes_aligned_separate_pca	Published	Fe_An_BF_3	Antenna	-0.045851954405471476	0.09493448740459014
-procrustes_aligned_separate_pca	Published	Fe_An_BF_4	Antenna	-0.03811339680161944	0.0905392941643486
-procrustes_aligned_separate_pca	Published	Fe_An_O_2	Antenna	-0.04025783118127812	0.09544844648068743
-procrustes_aligned_separate_pca	Published	Fe_An_O_3	Antenna	-0.04056047262593032	0.09614725337407433
-procrustes_aligned_separate_pca	Published	Fe_An_O_4	Antenna	-0.040666962757504165	0.09666585394159652
-procrustes_aligned_separate_pca	Published	Fe_An_SF_1	Antenna	-0.049494623126681965	0.0937482169446964
-procrustes_aligned_separate_pca	Published	Fe_An_SF_2	Antenna	-0.0475130887238794	0.08517962000439201
-procrustes_aligned_separate_pca	Published	Fe_An_SF_3	Antenna	-0.04856925849799132	0.08531781427667037
-procrustes_aligned_separate_pca	Published	Fe_An_SF_4	Antenna	-0.04623586759099289	0.08749948831500529
-procrustes_aligned_separate_pca	Published	Fe_An_SF_5	Antenna	-0.041556851322969796	0.09381261725535744
-procrustes_aligned_separate_pca	Published	Fe_An_SF_6	Antenna	-0.041764611412417815	0.09297108436803549
-procrustes_aligned_separate_pca	Published	Fe_An_SF_7	Antenna	-0.037948958885168325	0.09264757121045539
-procrustes_aligned_separate_pca	Published	Fe_An_SF_8	Antenna	-0.037734940930209133	0.09175079073939994
-procrustes_aligned_separate_pca	Published	Fe_At_O_1	Abdominal Tip	-0.025369579925300055	-0.030220514036071178
-procrustes_aligned_separate_pca	Published	Fe_At_O_2	Abdominal Tip	-0.031287158642454994	-0.029697687443937474
-procrustes_aligned_separate_pca	Published	Fe_At_O_3	Abdominal Tip	-0.03175347569845516	-0.03802097456217042
-procrustes_aligned_separate_pca	Published	Fe_At_O_4	Abdominal Tip	-0.0358096715598489	-0.04053506192700643
-procrustes_aligned_separate_pca	Published	Fe_At_O_5	Abdominal Tip	-0.0404296249508547	-0.0404276896138978
-procrustes_aligned_separate_pca	Published	Fe_At_O_6	Abdominal Tip	-0.033345402427599174	-0.04168392358530016
-procrustes_aligned_separate_pca	Published	Fe_At_O_7	Abdominal Tip	-0.030303536257647486	-0.03485695984096192
-procrustes_aligned_separate_pca	Published	Fe_At_SF_1	Abdominal Tip	-0.0342725507393972	-0.03417716833444945
-procrustes_aligned_separate_pca	Published	Fe_At_SF_2	Abdominal Tip	-0.03375543166324762	-0.03269339340255837
-procrustes_aligned_separate_pca	Published	Fe_At_SF_3	Abdominal Tip	-0.032696441251960806	-0.03297629618570612
-procrustes_aligned_separate_pca	Published	Fe_Br_BF_1	Brain	-0.12922328777218306	-0.033388818583743825
-procrustes_aligned_separate_pca	Published	Fe_Br_BF_2	Brain	-0.13746014290211986	-0.03221501115156758
-procrustes_aligned_separate_pca	Published	Fe_Br_BF_3	Brain	-0.13625607586562993	-0.0410347008239384
-procrustes_aligned_separate_pca	Published	Fe_Br_BF_4	Brain	-0.13054621773250538	-0.027435258926859354
-procrustes_aligned_separate_pca	Published	Fe_Br_O_1	Brain	-0.1330293163382036	-0.03820512392273692
-procrustes_aligned_separate_pca	Published	Fe_Br_O_2	Brain	-0.1348174709934431	-0.03729945569538415
-procrustes_aligned_separate_pca	Published	Fe_Br_O_3	Brain	-0.1366565734714986	-0.04065823728958401
-procrustes_aligned_separate_pca	Published	Fe_Br_O_4	Brain	-0.13585056506314674	-0.03754208640290724
-procrustes_aligned_separate_pca	Published	Fe_Br_SF_1	Brain	-0.13289115295359288	-0.022396733325155512
-procrustes_aligned_separate_pca	Published	Fe_Br_SF_4	Brain	-0.13427756709780775	-0.043474138274346735
-procrustes_aligned_separate_pca	Published	Fe_Br_SF_5	Brain	-0.12696425565499533	-0.030061279603535176
-procrustes_aligned_separate_pca	Published	Fe_Br_SF_6	Brain	-0.12682869405870897	-0.025071093465890527
-procrustes_aligned_separate_pca	Published	Fe_Br_SF_7	Brain	-0.13202293008926183	-0.04440701322270666
-procrustes_aligned_separate_pca	Published	Fe_Br_SF_8	Brain	-0.13117911873100002	-0.012658272961502222
-procrustes_aligned_separate_pca	Published	Fe_FL_O_1	Forelegs	0.08030838021036465	-0.015390514394033269
-procrustes_aligned_separate_pca	Published	Fe_FL_O_2	Forelegs	0.08228591152166066	-0.00391842037992978
-procrustes_aligned_separate_pca	Published	Fe_FL_O_3	Forelegs	0.0846897668351244	-0.0008747524765255837
-procrustes_aligned_separate_pca	Published	Fe_FL_O_4	Forelegs	0.07966858330972673	-0.00627498574280036
-procrustes_aligned_separate_pca	Published	Fe_FL_O_5	Forelegs	0.07710177076946706	-0.011321819212224804
-procrustes_aligned_separate_pca	Published	Fe_FL_O_6	Forelegs	0.07802765638345621	-0.019605307845979466
-procrustes_aligned_separate_pca	Published	Fe_FL_O_7	Forelegs	0.07795449650095856	-0.02198680622042871
-procrustes_aligned_separate_pca	Published	Fe_FL_SF_1	Forelegs	0.08194374783123122	-0.017763133948925047
-procrustes_aligned_separate_pca	Published	Fe_FL_SF_2	Forelegs	0.08356969142024002	-0.011203761341851833
-procrustes_aligned_separate_pca	Published	Fe_FL_SF_3	Forelegs	0.0713617596873032	-0.031147549401404077
-procrustes_aligned_separate_pca	Published	Fe_HL_BF_1	Hindlegs	0.08122063779502679	-0.01059778218054311
-procrustes_aligned_separate_pca	Published	Fe_HL_BF_2	Hindlegs	0.07313650084643146	-0.024341663563749453
-procrustes_aligned_separate_pca	Published	Fe_HL_BF_3	Hindlegs	0.07955965825157778	-0.00557378903640894
-procrustes_aligned_separate_pca	Published	Fe_HL_BF_4	Hindlegs	0.07662293186490071	-0.012809038492691738
-procrustes_aligned_separate_pca	Published	Fe_HL_O_1	Hindlegs	0.08785245595216268	-0.004789852589106598
-procrustes_aligned_separate_pca	Published	Fe_HL_O_2	Hindlegs	0.08986189761379085	-0.002356612677056173
-procrustes_aligned_separate_pca	Published	Fe_HL_O_3	Hindlegs	0.08371820788042213	-0.002434376700292561
-procrustes_aligned_separate_pca	Published	Fe_HL_O_4	Hindlegs	0.08404763743699462	-0.008092520304751839
-procrustes_aligned_separate_pca	Published	Fe_HL_O_5	Hindlegs	0.08434793220529335	-0.0037084000318536336
-procrustes_aligned_separate_pca	Published	Fe_HL_O_6	Hindlegs	0.0859487647833777	-0.009356400708461101
-procrustes_aligned_separate_pca	Published	Fe_HL_O_7	Hindlegs	0.07882954236691728	-0.009001357148006544
-procrustes_aligned_separate_pca	Published	Fe_HL_O_8	Hindlegs	0.083759022442392	-0.005145906344728531
-procrustes_aligned_separate_pca	Published	FE_HL_SF_1	Hindlegs	0.08416231277470314	-0.012778459457739547
-procrustes_aligned_separate_pca	Published	FE_HL_SF_2	Hindlegs	0.08183807063793655	-0.011907571314522662
-procrustes_aligned_separate_pca	Published	FE_HL_SF_3	Hindlegs	0.08309921261098031	-0.005910581458377678
-procrustes_aligned_separate_pca	Published	FE_HL_SF_4	Hindlegs	0.08381047559409043	-0.006270956137751244
-procrustes_aligned_separate_pca	Published	FE_HL_SF_5	Hindlegs	0.08127762137414132	-0.010221149666056917
-procrustes_aligned_separate_pca	Published	FE_HL_SF_6	Hindlegs	0.08274409624155192	-0.007601139753312251
-procrustes_aligned_separate_pca	Published	Fe_ML_O_1	Midlegs	0.06847813333106388	-0.034125674752117106
-procrustes_aligned_separate_pca	Published	Fe_ML_O_2	Midlegs	0.08372338297234408	-0.005687119976723764
-procrustes_aligned_separate_pca	Published	Fe_ML_O_3	Midlegs	0.08470170910957948	-0.006532680028956749
-procrustes_aligned_separate_pca	Published	Fe_ML_O_4	Midlegs	0.08156683334310388	-0.009886435577671677
-procrustes_aligned_separate_pca	Published	Fe_ML_O_5	Midlegs	0.07976542930267544	-0.01862685916318946
-procrustes_aligned_separate_pca	Published	Fe_ML_O_6	Midlegs	0.08275307060945374	-0.013211474498093057
-procrustes_aligned_separate_pca	Published	Fe_ML_O_7	Midlegs	0.07985617665557403	-0.01751091070012144
-procrustes_aligned_separate_pca	Published	Fe_ML_SF_1	Midlegs	0.07671566785704613	-0.024047547284938946
-procrustes_aligned_separate_pca	Published	Fe_ML_SF_2	Midlegs	0.07521271476135212	-0.026296860421758297
-procrustes_aligned_separate_pca	Published	Fe_ML_SF_3	Midlegs	0.07950161792783594	-0.01972033380279361
-procrustes_aligned_separate_pca	Published	Fe_Os_SF_1	Proboscis	0.008249537924962842	0.03550207763150013
-procrustes_aligned_separate_pca	Published	Fe_Os_SF_2	Proboscis	0.00969205761704916	0.03602034182214689
-procrustes_aligned_separate_pca	Published	Fe_Os_SF_3	Proboscis	0.008515074103135989	0.0379362718583531
-procrustes_aligned_separate_pca	Published	Fe_Os_SF_4	Proboscis	0.008514493260531884	0.04289887301257357
-procrustes_aligned_separate_pca	Published	Fe_Os_SF_5	Proboscis	0.010722797853664727	0.03773555348819183
-procrustes_aligned_separate_pca	Published	Fe_Ov_O_1	Ovaries	-0.03880949782640725	-0.11458912650615022
-procrustes_aligned_separate_pca	Published	Fe_Ov_O_2	Ovaries	-0.03448907170183693	-0.11574756706670246
-procrustes_aligned_separate_pca	Published	Fe_Ov_O_3	Ovaries	-0.03869648074568953	-0.11675939563145069
-procrustes_aligned_separate_pca	Published	Fe_Ov_O_4	Ovaries	-0.039126590751084524	-0.11643775528087875
-procrustes_aligned_separate_pca	Published	Fe_Ov_SF_1	Ovaries	-0.027673016789264794	-0.11039926672383167
-procrustes_aligned_separate_pca	Published	Fe_Ov_SF_2	Ovaries	-0.03490855935375179	-0.11296032263103284
-procrustes_aligned_separate_pca	Published	Fe_Ov_SF_3	Ovaries	-0.0341069555093586	-0.1140222127270875
-procrustes_aligned_separate_pca	Published	Fe_Pa_SF_1	Palps	-0.03500599427781667	0.03989331012469915
-procrustes_aligned_separate_pca	Published	Fe_Pa_SF_2	Palps	-0.04394960400113271	0.04062603349638571
-procrustes_aligned_separate_pca	Published	Fe_Pa_SF_3	Palps	-0.04310858630552713	0.041103624376772036
-procrustes_aligned_separate_pca	Published	Fe_Pa_SF_4	Palps	-0.04105690641413731	0.041644668831520494
-procrustes_aligned_separate_pca	Published	Fe_Rs_BF_1	Rostrum	-0.027435199599807926	0.049285463085687965
-procrustes_aligned_separate_pca	Published	Fe_Rs_BF_2	Rostrum	-0.01470418852199933	0.053071390217800454
-procrustes_aligned_separate_pca	Published	Fe_Rs_BF_3	Rostrum	-0.011765773532832893	0.04482385215833953
-procrustes_aligned_separate_pca	Published	Fe_Rs_SF_1	Rostrum	-0.0016415246770645215	0.04529689261263047
-procrustes_aligned_separate_pca	Published	Fe_Rs_SF_2	Rostrum	-0.00354783453466168	0.04309691450095829
-procrustes_aligned_separate_pca	Published	Fe_Rs_SF_3	Rostrum	-0.0037141413212471645	0.04489536814789782
-procrustes_aligned_separate_pca	Published	Ma_An_1	Antenna	-0.032018325469967725	0.07773246548343195
-procrustes_aligned_separate_pca	Published	Ma_An_2	Antenna	-0.03305738191985441	0.07796718594820605
-procrustes_aligned_separate_pca	Published	Ma_An_3	Antenna	-0.033408580462884425	0.07854631943382767
-procrustes_aligned_separate_pca	Published	Ma_At_1	Abdominal Tip	-0.020339887070933125	-0.034003077873482807
-procrustes_aligned_separate_pca	Published	Ma_At_2	Abdominal Tip	-0.023650389522933565	-0.034806142133147394
-procrustes_aligned_separate_pca	Published	Ma_At_3	Abdominal Tip	-0.015587006799241963	-0.03120125993852911
-procrustes_aligned_separate_pca	Published	Ma_Br_1	Brain	-0.13239733875973023	-0.04355508588655716
-procrustes_aligned_separate_pca	Published	Ma_Br_2	Brain	-0.13416236627178643	-0.04269818904566236
-procrustes_aligned_separate_pca	Published	Ma_Br_3	Brain	-0.1290490158329289	-0.038860580765812454
-procrustes_aligned_separate_pca	Published	Ma_FL_1	Forelegs	0.07945345833387432	-0.004145767405795772
-procrustes_aligned_separate_pca	Published	Ma_FL_2	Forelegs	0.07922846611150124	-0.00153826928758971
-procrustes_aligned_separate_pca	Published	Ma_FL_3	Forelegs	0.07855139179642155	-0.0032801518756085395
-procrustes_aligned_separate_pca	Published	Ma_HL_1	Hindlegs	0.08057162734638652	-0.004870927220826862
-procrustes_aligned_separate_pca	Published	Ma_HL_2	Hindlegs	0.08039988379554952	-0.00410211624885957
-procrustes_aligned_separate_pca	Published	Ma_HL_3	Hindlegs	0.08122319496395006	-0.0057539829933231845
-procrustes_aligned_separate_pca	Published	Ma_HL_4	Hindlegs	0.07573081784139346	-0.0040928088354735895
-procrustes_aligned_separate_pca	Published	Ma_HL_5	Hindlegs	0.08200244917257506	-0.003939877370963347
-procrustes_aligned_separate_pca	Published	Ma_ML_1	Midlegs	0.08101052102135956	-0.0005129391505908912
-procrustes_aligned_separate_pca	Published	Ma_ML_2	Midlegs	0.07636383170191394	-0.004560693909633538
-procrustes_aligned_separate_pca	Published	Ma_ML_3	Midlegs	0.07679784651245321	-0.009780969408318053
-procrustes_aligned_separate_pca	Published	Ma_Rs_1	Rostrum	-0.04242043982115704	0.03294876230471657
-procrustes_aligned_separate_pca	Published	Ma_Rs_2	Rostrum	-0.04984910998918456	0.03552078440123573
-procrustes_aligned_separate_pca	Published	Ma_Rs_3	Rostrum	-0.034935848138732406	0.036358445959721604
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_1	Antenna	-0.0505985462458053	0.09492535625301299
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_2	Antenna	-0.049274012701280664	0.0978265232969338
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_3	Antenna	-0.04919567887963203	0.09572674786372866
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_4	Antenna	-0.041996193252376766	0.09013814419377612
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_O_2	Antenna	-0.044602652532959	0.096533905683639
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_O_3	Antenna	-0.04537254782070148	0.09704990728969208
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_O_4	Antenna	-0.04571425663636261	0.09897064692956516
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_1	Antenna	-0.051477831118551254	0.09931362707435475
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_2	Antenna	-0.049055235031259255	0.09169961387321143
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_3	Antenna	-0.04955036217611543	0.09150437762076506
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_4	Antenna	-0.04733598645389413	0.0933946608162521
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_5	Antenna	-0.0456142543936487	0.0941561154760522
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_6	Antenna	-0.04571055402874023	0.09451215994129503
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_7	Antenna	-0.04230173382856699	0.09589989661739019
-procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_8	Antenna	-0.042183293554445396	0.0928739351144392
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_1	Abdominal Tip	-0.022117966133181368	-0.031425685550652754
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_2	Abdominal Tip	-0.027980823898738672	-0.03095866465547797
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_3	Abdominal Tip	-0.02990026311941832	-0.03878709766933616
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_4	Abdominal Tip	-0.03365054259871916	-0.04226997151623986
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_5	Abdominal Tip	-0.03917691770239215	-0.04055711582601485
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_6	Abdominal Tip	-0.03382990724551433	-0.0410020656393097
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_7	Abdominal Tip	-0.03060366243713668	-0.03511667696687441
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_SF_1	Abdominal Tip	-0.03398788445376341	-0.03441157076206921
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_SF_2	Abdominal Tip	-0.03327601600060651	-0.03212320332718109
-procrustes_aligned_separate_pca	Reanalysis	Fe_At_SF_3	Abdominal Tip	-0.03242450890330419	-0.032748686338138704
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_1	Brain	-0.12510189993115445	-0.03461186559420781
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_2	Brain	-0.13414100070072793	-0.03316753902356242
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_3	Brain	-0.13396272331575268	-0.04110842678031735
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_4	Brain	-0.1273716071652187	-0.02545557598594583
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_1	Brain	-0.12911203285216086	-0.039233293858596564
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_2	Brain	-0.13183961244129855	-0.038115849914118705
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_3	Brain	-0.13461238731730835	-0.041130037606526657
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_4	Brain	-0.13309884851257245	-0.03746966668111636
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_1	Brain	-0.13042164185951682	-0.022469773566753008
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_4	Brain	-0.13188497810914862	-0.04452380472118676
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_5	Brain	-0.12221977541337278	-0.029093215116405946
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_6	Brain	-0.12249982786460636	-0.023695000428643653
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_7	Brain	-0.1295014753385906	-0.0425205422452238
-procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_8	Brain	-0.12915246130770275	-0.009480752497716816
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_1	Forelegs	0.07604524754842183	-0.015575227877749407
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_2	Forelegs	0.08413484717349204	-0.005162016097538796
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_3	Forelegs	0.08758458493082953	-0.0004312862446724211
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_4	Forelegs	0.08181993343241667	-0.006872316482653233
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_5	Forelegs	0.07795489980318622	-0.011919973509801845
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_6	Forelegs	0.07272494521474757	-0.021112733919792064
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_7	Forelegs	0.07152302372524283	-0.022934444251078184
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_SF_1	Forelegs	0.07641414485893162	-0.01716518174950158
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_SF_2	Forelegs	0.07950606718444549	-0.010389946683513328
-procrustes_aligned_separate_pca	Reanalysis	Fe_FL_SF_3	Forelegs	0.06313391421355126	-0.0325279185062053
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_1	Hindlegs	0.07940129160135667	-0.0106320675721491
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_2	Hindlegs	0.07323817542571436	-0.024192722186028092
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_3	Hindlegs	0.07921772092742463	-0.005226644734881902
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_4	Hindlegs	0.07590495428865994	-0.012431435748034148
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_1	Hindlegs	0.09123299609142832	-0.002838582915835279
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_2	Hindlegs	0.09191333058991964	-0.0016806733679680117
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_3	Hindlegs	0.08575102110336244	-0.003659042500667504
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_4	Hindlegs	0.08608519126440821	-0.006765444736597647
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_5	Hindlegs	0.08639262313351727	-0.0032903477188141973
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_6	Hindlegs	0.08298715380022986	-0.007567390285887688
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_7	Hindlegs	0.07743477590820771	-0.0071023854088834715
-procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_8	Hindlegs	0.08107659251388806	-0.0048159460449633505
-procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_1	Hindlegs	0.0810931064957902	-0.010152101570107042
-procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_2	Hindlegs	0.07987241230740733	-0.011870242916950494
-procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_3	Hindlegs	0.08222917213980048	-0.00628814936899816
-procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_4	Hindlegs	0.08283319652023935	-0.005807451279073251
-procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_5	Hindlegs	0.07834342940972526	-0.011848864630831894
-procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_6	Hindlegs	0.08087949969405343	-0.005177356439851163
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_1	Midlegs	0.05998724657777044	-0.03590826965949631
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_2	Midlegs	0.08555865738648417	-0.0051018645949270245
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_3	Midlegs	0.0874465702634763	-0.005381861301487249
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_4	Midlegs	0.08355866949583288	-0.009516790583740341
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_5	Midlegs	0.07424263393358578	-0.018236857669196513
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_6	Midlegs	0.07754100905711765	-0.014370411439305853
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_7	Midlegs	0.07995347698403836	-0.016619071622814965
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_SF_1	Midlegs	0.07053741588121482	-0.02418803656447258
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_SF_2	Midlegs	0.07029086028884628	-0.0250971628201992
-procrustes_aligned_separate_pca	Reanalysis	Fe_ML_SF_3	Midlegs	0.07511868015227945	-0.018721417819041516
-procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_1	Proboscis	0.012882545837788795	0.03525698255973117
-procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_2	Proboscis	0.014328913775857289	0.03702042929374113
-procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_3	Proboscis	0.013868213147646339	0.03786750687754881
-procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_4	Proboscis	0.013023611634324703	0.04288735471833174
-procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_5	Proboscis	0.014994817829910693	0.03911082274989918
-procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_1	Ovaries	-0.044061341248676014	-0.11820011386587477
-procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_2	Ovaries	-0.04020562043977736	-0.11916732008885199
-procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_3	Ovaries	-0.0449482055072947	-0.12045002672128365
-procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_4	Ovaries	-0.04495193131537363	-0.1203740383545388
-procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_SF_1	Ovaries	-0.02927113647821128	-0.11168858013175398
-procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_SF_2	Ovaries	-0.039255798186041226	-0.1157202285710343
-procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_SF_3	Ovaries	-0.03893530615225479	-0.11645990621163664
-procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_1	Palps	-0.02999115680978499	0.035512994997164135
-procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_2	Palps	-0.03847100967234022	0.033909138493675356
-procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_3	Palps	-0.03861747231781285	0.034471923407209504
-procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_4	Palps	-0.03509439875319414	0.03900062841483509
-procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_BF_1	Rostrum	-0.021503010683987665	0.049318127157119696
-procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_BF_2	Rostrum	-0.011052927820122033	0.053904576293506784
-procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_BF_3	Rostrum	-0.007165836335718723	0.04503758600432887
-procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_SF_1	Rostrum	0.0017874758464978338	0.04414203965946795
-procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_SF_2	Rostrum	0.0008092157521779082	0.042922567582662254
-procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_SF_3	Rostrum	-0.00037889089425434375	0.04557271610178019
-procrustes_aligned_separate_pca	Reanalysis	Ma_An_1	Antenna	-0.03408266298379262	0.08192185910997177
-procrustes_aligned_separate_pca	Reanalysis	Ma_An_2	Antenna	-0.03670834174660967	0.08081540218596127
-procrustes_aligned_separate_pca	Reanalysis	Ma_An_3	Antenna	-0.03670642119089276	0.08091641135683725
-procrustes_aligned_separate_pca	Reanalysis	Ma_At_1	Abdominal Tip	-0.02002153988705263	-0.042221802535084334
-procrustes_aligned_separate_pca	Reanalysis	Ma_At_2	Abdominal Tip	-0.023137141468949535	-0.04287135618634481
-procrustes_aligned_separate_pca	Reanalysis	Ma_At_3	Abdominal Tip	-0.017224630627055024	-0.039414430233066906
-procrustes_aligned_separate_pca	Reanalysis	Ma_Br_1	Brain	-0.13093963822174118	-0.045120113015755824
-procrustes_aligned_separate_pca	Reanalysis	Ma_Br_2	Brain	-0.13312771221370662	-0.043982033311405634
-procrustes_aligned_separate_pca	Reanalysis	Ma_Br_3	Brain	-0.12762793938812886	-0.03842109911279875
-procrustes_aligned_separate_pca	Reanalysis	Ma_FL_1	Forelegs	0.08079824517457913	-0.0029627179821186075
-procrustes_aligned_separate_pca	Reanalysis	Ma_FL_2	Forelegs	0.08102644065975263	-0.0013370135300386935
-procrustes_aligned_separate_pca	Reanalysis	Ma_FL_3	Forelegs	0.07994082643432536	-0.002649490243777635
-procrustes_aligned_separate_pca	Reanalysis	Ma_HL_1	Hindlegs	0.08230424792704347	-0.0029025668228753227
-procrustes_aligned_separate_pca	Reanalysis	Ma_HL_2	Hindlegs	0.08172493697589434	-0.0030822002262393816
-procrustes_aligned_separate_pca	Reanalysis	Ma_HL_3	Hindlegs	0.08279576411890872	-0.004429019922616732
-procrustes_aligned_separate_pca	Reanalysis	Ma_HL_4	Hindlegs	0.0731324629872134	-0.0034204535414490297
-procrustes_aligned_separate_pca	Reanalysis	Ma_HL_5	Hindlegs	0.07918760481067437	-0.003084142008837669
-procrustes_aligned_separate_pca	Reanalysis	Ma_ML_1	Midlegs	0.08180736418169654	-0.00032579491685505967
-procrustes_aligned_separate_pca	Reanalysis	Ma_ML_2	Midlegs	0.07868833837997866	-0.0037847213099321524
-procrustes_aligned_separate_pca	Reanalysis	Ma_ML_3	Midlegs	0.07865883710390972	-0.008297130419098516
-procrustes_aligned_separate_pca	Reanalysis	Ma_Rs_1	Rostrum	-0.03615675884873057	0.034374498828541454
-procrustes_aligned_separate_pca	Reanalysis	Ma_Rs_2	Rostrum	-0.04264706589086255	0.035522909487098964
-procrustes_aligned_separate_pca	Reanalysis	Ma_Rs_3	Rostrum	-0.028587535540613503	0.03640992703507557
-joint_pca	Published	Fe_An_BF_1	Antenna	-26.285134499608176	50.81888304244787
-joint_pca	Published	Fe_An_BF_2	Antenna	-25.630922947293666	50.094337457140874
-joint_pca	Published	Fe_An_BF_3	Antenna	-25.4428261530115	49.928913319500104
-joint_pca	Published	Fe_An_BF_4	Antenna	-21.433305769249273	47.599993086761344
-joint_pca	Published	Fe_An_O_2	Antenna	-22.50162435501294	50.40283277929772
-joint_pca	Published	Fe_An_O_3	Antenna	-22.696657116121912	51.02671015244888
-joint_pca	Published	Fe_An_O_4	Antenna	-22.810531032331898	51.186544801216115
-joint_pca	Published	Fe_An_SF_1	Antenna	-27.441280471145106	49.32581080394581
-joint_pca	Published	Fe_An_SF_2	Antenna	-26.3065924742747	45.12341637171138
-joint_pca	Published	Fe_An_SF_3	Antenna	-27.026328968413946	45.471813309879074
-joint_pca	Published	Fe_An_SF_4	Antenna	-25.842566117877787	46.495351342480085
-joint_pca	Published	Fe_An_SF_5	Antenna	-23.171992120920137	49.383551346331885
-joint_pca	Published	Fe_An_SF_6	Antenna	-23.204312426895694	49.119801304000845
-joint_pca	Published	Fe_An_SF_7	Antenna	-21.356337268487497	48.93942581573929
-joint_pca	Published	Fe_An_SF_8	Antenna	-21.228226215614086	48.112599256449386
-joint_pca	Published	Fe_At_O_1	Abdominal Tip	-13.2512408042417	-13.898566695775212
-joint_pca	Published	Fe_At_O_2	Abdominal Tip	-16.203840973747702	-13.830457674616888
-joint_pca	Published	Fe_At_O_3	Abdominal Tip	-16.57062156182632	-17.922398305751006
-joint_pca	Published	Fe_At_O_4	Abdominal Tip	-18.616671023315845	-19.312994767882348
-joint_pca	Published	Fe_At_O_5	Abdominal Tip	-20.92826449164856	-19.154314139865214
-joint_pca	Published	Fe_At_O_6	Abdominal Tip	-17.50643934006603	-19.81149765657771
-joint_pca	Published	Fe_At_O_7	Abdominal Tip	-15.86709797137976	-16.46027056685181
-joint_pca	Published	Fe_At_SF_1	Abdominal Tip	-18.036509131915555	-16.397492619995223
-joint_pca	Published	Fe_At_SF_2	Abdominal Tip	-17.678125825373463	-15.60409332361498
-joint_pca	Published	Fe_At_SF_3	Abdominal Tip	-17.191364948300055	-15.753530934910996
-joint_pca	Published	Fe_Br_BF_1	Brain	-69.3667312531029	-19.079675681572894
-joint_pca	Published	Fe_Br_BF_2	Brain	-73.69550806943889	-18.74422313079346
-joint_pca	Published	Fe_Br_BF_3	Brain	-73.24354022673168	-23.811596235542478
-joint_pca	Published	Fe_Br_BF_4	Brain	-70.08932828879009	-16.465442737345807
-joint_pca	Published	Fe_Br_O_1	Brain	-71.32706810088202	-21.833127644947115
-joint_pca	Published	Fe_Br_O_2	Brain	-72.36940485503803	-21.311170496226108
-joint_pca	Published	Fe_Br_O_3	Brain	-73.29900992268632	-23.215038608976666
-joint_pca	Published	Fe_Br_O_4	Brain	-72.87210346935991	-21.591085556582975
-joint_pca	Published	Fe_Br_SF_1	Brain	-71.31566288710745	-13.656360961011766
-joint_pca	Published	Fe_Br_SF_4	Brain	-72.33364521868896	-24.90371645190164
-joint_pca	Published	Fe_Br_SF_5	Brain	-67.80011439113565	-17.405510530898507
-joint_pca	Published	Fe_Br_SF_6	Brain	-67.61525681453307	-14.954050393656862
-joint_pca	Published	Fe_Br_SF_7	Brain	-70.87394981738517	-25.40748643187505
-joint_pca	Published	Fe_Br_SF_8	Brain	-70.27901230973856	-8.463826541152347
-joint_pca	Published	Fe_FL_O_1	Forelegs	40.75153197445981	-9.71452989870143
-joint_pca	Published	Fe_FL_O_2	Forelegs	42.24025553581516	-3.699035778075051
-joint_pca	Published	Fe_FL_O_3	Forelegs	43.639351339267144	-1.868606058247994
-joint_pca	Published	Fe_FL_O_4	Forelegs	40.752098706426665	-5.092239491317539
-joint_pca	Published	Fe_FL_O_5	Forelegs	39.091198352935216	-7.552633444571412
-joint_pca	Published	Fe_FL_O_6	Forelegs	39.287797755498026	-12.113644114371828
-joint_pca	Published	Fe_FL_O_7	Forelegs	39.21700862834673	-13.34242935049283
-joint_pca	Published	Fe_FL_SF_1	Forelegs	41.466435587704495	-10.951017294869922
-joint_pca	Published	Fe_FL_SF_2	Forelegs	42.62087137880836	-7.568188313797222
-joint_pca	Published	Fe_FL_SF_3	Forelegs	35.41862176128168	-18.182772814778073
-joint_pca	Published	Fe_HL_BF_1	Hindlegs	41.60321806717345	-6.801520303278383
-joint_pca	Published	Fe_HL_BF_2	Hindlegs	37.49974932362709	-13.580558945299655
-joint_pca	Published	Fe_HL_BF_3	Hindlegs	40.851140463627615	-4.136994415469369
-joint_pca	Published	Fe_HL_BF_4	Hindlegs	39.1991109924806	-7.960938690252562
-joint_pca	Published	Fe_HL_O_1	Hindlegs	45.17352180298062	-3.654023898672345
-joint_pca	Published	Fe_HL_O_2	Hindlegs	46.20476941798444	-2.2314124172073866
-joint_pca	Published	Fe_HL_O_3	Hindlegs	43.013111089341685	-2.6187841190039873
-joint_pca	Published	Fe_HL_O_4	Hindlegs	42.995926261747314	-5.45369238132162
-joint_pca	Published	Fe_HL_O_5	Hindlegs	43.27760611667626	-3.18554381552462
-joint_pca	Published	Fe_HL_O_6	Hindlegs	44.02080611958784	-6.134063636036976
-joint_pca	Published	Fe_HL_O_7	Hindlegs	40.21287176957372	-6.237956904470951
-joint_pca	Published	Fe_HL_O_8	Hindlegs	42.93080017550595	-3.8185483969064657
-joint_pca	Published	FE_HL_SF_1	Hindlegs	42.94910996340848	-7.912619986824864
-joint_pca	Published	FE_HL_SF_2	Hindlegs	41.70483979083486	-7.527892234157298
-joint_pca	Published	FE_HL_SF_3	Hindlegs	42.607836526572136	-4.288317460164249
-joint_pca	Published	FE_HL_SF_4	Hindlegs	42.98002630860526	-4.38065555753293
-joint_pca	Published	FE_HL_SF_5	Hindlegs	41.49568325806628	-6.4939695730247005
-joint_pca	Published	FE_HL_SF_6	Hindlegs	42.219897950477474	-5.260422946738783
-joint_pca	Published	Fe_ML_O_1	Midlegs	33.7917778537102	-19.688243036826968
-joint_pca	Published	Fe_ML_O_2	Midlegs	42.91811400246874	-4.489962466224716
-joint_pca	Published	Fe_ML_O_3	Midlegs	43.46152662256018	-4.78497168650417
-joint_pca	Published	Fe_ML_O_4	Midlegs	41.64955409451292	-6.785429613013797
-joint_pca	Published	Fe_ML_O_5	Midlegs	40.46928221357637	-11.374231052866335
-joint_pca	Published	Fe_ML_O_6	Midlegs	42.167606470947646	-8.358118054445109
-joint_pca	Published	Fe_ML_O_7	Midlegs	40.46592627877023	-10.640591964190772
-joint_pca	Published	Fe_ML_SF_1	Midlegs	38.59983084183926	-14.238202495745167
-joint_pca	Published	Fe_ML_SF_2	Midlegs	37.75584762748144	-15.478383505329703
-joint_pca	Published	Fe_ML_SF_3	Midlegs	40.23471061741697	-11.990203008525475
-joint_pca	Published	Fe_Os_SF_1	Proboscis	4.179751788120617	18.791484207968935
-joint_pca	Published	Fe_Os_SF_2	Proboscis	4.7491935889960795	19.088349673508638
-joint_pca	Published	Fe_Os_SF_3	Proboscis	4.179421251567696	20.128474834852295
-joint_pca	Published	Fe_Os_SF_4	Proboscis	4.133366137061959	23.0269115570887
-joint_pca	Published	Fe_Os_SF_5	Proboscis	5.629023400674031	20.279050973364647
-joint_pca	Published	Fe_Ov_O_1	Ovaries	-22.801847709631446	-60.04204732163992
-joint_pca	Published	Fe_Ov_O_2	Ovaries	-20.655756682723535	-60.625363792810816
-joint_pca	Published	Fe_Ov_O_3	Ovaries	-22.81298987129035	-61.21070004428016
-joint_pca	Published	Fe_Ov_O_4	Ovaries	-23.10295679931305	-61.05651900070919
-joint_pca	Published	Fe_Ov_SF_1	Ovaries	-16.613904079667474	-57.9466705940433
-joint_pca	Published	Fe_Ov_SF_2	Ovaries	-20.41321752975645	-59.21284007837941
-joint_pca	Published	Fe_Ov_SF_3	Ovaries	-20.07186965717337	-59.78474310642071
-joint_pca	Published	Fe_Pa_SF_1	Palps	-18.247474870311656	21.125350224208255
-joint_pca	Published	Fe_Pa_SF_2	Palps	-22.708809851292433	21.80101711294033
-joint_pca	Published	Fe_Pa_SF_3	Palps	-22.501711341522817	22.094755907686768
-joint_pca	Published	Fe_Pa_SF_4	Palps	-21.096546186764314	22.47609356451288
-joint_pca	Published	Fe_Rs_BF_1	Rostrum	-13.782341504473834	26.219837147776964
-joint_pca	Published	Fe_Rs_BF_2	Rostrum	-7.39869446164504	28.074831075412348
-joint_pca	Published	Fe_Rs_BF_3	Rostrum	-5.615525824242697	23.889940908860577
-joint_pca	Published	Fe_Rs_SF_1	Rostrum	-0.10382087295538343	24.264868717569012
-joint_pca	Published	Fe_Rs_SF_2	Rostrum	-1.0638376975279913	22.853551769224598
-joint_pca	Published	Fe_Rs_SF_3	Rostrum	-1.3893627976433074	23.99241978569596
-joint_pca	Published	Ma_An_1	Antenna	-18.164715680112323	40.433900931990635
-joint_pca	Published	Ma_An_2	Antenna	-18.96805011237516	40.48096584297848
-joint_pca	Published	Ma_An_3	Antenna	-19.20695574836125	40.80362916748897
-joint_pca	Published	Ma_At_1	Abdominal Tip	-11.142573202926176	-16.521616745323477
-joint_pca	Published	Ma_At_2	Abdominal Tip	-12.965264963500937	-17.037331047615567
-joint_pca	Published	Ma_At_3	Abdominal Tip	-8.633159096963718	-14.780758121912628
-joint_pca	Published	Ma_Br_1	Brain	-71.105682576382	-25.19130378116993
-joint_pca	Published	Ma_Br_2	Brain	-72.09525359866639	-24.71380755896901
-joint_pca	Published	Ma_Br_3	Brain	-69.65485254086767	-23.00636897298136
-joint_pca	Published	Ma_FL_1	Forelegs	40.531887246993705	-3.599146334044805
-joint_pca	Published	Ma_FL_2	Forelegs	40.46375326494583	-2.3892143928114784
-joint_pca	Published	Ma_FL_3	Forelegs	40.12407981682135	-3.33620442941837
-joint_pca	Published	Ma_HL_1	Hindlegs	41.13560313469806	-3.846856058833084
-joint_pca	Published	Ma_HL_2	Hindlegs	41.01621723482225	-3.466509012425522
-joint_pca	Published	Ma_HL_3	Hindlegs	41.484460842072444	-4.348486341261631
-joint_pca	Published	Ma_HL_4	Hindlegs	38.51961137679723	-3.707110953297968
-joint_pca	Published	Ma_HL_5	Hindlegs	41.940004471931786	-3.387443163649941
-joint_pca	Published	Ma_ML_1	Midlegs	41.49051278430738	-1.786704615960161
-joint_pca	Published	Ma_ML_2	Midlegs	38.98403447928537	-3.8690415426257387
-joint_pca	Published	Ma_ML_3	Midlegs	39.00949006984298	-6.614509304020805
-joint_pca	Published	Ma_Rs_1	Rostrum	-22.057061158307658	16.584093223974808
-joint_pca	Published	Ma_Rs_2	Rostrum	-25.870801419654462	17.950131199204275
-joint_pca	Published	Ma_Rs_3	Rostrum	-18.127190565269622	18.44736946153892
-joint_pca	Reanalysis	Fe_An_BF_1	Antenna	-23.402648104861253	49.61741320665357
-joint_pca	Reanalysis	Fe_An_BF_2	Antenna	-22.83441047695247	51.07854134877169
-joint_pca	Reanalysis	Fe_An_BF_3	Antenna	-22.724979314270048	50.0701699501628
-joint_pca	Reanalysis	Fe_An_BF_4	Antenna	-18.977124403081305	46.90842401592384
-joint_pca	Reanalysis	Fe_An_O_2	Antenna	-20.315654292394168	50.61684934395965
-joint_pca	Reanalysis	Fe_An_O_3	Antenna	-20.719585653617365	50.949514259057054
-joint_pca	Reanalysis	Fe_An_O_4	Antenna	-20.877625650110925	51.89935083261653
-joint_pca	Reanalysis	Fe_An_SF_1	Antenna	-24.70293731280398	52.82281293950955
-joint_pca	Reanalysis	Fe_An_SF_2	Antenna	-23.636801369126363	48.60785333783802
-joint_pca	Reanalysis	Fe_An_SF_3	Antenna	-24.187623638677515	48.74036700685954
-joint_pca	Reanalysis	Fe_An_SF_4	Antenna	-23.008136765996817	49.656828432721525
-joint_pca	Reanalysis	Fe_An_SF_5	Antenna	-20.78623884903024	49.22384837677266
-joint_pca	Reanalysis	Fe_An_SF_6	Antenna	-20.805075776995064	49.38180368459267
-joint_pca	Reanalysis	Fe_An_SF_7	Antenna	-19.09221576499042	50.052862179708704
-joint_pca	Reanalysis	Fe_An_SF_8	Antenna	-18.976358676665676	48.48713192170701
-joint_pca	Reanalysis	Fe_At_O_1	Abdominal Tip	-10.702211027229994	-11.768266661532214
-joint_pca	Reanalysis	Fe_At_O_2	Abdominal Tip	-13.882767303719362	-11.89269276160715
-joint_pca	Reanalysis	Fe_At_O_3	Abdominal Tip	-14.528543717412894	-15.835553356215955
-joint_pca	Reanalysis	Fe_At_O_4	Abdominal Tip	-16.51965672241145	-17.367214541277253
-joint_pca	Reanalysis	Fe_At_O_5	Abdominal Tip	-18.796265815130685	-17.087992101122822
-joint_pca	Reanalysis	Fe_At_O_6	Abdominal Tip	-15.785733419413615	-17.163334911576577
-joint_pca	Reanalysis	Fe_At_O_7	Abdominal Tip	-14.153718673357657	-14.639554237711094
-joint_pca	Reanalysis	Fe_At_SF_1	Abdominal Tip	-16.29684711810849	-14.883837567321196
-joint_pca	Reanalysis	Fe_At_SF_2	Abdominal Tip	-15.982807744812062	-13.802255609133116
-joint_pca	Reanalysis	Fe_At_SF_3	Abdominal Tip	-15.488849614488117	-14.140419409316442
-joint_pca	Reanalysis	Fe_Br_BF_1	Brain	-65.05075659547556	-17.56816444634018
-joint_pca	Reanalysis	Fe_Br_BF_2	Brain	-69.96759905258348	-17.269987619445885
-joint_pca	Reanalysis	Fe_Br_BF_3	Brain	-69.88003075503185	-21.98134845287886
-joint_pca	Reanalysis	Fe_Br_BF_4	Brain	-66.68257205147562	-13.302222363467427
-joint_pca	Reanalysis	Fe_Br_O_1	Brain	-67.29632123174956	-20.77266602252238
-joint_pca	Reanalysis	Fe_Br_O_2	Brain	-68.63767615776882	-20.04248427546712
-joint_pca	Reanalysis	Fe_Br_O_3	Brain	-69.95878377287073	-21.77757741368249
-joint_pca	Reanalysis	Fe_Br_O_4	Brain	-69.29638461975368	-20.022174487803436
-joint_pca	Reanalysis	Fe_Br_SF_1	Brain	-68.50563946472217	-11.497780746132712
-joint_pca	Reanalysis	Fe_Br_SF_4	Brain	-69.28490523945997	-23.278807121104688
-joint_pca	Reanalysis	Fe_Br_SF_5	Brain	-63.61533904949575	-14.989710253317073
-joint_pca	Reanalysis	Fe_Br_SF_6	Brain	-63.93099318373715	-12.489986959174363
-joint_pca	Reanalysis	Fe_Br_SF_7	Brain	-67.50277501936863	-23.14639641969689
-joint_pca	Reanalysis	Fe_Br_SF_8	Brain	-67.13210183449728	-5.395232459725029
-joint_pca	Reanalysis	Fe_FL_O_1	Forelegs	40.96678483577887	-9.039863992826383
-joint_pca	Reanalysis	Fe_FL_O_2	Forelegs	44.253744218456646	-3.0465255377501332
-joint_pca	Reanalysis	Fe_FL_O_3	Forelegs	46.22421293594044	-0.4157711422755126
-joint_pca	Reanalysis	Fe_FL_O_4	Forelegs	43.187940213569114	-3.8640903448007093
-joint_pca	Reanalysis	Fe_FL_O_5	Forelegs	41.21186814036915	-6.617207038530159
-joint_pca	Reanalysis	Fe_FL_O_6	Forelegs	39.256542816001975	-11.92406544127212
-joint_pca	Reanalysis	Fe_FL_O_7	Forelegs	38.80629015299237	-12.903259164113882
-joint_pca	Reanalysis	Fe_FL_SF_1	Forelegs	41.22893342149444	-9.954926058704048
-joint_pca	Reanalysis	Fe_FL_SF_2	Forelegs	42.96343593267031	-6.502343168639977
-joint_pca	Reanalysis	Fe_FL_SF_3	Forelegs	34.42373821003718	-18.06340869549596
-joint_pca	Reanalysis	Fe_HL_BF_1	Hindlegs	42.02694050180855	-5.985391234892519
-joint_pca	Reanalysis	Fe_HL_BF_2	Hindlegs	38.66154115241286	-12.086808535437132
-joint_pca	Reanalysis	Fe_HL_BF_3	Hindlegs	41.83431056240111	-2.9879740885200334
-joint_pca	Reanalysis	Fe_HL_BF_4	Hindlegs	40.04312835515406	-6.934639214385395
-joint_pca	Reanalysis	Fe_HL_O_1	Hindlegs	47.82253699488446	-1.6469685650219665
-joint_pca	Reanalysis	Fe_HL_O_2	Hindlegs	48.330236681729886	-1.0568842489765735
-joint_pca	Reanalysis	Fe_HL_O_3	Hindlegs	45.1719272592189	-2.185552325084498
-joint_pca	Reanalysis	Fe_HL_O_4	Hindlegs	45.20696041506644	-3.7374242612434405
-joint_pca	Reanalysis	Fe_HL_O_5	Hindlegs	45.32743702414293	-2.0319413741620944
-joint_pca	Reanalysis	Fe_HL_O_6	Hindlegs	44.43928707991609	-4.865533678657605
-joint_pca	Reanalysis	Fe_HL_O_7	Hindlegs	41.2729259312637	-4.533033649990705
-joint_pca	Reanalysis	Fe_HL_O_8	Hindlegs	43.28072607065068	-3.245073336231209
-joint_pca	Reanalysis	FE_HL_SF_1	Hindlegs	43.326327934971445	-6.149789113976826
-joint_pca	Reanalysis	FE_HL_SF_2	Hindlegs	42.16439844403576	-6.624121445420135
-joint_pca	Reanalysis	FE_HL_SF_3	Hindlegs	43.26453379288713	-3.717162105445382
-joint_pca	Reanalysis	FE_HL_SF_4	Hindlegs	43.578298665677785	-3.4333313599441877
-joint_pca	Reanalysis	FE_HL_SF_5	Hindlegs	41.389688986990556	-6.521338663432979
-joint_pca	Reanalysis	FE_HL_SF_6	Hindlegs	43.146043983451136	-3.5512461665912816
-joint_pca	Reanalysis	Fe_ML_O_1	Midlegs	32.73260715552232	-19.752777512307194
-joint_pca	Reanalysis	Fe_ML_O_2	Midlegs	45.19141838215993	-3.0523469172617284
-joint_pca	Reanalysis	Fe_ML_O_3	Midlegs	46.110240262923476	-3.093386379670069
-joint_pca	Reanalysis	Fe_ML_O_4	Midlegs	44.091744561708424	-5.329769297745319
-joint_pca	Reanalysis	Fe_ML_O_5	Midlegs	39.946303396903225	-10.579855213484253
-joint_pca	Reanalysis	Fe_ML_O_6	Midlegs	41.65208712101194	-8.489620825838726
-joint_pca	Reanalysis	Fe_ML_O_7	Midlegs	42.411723323276235	-9.183018692888922
-joint_pca	Reanalysis	Fe_ML_SF_1	Midlegs	38.17758696054611	-13.632917930009269
-joint_pca	Reanalysis	Fe_ML_SF_2	Midlegs	37.95690068184624	-14.410711084670956
-joint_pca	Reanalysis	Fe_ML_SF_3	Midlegs	40.3925698916319	-10.858469477433534
-joint_pca	Reanalysis	Fe_Os_SF_1	Proboscis	7.156794433272482	19.894313236488088
-joint_pca	Reanalysis	Fe_Os_SF_2	Proboscis	8.10609391714605	20.856340291670627
-joint_pca	Reanalysis	Fe_Os_SF_3	Proboscis	7.613612780395557	21.488594701513435
-joint_pca	Reanalysis	Fe_Os_SF_4	Proboscis	7.478990975221492	23.77603704475994
-joint_pca	Reanalysis	Fe_Os_SF_5	Proboscis	8.522526299797558	22.27000282645652
-joint_pca	Reanalysis	Fe_Ov_O_1	Ovaries	-21.269485788330385	-58.495728966190114
-joint_pca	Reanalysis	Fe_Ov_O_2	Ovaries	-19.3591795403349	-58.871325338839085
-joint_pca	Reanalysis	Fe_Ov_O_3	Ovaries	-21.744702282685562	-59.82945096086734
-joint_pca	Reanalysis	Fe_Ov_O_4	Ovaries	-21.841622014196034	-59.77515810851485
-joint_pca	Reanalysis	Fe_Ov_SF_1	Ovaries	-14.344142395626173	-55.9607990841109
-joint_pca	Reanalysis	Fe_Ov_SF_2	Ovaries	-19.32829499837022	-57.9659231098246
-joint_pca	Reanalysis	Fe_Ov_SF_3	Ovaries	-18.994138059909304	-58.58131256314712
-joint_pca	Reanalysis	Fe_Pa_SF_1	Palps	-14.885871715635705	20.735045651572186
-joint_pca	Reanalysis	Fe_Pa_SF_2	Palps	-19.304748556288107	20.38045092077352
-joint_pca	Reanalysis	Fe_Pa_SF_3	Palps	-19.33619825177837	20.577090126251093
-joint_pca	Reanalysis	Fe_Pa_SF_4	Palps	-17.731524650404584	23.00123862058371
-joint_pca	Reanalysis	Fe_Rs_BF_1	Rostrum	-10.161830976892462	27.22858921421633
-joint_pca	Reanalysis	Fe_Rs_BF_2	Rostrum	-4.455545571997442	30.025405698867303
-joint_pca	Reanalysis	Fe_Rs_BF_3	Rostrum	-2.4792117765540285	25.37203684227114
-joint_pca	Reanalysis	Fe_Rs_SF_1	Rostrum	2.422735125298675	24.808273420279047
-joint_pca	Reanalysis	Fe_Rs_SF_2	Rostrum	1.7572358839578448	24.1124514625953
-joint_pca	Reanalysis	Fe_Rs_SF_3	Rostrum	1.3641087002940453	25.515147398027228
-joint_pca	Reanalysis	Ma_An_1	Antenna	-15.437394753923714	43.70021738110928
-joint_pca	Reanalysis	Ma_An_2	Antenna	-16.474609371677104	43.106941385387046
-joint_pca	Reanalysis	Ma_An_3	Antenna	-16.65951633600111	43.25804491704789
-joint_pca	Reanalysis	Ma_At_1	Abdominal Tip	-9.464664153757717	-19.809569879560406
-joint_pca	Reanalysis	Ma_At_2	Abdominal Tip	-10.986783290075637	-20.162815432849634
-joint_pca	Reanalysis	Ma_At_3	Abdominal Tip	-7.798866723903084	-18.253505598310507
-joint_pca	Reanalysis	Ma_Br_1	Brain	-69.21143873309839	-23.851982799199227
-joint_pca	Reanalysis	Ma_Br_2	Brain	-70.35842479818092	-23.23581316149024
-joint_pca	Reanalysis	Ma_Br_3	Brain	-67.59616012416383	-20.387053016283716
-joint_pca	Reanalysis	Ma_FL_1	Forelegs	42.72941492630603	-1.9964956415160349
-joint_pca	Reanalysis	Ma_FL_2	Forelegs	42.7238992125044	-0.991439089884536
-joint_pca	Reanalysis	Ma_FL_3	Forelegs	42.59961684537881	-1.5973050475389197
-joint_pca	Reanalysis	Ma_HL_1	Hindlegs	43.47913316482656	-1.8253707907321535
-joint_pca	Reanalysis	Ma_HL_2	Hindlegs	43.430632134236845	-1.871865256757353
-joint_pca	Reanalysis	Ma_HL_3	Hindlegs	43.94347541388337	-2.5743219916968716
-joint_pca	Reanalysis	Ma_HL_4	Hindlegs	39.227259145571516	-2.515151795205072
-joint_pca	Reanalysis	Ma_HL_5	Hindlegs	42.39661882258538	-2.2629481994212934
-joint_pca	Reanalysis	Ma_ML_1	Midlegs	43.390638135995296	-0.623274750553649
-joint_pca	Reanalysis	Ma_ML_2	Midlegs	41.56744056702985	-2.4734473005357835
-joint_pca	Reanalysis	Ma_ML_3	Midlegs	41.66734134156577	-4.758902203440021
-joint_pca	Reanalysis	Ma_Rs_1	Rostrum	-18.57681240426272	19.09731678703306
-joint_pca	Reanalysis	Ma_Rs_2	Rostrum	-22.2142228678907	19.546437221940746
-joint_pca	Reanalysis	Ma_Rs_3	Rostrum	-14.537810804208062	20.154983631991392
+separate_pca	Published	Fe_An_BF_1	Antenna	-26.287440391867896	53.57164375883346
+separate_pca	Published	Fe_An_BF_2	Antenna	-25.63212113382148	52.82582640805628
+separate_pca	Published	Fe_An_BF_3	Antenna	-25.276056115121108	52.559476836079135
+separate_pca	Published	Fe_An_BF_4	Antenna	-21.22235124737943	50.54048479765811
+separate_pca	Published	Fe_An_O_2	Antenna	-22.36082339811594	53.08000876436172
+separate_pca	Published	Fe_An_O_3	Antenna	-22.53378494455074	53.543663007652704
+separate_pca	Published	Fe_An_O_4	Antenna	-22.611804819542954	53.8138536496461
+separate_pca	Published	Fe_An_SF_1	Antenna	-27.201608513476845	51.8114394969824
+separate_pca	Published	Fe_An_SF_2	Antenna	-26.062515760611877	47.11839427597382
+separate_pca	Published	Fe_An_SF_3	Antenna	-26.64470280337767	47.24410877080105
+separate_pca	Published	Fe_An_SF_4	Antenna	-25.43353866563562	48.42427762411662
+separate_pca	Published	Fe_An_SF_5	Antenna	-23.047251039888206	52.188960852784994
+separate_pca	Published	Fe_An_SF_6	Antenna	-23.080346587339218	51.618241231178665
+separate_pca	Published	Fe_An_SF_7	Antenna	-21.112988275398063	51.50307099888548
+separate_pca	Published	Fe_An_SF_8	Antenna	-21.03047487227184	51.09785782734314
+separate_pca	Published	Fe_At_O_1	Abdominal Tip	-12.997666405649595	-15.26083064432075
+separate_pca	Published	Fe_At_O_2	Abdominal Tip	-16.197698607911317	-15.497015285665787
+separate_pca	Published	Fe_At_O_3	Abdominal Tip	-16.387884544803285	-19.499921162474628
+separate_pca	Published	Fe_At_O_4	Abdominal Tip	-18.522252663855834	-20.675462988018136
+separate_pca	Published	Fe_At_O_5	Abdominal Tip	-20.873507934882067	-20.81483573000645
+separate_pca	Published	Fe_At_O_6	Abdominal Tip	-17.11150862736953	-21.098486203682423
+separate_pca	Published	Fe_At_O_7	Abdominal Tip	-15.577833002377295	-18.051609747796725
+separate_pca	Published	Fe_At_SF_1	Abdominal Tip	-17.723495271417953	-17.96635480061703
+separate_pca	Published	Fe_At_SF_2	Abdominal Tip	-17.481186293990348	-17.281807989970627
+separate_pca	Published	Fe_At_SF_3	Abdominal Tip	-16.91390827432711	-17.39758323239422
+separate_pca	Published	Fe_Br_BF_1	Brain	-67.75595601097572	-20.913164379343392
+separate_pca	Published	Fe_Br_BF_2	Brain	-72.14470624258925	-20.658465209663497
+separate_pca	Published	Fe_Br_BF_3	Brain	-71.46968313782949	-25.27258504940531
+separate_pca	Published	Fe_Br_BF_4	Brain	-68.51955893164143	-18.183621167676133
+separate_pca	Published	Fe_Br_O_1	Brain	-69.71894823482977	-23.801952208590176
+separate_pca	Published	Fe_Br_O_2	Brain	-70.70208689083783	-23.402036096666333
+separate_pca	Published	Fe_Br_O_3	Brain	-71.6935961317363	-25.057277655927102
+separate_pca	Published	Fe_Br_O_4	Brain	-71.25140243646	-23.366383317796448
+separate_pca	Published	Fe_Br_SF_1	Brain	-69.77582157684098	-15.172277218537348
+separate_pca	Published	Fe_Br_SF_4	Brain	-70.36264809296578	-26.429871930089636
+separate_pca	Published	Fe_Br_SF_5	Brain	-66.5764338124754	-19.52616705318141
+separate_pca	Published	Fe_Br_SF_6	Brain	-66.54699307416571	-16.88456977275876
+separate_pca	Published	Fe_Br_SF_7	Brain	-69.18533032338146	-26.864175642204017
+separate_pca	Published	Fe_Br_SF_8	Brain	-69.00128424229484	-9.699747328812728
+separate_pca	Published	Fe_FL_O_1	Forelegs	42.62006951200336	-8.40513377528545
+separate_pca	Published	Fe_FL_O_2	Forelegs	43.59661653207121	-2.7294014419767
+separate_pca	Published	Fe_FL_O_3	Forelegs	44.8372814451802	-1.1659923012007625
+separate_pca	Published	Fe_FL_O_4	Forelegs	42.206441931164626	-4.0208447217641545
+separate_pca	Published	Fe_FL_O_5	Forelegs	40.84651134939871	-6.472539195886957
+separate_pca	Published	Fe_FL_O_6	Forelegs	41.374997132922694	-10.580569168928818
+separate_pca	Published	Fe_FL_O_7	Forelegs	41.35168189978021	-11.766872183018458
+separate_pca	Published	Fe_FL_SF_1	Forelegs	43.50581189372926	-9.584360298596021
+separate_pca	Published	Fe_FL_SF_2	Forelegs	44.33017132625961	-6.261457159641428
+separate_pca	Published	Fe_FL_SF_3	Forelegs	37.92769832890163	-16.48819210509196
+separate_pca	Published	Fe_HL_BF_1	Hindlegs	43.13435644686808	-5.935651952204404
+separate_pca	Published	Fe_HL_BF_2	Hindlegs	39.003515264930286	-12.276765496247656
+separate_pca	Published	Fe_HL_BF_3	Hindlegs	42.18932064697758	-3.475416683808298
+separate_pca	Published	Fe_HL_BF_4	Hindlegs	40.765982847911594	-7.100594595624834
+separate_pca	Published	Fe_HL_O_1	Hindlegs	46.600982775699464	-2.92854913831701
+separate_pca	Published	Fe_HL_O_2	Hindlegs	47.649940854116984	-1.7251215337177612
+separate_pca	Published	Fe_HL_O_3	Hindlegs	44.384136243636064	-1.857100316630912
+separate_pca	Published	Fe_HL_O_4	Hindlegs	44.58934295754197	-4.634784327299499
+separate_pca	Published	Fe_HL_O_5	Hindlegs	44.72191252554455	-2.4754948396465988
+separate_pca	Published	Fe_HL_O_6	Hindlegs	45.62397277016526	-5.254250236180957
+separate_pca	Published	Fe_HL_O_7	Hindlegs	41.829901633268	-5.39736374104774
+separate_pca	Published	Fe_HL_O_8	Hindlegs	44.38910451658055	-3.1118911440865458
+separate_pca	Published	FE_HL_SF_1	Hindlegs	44.68418802349917	-6.978569155874345
+separate_pca	Published	FE_HL_SF_2	Hindlegs	43.430810894711584	-6.548240995277623
+separate_pca	Published	FE_HL_SF_3	Hindlegs	44.07935674316874	-3.4714924448159676
+separate_pca	Published	FE_HL_SF_4	Hindlegs	44.48720606818926	-3.677830435436159
+separate_pca	Published	FE_HL_SF_5	Hindlegs	43.21198524276041	-5.688587906137663
+separate_pca	Published	FE_HL_SF_6	Hindlegs	43.930673463802535	-4.419286769395433
+separate_pca	Published	Fe_ML_O_1	Midlegs	36.398606821559696	-17.976684992314304
+separate_pca	Published	Fe_ML_O_2	Midlegs	44.354939844394494	-3.498688509871014
+separate_pca	Published	Fe_ML_O_3	Midlegs	44.89709717419318	-3.857762898399841
+separate_pca	Published	Fe_ML_O_4	Midlegs	43.19061214412697	-5.676747323048044
+separate_pca	Published	Fe_ML_O_5	Midlegs	42.38687493246857	-10.016899780887538
+separate_pca	Published	Fe_ML_O_6	Midlegs	43.8717550924568	-7.251504110880212
+separate_pca	Published	Fe_ML_O_7	Midlegs	42.35525643884568	-9.422361362566711
+separate_pca	Published	Fe_ML_SF_1	Midlegs	40.76358299980704	-12.78156985767993
+separate_pca	Published	Fe_ML_SF_2	Midlegs	39.97912651122012	-13.948193605604667
+separate_pca	Published	Fe_ML_SF_3	Midlegs	42.19390403431611	-10.618148488084838
+separate_pca	Published	Fe_Os_SF_1	Proboscis	3.8472437926821113	18.477564771885906
+separate_pca	Published	Fe_Os_SF_2	Proboscis	4.565505183741248	18.753627118951677
+separate_pca	Published	Fe_Os_SF_3	Proboscis	3.9704083444442375	19.769360398716763
+separate_pca	Published	Fe_Os_SF_4	Proboscis	3.946351920929193	22.35696267210289
+separate_pca	Published	Fe_Os_SF_5	Proboscis	5.206475369845554	19.781741882675917
+separate_pca	Published	Fe_Ov_O_1	Ovaries	-19.651085683511962	-56.548793728778506
+separate_pca	Published	Fe_Ov_O_2	Ovaries	-17.344605825020874	-57.166967350196785
+separate_pca	Published	Fe_Ov_O_3	Ovaries	-19.563984469567693	-57.70284576544942
+separate_pca	Published	Fe_Ov_O_4	Ovaries	-19.793698658085795	-57.492727718842545
+separate_pca	Published	Fe_Ov_SF_1	Ovaries	-13.654420644391095	-54.45339126848125
+separate_pca	Published	Fe_Ov_SF_2	Ovaries	-17.434696166502604	-55.78967145974423
+separate_pca	Published	Fe_Ov_SF_3	Ovaries	-17.032314157482606	-56.23708784983155
+separate_pca	Published	Fe_Pa_SF_1	Palps	-19.169125891972964	22.267557860000554
+separate_pca	Published	Fe_Pa_SF_2	Palps	-23.823355978417123	23.24107437307027
+separate_pca	Published	Fe_Pa_SF_3	Palps	-23.43332024716779	23.602621242489207
+separate_pca	Published	Fe_Pa_SF_4	Palps	-22.348131438597242	23.744915552047313
+separate_pca	Published	Fe_Rs_BF_1	Rostrum	-15.32954901100553	26.454223463990612
+separate_pca	Published	Fe_Rs_BF_2	Rostrum	-8.607919763436334	28.710946554417788
+separate_pca	Published	Fe_Rs_BF_3	Rostrum	-6.9613128788605465	24.256796729189066
+separate_pca	Published	Fe_Rs_SF_1	Rostrum	-1.6060828206201774	24.812952855527136
+separate_pca	Published	Fe_Rs_SF_2	Rostrum	-2.5837046009237628	23.292843993531832
+separate_pca	Published	Fe_Rs_SF_3	Rostrum	-2.727248302863751	24.655639769976798
+separate_pca	Published	Ma_An_1	Antenna	-17.545250198896188	42.2964914047079
+separate_pca	Published	Ma_An_2	Antenna	-18.10253888843008	42.41558109664805
+separate_pca	Published	Ma_An_3	Antenna	-18.332997723950328	42.65288827926762
+separate_pca	Published	Ma_At_1	Abdominal Tip	-10.385533945041166	-18.452571160093584
+separate_pca	Published	Ma_At_2	Abdominal Tip	-12.128559601229217	-18.96622737204383
+separate_pca	Published	Ma_At_3	Abdominal Tip	-7.843349758322195	-16.793324302312847
+separate_pca	Published	Ma_Br_1	Brain	-69.37467701562913	-26.599274789531325
+separate_pca	Published	Ma_Br_2	Brain	-70.34296572071645	-26.114255420157605
+separate_pca	Published	Ma_Br_3	Brain	-67.66533137070799	-24.022962290241125
+separate_pca	Published	Ma_FL_1	Forelegs	42.13283493826515	-2.6110300291464568
+separate_pca	Published	Ma_FL_2	Forelegs	41.95951447986281	-1.392546704954377
+separate_pca	Published	Ma_FL_3	Forelegs	41.6478760915354	-2.2221086552248104
+separate_pca	Published	Ma_HL_1	Hindlegs	42.76218925909149	-2.933735233562544
+separate_pca	Published	Ma_HL_2	Hindlegs	42.631007045308586	-2.56664450219204
+separate_pca	Published	Ma_HL_3	Hindlegs	43.09506575586026	-3.371005109965947
+separate_pca	Published	Ma_HL_4	Hindlegs	40.132219395750475	-2.8678548193436337
+separate_pca	Published	Ma_HL_5	Hindlegs	43.47260143563674	-2.5298135619474
+separate_pca	Published	Ma_ML_1	Midlegs	42.9314571625689	-0.8134537026955793
+separate_pca	Published	Ma_ML_2	Midlegs	40.485148349849645	-2.9859319831443685
+separate_pca	Published	Ma_ML_3	Midlegs	40.77996071430902	-5.499283414440115
+separate_pca	Published	Ma_Rs_1	Rostrum	-22.78532737215483	16.301643514895773
+separate_pca	Published	Ma_Rs_2	Rostrum	-26.723756232513885	17.31367798528804
+separate_pca	Published	Ma_Rs_3	Rostrum	-18.93754280382682	18.290205180663488
+separate_pca	Reanalysis	Fe_An_BF_1	Antenna	-26.469945131278674	51.81188595593212
+separate_pca	Reanalysis	Fe_An_BF_2	Antenna	-25.773865678744595	53.267118369301
+separate_pca	Reanalysis	Fe_An_BF_3	Antenna	-25.703110958716	52.10486987783128
+separate_pca	Reanalysis	Fe_An_BF_4	Antenna	-22.091648544070253	49.36104032755294
+separate_pca	Reanalysis	Fe_An_O_2	Antenna	-23.37894944882954	52.81595464837794
+separate_pca	Reanalysis	Fe_An_O_3	Antenna	-23.78138346567236	53.1625327605668
+separate_pca	Reanalysis	Fe_An_O_4	Antenna	-23.994507638237767	54.11126321732124
+separate_pca	Reanalysis	Fe_An_SF_1	Antenna	-26.9920622552122	54.221759678602695
+separate_pca	Reanalysis	Fe_An_SF_2	Antenna	-25.784419382283467	50.187489797709404
+separate_pca	Reanalysis	Fe_An_SF_3	Antenna	-26.045788800847188	50.144769671139144
+separate_pca	Reanalysis	Fe_An_SF_4	Antenna	-24.872682366228666	51.11952251731913
+separate_pca	Reanalysis	Fe_An_SF_5	Antenna	-23.936335343545313	51.55236018693304
+separate_pca	Reanalysis	Fe_An_SF_6	Antenna	-23.98375397037655	51.611809629693866
+separate_pca	Reanalysis	Fe_An_SF_7	Antenna	-22.196028112775952	52.36825646928616
+separate_pca	Reanalysis	Fe_An_SF_8	Antenna	-22.179585828888957	50.875342407671106
+separate_pca	Reanalysis	Fe_At_O_1	Abdominal Tip	-11.369968242201683	-15.835716893298656
+separate_pca	Reanalysis	Fe_At_O_2	Abdominal Tip	-14.477735056115945	-16.007866616887124
+separate_pca	Reanalysis	Fe_At_O_3	Abdominal Tip	-15.486554835241266	-19.669850133957137
+separate_pca	Reanalysis	Fe_At_O_4	Abdominal Tip	-17.46948657522692	-21.31403042326072
+separate_pca	Reanalysis	Fe_At_O_5	Abdominal Tip	-20.25184500833121	-20.670122441285766
+separate_pca	Reanalysis	Fe_At_O_6	Abdominal Tip	-17.438792026143005	-20.601509713816213
+separate_pca	Reanalysis	Fe_At_O_7	Abdominal Tip	-15.86421550500569	-18.069274195478013
+separate_pca	Reanalysis	Fe_At_SF_1	Abdominal Tip	-17.651674797086294	-17.91658828692313
+separate_pca	Reanalysis	Fe_At_SF_2	Abdominal Tip	-17.310751389461423	-16.85031777540138
+separate_pca	Reanalysis	Fe_At_SF_3	Abdominal Tip	-16.884795790207992	-17.156569709198564
+separate_pca	Reanalysis	Fe_Br_BF_1	Brain	-64.87899063002459	-19.92684143309505
+separate_pca	Reanalysis	Fe_Br_BF_2	Brain	-69.599858249932	-19.433346956543545
+separate_pca	Reanalysis	Fe_Br_BF_3	Brain	-69.54615175945798	-23.52400631284752
+separate_pca	Reanalysis	Fe_Br_BF_4	Brain	-65.9585439820794	-15.657486003111007
+separate_pca	Reanalysis	Fe_Br_O_1	Brain	-66.97079975594599	-22.623145121532172
+separate_pca	Reanalysis	Fe_Br_O_2	Brain	-68.39924837352021	-22.112915249350607
+separate_pca	Reanalysis	Fe_Br_O_3	Brain	-69.85594083618673	-23.548277208218018
+separate_pca	Reanalysis	Fe_Br_O_4	Brain	-69.06310520921375	-21.581602057035628
+separate_pca	Reanalysis	Fe_Br_SF_1	Brain	-67.67789706063897	-13.646475610665924
+separate_pca	Reanalysis	Fe_Br_SF_4	Brain	-68.45910139039806	-25.21744211529997
+separate_pca	Reanalysis	Fe_Br_SF_5	Brain	-63.40586847221837	-17.268335906957002
+separate_pca	Reanalysis	Fe_Br_SF_6	Brain	-63.50309009403937	-14.581300090713649
+separate_pca	Reanalysis	Fe_Br_SF_7	Brain	-67.27079377623214	-24.11687709345256
+separate_pca	Reanalysis	Fe_Br_SF_8	Brain	-67.02330635125728	-6.605253369862676
+separate_pca	Reanalysis	Fe_FL_O_1	Forelegs	39.73730972035983	-8.963268672647883
+separate_pca	Reanalysis	Fe_FL_O_2	Forelegs	43.99946367059026	-3.8789388666518834
+separate_pca	Reanalysis	Fe_FL_O_3	Forelegs	45.85929357406028	-1.4350378554216054
+separate_pca	Reanalysis	Fe_FL_O_4	Forelegs	42.76603244173626	-4.7446389901312935
+separate_pca	Reanalysis	Fe_FL_O_5	Forelegs	40.674256441396146	-7.281567795332573
+separate_pca	Reanalysis	Fe_FL_O_6	Forelegs	37.93535570082226	-11.759591724751509
+separate_pca	Reanalysis	Fe_FL_O_7	Forelegs	37.27907393318839	-12.696065700022318
+separate_pca	Reanalysis	Fe_FL_SF_1	Forelegs	39.930034785936336	-9.831559625209682
+separate_pca	Reanalysis	Fe_FL_SF_2	Forelegs	41.59658987952896	-6.335816031588254
+separate_pca	Reanalysis	Fe_FL_SF_3	Forelegs	32.81942089077035	-17.518589964230276
+separate_pca	Reanalysis	Fe_HL_BF_1	Hindlegs	41.37719982505273	-6.349575378434607
+separate_pca	Reanalysis	Fe_HL_BF_2	Hindlegs	38.151750225581054	-12.59511306311294
+separate_pca	Reanalysis	Fe_HL_BF_3	Hindlegs	41.30282752046932	-3.6867792005003186
+separate_pca	Reanalysis	Fe_HL_BF_4	Hindlegs	39.497718641929374	-7.252672129839463
+separate_pca	Reanalysis	Fe_HL_O_1	Hindlegs	47.49026472454863	-2.4482331235871313
+separate_pca	Reanalysis	Fe_HL_O_2	Hindlegs	47.895695903191665	-1.8976952220690735
+separate_pca	Reanalysis	Fe_HL_O_3	Hindlegs	44.640057344352385	-2.872526540187411
+separate_pca	Reanalysis	Fe_HL_O_4	Hindlegs	44.78111207948534	-4.417317750917772
+separate_pca	Reanalysis	Fe_HL_O_5	Hindlegs	44.94742247117176	-2.6893833141388375
+separate_pca	Reanalysis	Fe_HL_O_6	Hindlegs	43.138357721223265	-4.791094204554039
+separate_pca	Reanalysis	Fe_HL_O_7	Hindlegs	40.272354459052906	-4.756802128741773
+separate_pca	Reanalysis	Fe_HL_O_8	Hindlegs	42.203082750683905	-3.4545624675756406
+separate_pca	Reanalysis	FE_HL_SF_1	Hindlegs	42.10835188996506	-6.017863890094718
+separate_pca	Reanalysis	FE_HL_SF_2	Hindlegs	41.5871997999362	-6.890197570095227
+separate_pca	Reanalysis	FE_HL_SF_3	Hindlegs	42.84342364792022	-4.075771781902362
+separate_pca	Reanalysis	FE_HL_SF_4	Hindlegs	43.14104645873405	-3.8768780364807873
+separate_pca	Reanalysis	FE_HL_SF_5	Hindlegs	40.77764293444	-6.9118542587656595
+separate_pca	Reanalysis	FE_HL_SF_6	Hindlegs	42.07220950140891	-3.6208278086162835
+separate_pca	Reanalysis	Fe_ML_O_1	Midlegs	31.1242574779814	-19.132059184955114
+separate_pca	Reanalysis	Fe_ML_O_2	Midlegs	44.66860977626909	-3.6563378721491437
+separate_pca	Reanalysis	Fe_ML_O_3	Midlegs	45.67408021217725	-3.760972695109459
+separate_pca	Reanalysis	Fe_ML_O_4	Midlegs	43.597946897356756	-5.916559551446146
+separate_pca	Reanalysis	Fe_ML_O_5	Midlegs	38.71868958364008	-10.20735214232119
+separate_pca	Reanalysis	Fe_ML_O_6	Midlegs	40.46729651339336	-8.27862065046632
+separate_pca	Reanalysis	Fe_ML_O_7	Midlegs	41.6231825672203	-9.500818274144095
+separate_pca	Reanalysis	Fe_ML_SF_1	Midlegs	36.725117256911965	-13.23141081158984
+separate_pca	Reanalysis	Fe_ML_SF_2	Midlegs	36.57819008638821	-13.683857768720701
+separate_pca	Reanalysis	Fe_ML_SF_3	Midlegs	39.15745510601839	-10.493328382224743
+separate_pca	Reanalysis	Fe_Os_SF_1	Proboscis	6.83904803235924	18.049476507856518
+separate_pca	Reanalysis	Fe_Os_SF_2	Proboscis	7.589331948430132	19.027019391191008
+separate_pca	Reanalysis	Fe_Os_SF_3	Proboscis	7.449055147717445	19.435553418701943
+separate_pca	Reanalysis	Fe_Os_SF_4	Proboscis	6.971217503087623	22.10083204340664
+separate_pca	Reanalysis	Fe_Os_SF_5	Proboscis	8.088090078134163	20.14166306951357
+separate_pca	Reanalysis	Fe_Ov_O_1	Ovaries	-23.81936172815753	-57.43399947651577
+separate_pca	Reanalysis	Fe_Ov_O_2	Ovaries	-21.814720402401107	-57.9158128930323
+separate_pca	Reanalysis	Fe_Ov_O_3	Ovaries	-24.263462338774303	-58.5746779891386
+separate_pca	Reanalysis	Fe_Ov_O_4	Ovaries	-24.244409845195825	-58.51518195050516
+separate_pca	Reanalysis	Fe_Ov_SF_1	Ovaries	-16.00790425724731	-54.406580889863754
+separate_pca	Reanalysis	Fe_Ov_SF_2	Ovaries	-21.312629664597594	-56.26493399218462
+separate_pca	Reanalysis	Fe_Ov_SF_3	Ovaries	-21.12104459477414	-56.62168015243373
+separate_pca	Reanalysis	Fe_Pa_SF_1	Palps	-15.718232475752162	19.58751294648747
+separate_pca	Reanalysis	Fe_Pa_SF_2	Palps	-20.175394413111377	19.347137344750724
+separate_pca	Reanalysis	Fe_Pa_SF_3	Palps	-20.229972540483264	19.71766047584544
+separate_pca	Reanalysis	Fe_Pa_SF_4	Palps	-18.31209252852321	21.919471408112344
+separate_pca	Reanalysis	Fe_Rs_BF_1	Rostrum	-11.05256869797909	26.1635637502975
+separate_pca	Reanalysis	Fe_Rs_BF_2	Rostrum	-5.535199169236096	28.725332605290706
+separate_pca	Reanalysis	Fe_Rs_BF_3	Rostrum	-3.544730470747044	23.958799169755377
+separate_pca	Reanalysis	Fe_Rs_SF_1	Rostrum	1.0540946446334658	23.591664131314616
+separate_pca	Reanalysis	Fe_Rs_SF_2	Rostrum	0.5623177703093112	22.68821218700952
+separate_pca	Reanalysis	Fe_Rs_SF_3	Rostrum	-0.07307205195382245	24.416987641315945
+separate_pca	Reanalysis	Ma_An_1	Antenna	-17.815088976399682	44.272080497330435
+separate_pca	Reanalysis	Ma_An_2	Antenna	-19.154663408755248	43.71847919848345
+separate_pca	Reanalysis	Ma_An_3	Antenna	-19.14735996218379	43.751051994670256
+separate_pca	Reanalysis	Ma_At_1	Abdominal Tip	-10.641672907593142	-22.240988698467532
+separate_pca	Reanalysis	Ma_At_2	Abdominal Tip	-12.286568618702558	-22.59289705459567
+separate_pca	Reanalysis	Ma_At_3	Abdominal Tip	-9.16573118880327	-20.662892566644445
+separate_pca	Reanalysis	Ma_Br_1	Brain	-67.94190454167445	-25.615857950358432
+separate_pca	Reanalysis	Ma_Br_2	Brain	-69.0705633115276	-25.037554494260934
+separate_pca	Reanalysis	Ma_Br_3	Brain	-66.1746520304787	-22.124257999942888
+separate_pca	Reanalysis	Ma_FL_1	Forelegs	42.19397587281619	-2.5361199954519247
+separate_pca	Reanalysis	Ma_FL_2	Forelegs	42.38877458878451	-1.8025214088523225
+separate_pca	Reanalysis	Ma_FL_3	Forelegs	41.795841419173534	-2.4496729352921975
+separate_pca	Reanalysis	Ma_HL_1	Hindlegs	42.82010829881571	-2.3389189140424413
+separate_pca	Reanalysis	Ma_HL_2	Hindlegs	42.52146422366444	-2.4137696360223693
+separate_pca	Reanalysis	Ma_HL_3	Hindlegs	43.05760326091923	-3.0806777241920464
+separate_pca	Reanalysis	Ma_HL_4	Hindlegs	38.02027731150062	-2.803880075105978
+separate_pca	Reanalysis	Ma_HL_5	Hindlegs	41.16222647724933	-2.4893978360473956
+separate_pca	Reanalysis	Ma_ML_1	Midlegs	42.80029386162768	-1.297766233067784
+separate_pca	Reanalysis	Ma_ML_2	Midlegs	41.08066885486994	-3.031880232387837
+separate_pca	Reanalysis	Ma_ML_3	Midlegs	41.024430446257924	-5.178249841412081
+separate_pca	Reanalysis	Ma_Rs_1	Rostrum	-18.49509332016807	17.131271407328786
+separate_pca	Reanalysis	Ma_Rs_2	Rostrum	-21.850889808733733	17.510659774099242
+separate_pca	Reanalysis	Ma_Rs_3	Rostrum	-14.606628809415184	18.30645760873913
+procrustes_aligned_separate_pca	Published	Fe_An_BF_1	Antenna	-0.049428554243944114	0.10073133252980795
+procrustes_aligned_separate_pca	Published	Fe_An_BF_2	Antenna	-0.04819635046105056	0.09932896421895603
+procrustes_aligned_separate_pca	Published	Fe_An_BF_3	Antenna	-0.04752683761275336	0.09882814428099065
+procrustes_aligned_separate_pca	Published	Fe_An_BF_4	Antenna	-0.03990461316042156	0.0950318120401363
+procrustes_aligned_separate_pca	Published	Fe_An_O_2	Antenna	-0.042045294475111586	0.09980690601166033
+procrustes_aligned_separate_pca	Published	Fe_An_O_3	Antenna	-0.042370515913662664	0.10067872002524657
+procrustes_aligned_separate_pca	Published	Fe_An_O_4	Antenna	-0.04251721751586016	0.10118676236808752
+procrustes_aligned_separate_pca	Published	Fe_An_SF_1	Antenna	-0.051147474302856	0.09742160170244897
+procrustes_aligned_separate_pca	Published	Fe_An_SF_2	Antenna	-0.04900562606337174	0.0885972187721251
+procrustes_aligned_separate_pca	Published	Fe_An_SF_3	Antenna	-0.05010031856269825	0.0888336010761527
+procrustes_aligned_separate_pca	Published	Fe_An_SF_4	Antenna	-0.04782295373035716	0.09105268514495263
+procrustes_aligned_separate_pca	Published	Fe_An_SF_5	Antenna	-0.043335991683363904	0.09813145913000242
+procrustes_aligned_separate_pca	Published	Fe_An_SF_6	Antenna	-0.043398221593846986	0.09705832894485976
+procrustes_aligned_separate_pca	Published	Fe_An_SF_7	Antenna	-0.0396989767990156	0.096841773130017
+procrustes_aligned_separate_pca	Published	Fe_An_SF_8	Antenna	-0.03954382596799218	0.09607984648629032
+procrustes_aligned_separate_pca	Published	Fe_At_O_1	Abdominal Tip	-0.024439650623994825	-0.028695102454471162
+procrustes_aligned_separate_pca	Published	Fe_At_O_2	Abdominal Tip	-0.030456705268112737	-0.0291392029519818
+procrustes_aligned_separate_pca	Published	Fe_At_O_3	Abdominal Tip	-0.0308143139115548	-0.03666590952043326
+procrustes_aligned_separate_pca	Published	Fe_At_O_4	Abdominal Tip	-0.03482758902607566	-0.0388762933396155
+procrustes_aligned_separate_pca	Published	Fe_At_O_5	Abdominal Tip	-0.03924867936324034	-0.03913835739129958
+procrustes_aligned_separate_pca	Published	Fe_At_O_6	Abdominal Tip	-0.03217495198373526	-0.03967170839905881
+procrustes_aligned_separate_pca	Published	Fe_At_O_7	Abdominal Tip	-0.029291165365773215	-0.033942634136623885
+procrustes_aligned_separate_pca	Published	Fe_At_SF_1	Abdominal Tip	-0.03332567699084834	-0.0337823283511074
+procrustes_aligned_separate_pca	Published	Fe_At_SF_2	Abdominal Tip	-0.03287006083895094	-0.03249516768966004
+procrustes_aligned_separate_pca	Published	Fe_At_SF_3	Abdominal Tip	-0.03180340193460985	-0.03271286111149698
+procrustes_aligned_separate_pca	Published	Fe_Br_BF_1	Brain	-0.12740224598188166	-0.0393232457982739
+procrustes_aligned_separate_pca	Published	Fe_Br_BF_2	Brain	-0.1356544598015862	-0.0388443322358753
+procrustes_aligned_separate_pca	Published	Fe_Br_BF_3	Brain	-0.1343852066657862	-0.047520310930906064
+procrustes_aligned_separate_pca	Published	Fe_Br_BF_4	Brain	-0.12883805668928833	-0.03419085661591662
+procrustes_aligned_separate_pca	Published	Fe_Br_O_1	Brain	-0.1310932811747651	-0.04475506433171097
+procrustes_aligned_separate_pca	Published	Fe_Br_O_2	Brain	-0.1329418872643426	-0.044003097805621574
+procrustes_aligned_separate_pca	Published	Fe_Br_O_3	Brain	-0.13480623265387254	-0.047115466144992554
+procrustes_aligned_separate_pca	Published	Fe_Br_O_4	Brain	-0.1339747711373661	-0.04393605950565599
+procrustes_aligned_separate_pca	Published	Fe_Br_SF_1	Brain	-0.13120022072569623	-0.028528594504493042
+procrustes_aligned_separate_pca	Published	Fe_Br_SF_4	Brain	-0.1323036368762102	-0.049696369782775335
+procrustes_aligned_separate_pca	Published	Fe_Br_SF_5	Brain	-0.1251843778250205	-0.03671525994836165
+procrustes_aligned_separate_pca	Published	Fe_Br_SF_6	Brain	-0.1251290200911054	-0.031748236437528755
+procrustes_aligned_separate_pca	Published	Fe_Br_SF_7	Brain	-0.1300899137305265	-0.05051299567987991
+procrustes_aligned_separate_pca	Published	Fe_Br_SF_8	Brain	-0.1297438499233713	-0.018238538246694025
+procrustes_aligned_separate_pca	Published	Fe_FL_O_1	Forelegs	0.0801389707917864	-0.015804262588754194
+procrustes_aligned_separate_pca	Published	Fe_FL_O_2	Forelegs	0.08197518255807605	-0.005132122611297659
+procrustes_aligned_separate_pca	Published	Fe_FL_O_3	Forelegs	0.08430801801265066	-0.0021924277468167714
+procrustes_aligned_separate_pca	Published	Fe_FL_O_4	Forelegs	0.0793612224446098	-0.0075604371697473504
+procrustes_aligned_separate_pca	Published	Fe_FL_O_5	Forelegs	0.07680413048256356	-0.012170384410607117
+procrustes_aligned_separate_pca	Published	Fe_FL_O_6	Forelegs	0.07779784793198664	-0.019894756937232545
+procrustes_aligned_separate_pca	Published	Fe_FL_O_7	Forelegs	0.07775400805070061	-0.02212537513389135
+procrustes_aligned_separate_pca	Published	Fe_FL_SF_1	Forelegs	0.08180444162913893	-0.018021574784405834
+procrustes_aligned_separate_pca	Published	Fe_FL_SF_2	Forelegs	0.08335449345312475	-0.011773484608916576
+procrustes_aligned_separate_pca	Published	Fe_FL_SF_3	Forelegs	0.0713158552621202	-0.031002923285875644
+procrustes_aligned_separate_pca	Published	Fe_HL_BF_1	Hindlegs	0.08110598999479623	-0.011160869606135923
+procrustes_aligned_separate_pca	Published	Fe_HL_BF_2	Hindlegs	0.07333872530904559	-0.023084132963328806
+procrustes_aligned_separate_pca	Published	Fe_HL_BF_3	Hindlegs	0.07932902911153704	-0.006534863018807607
+procrustes_aligned_separate_pca	Published	Fe_HL_BF_4	Hindlegs	0.07665271188323995	-0.013351323670244932
+procrustes_aligned_separate_pca	Published	Fe_HL_O_1	Hindlegs	0.08762432441548539	-0.005506582146511999
+procrustes_aligned_separate_pca	Published	Fe_HL_O_2	Hindlegs	0.08959669146628138	-0.003243764399866906
+procrustes_aligned_separate_pca	Published	Fe_HL_O_3	Hindlegs	0.08345596426222783	-0.003491925511524261
+procrustes_aligned_separate_pca	Published	Fe_HL_O_4	Hindlegs	0.08384181663272555	-0.008714834351151788
+procrustes_aligned_separate_pca	Published	Fe_HL_O_5	Hindlegs	0.08409108860388098	-0.004654699321731155
+procrustes_aligned_separate_pca	Published	Fe_HL_O_6	Hindlegs	0.08578724209269055	-0.00987962269961699
+procrustes_aligned_separate_pca	Published	Fe_HL_O_7	Hindlegs	0.07865320971068947	-0.010148720547596784
+procrustes_aligned_separate_pca	Published	Fe_HL_O_8	Hindlegs	0.08346530615877899	-0.0058513220733470385
+procrustes_aligned_separate_pca	Published	FE_HL_SF_1	Hindlegs	0.08402015482075569	-0.013121877935782551
+procrustes_aligned_separate_pca	Published	FE_HL_SF_2	Hindlegs	0.08166341645160045	-0.012312727310553483
+procrustes_aligned_separate_pca	Published	FE_HL_SF_3	Hindlegs	0.08288288412027717	-0.006527484230420183
+procrustes_aligned_separate_pca	Published	FE_HL_SF_4	Hindlegs	0.08364976755147532	-0.006915463752576765
+procrustes_aligned_separate_pca	Published	FE_HL_SF_5	Hindlegs	0.08125195624679554	-0.01069631244801428
+procrustes_aligned_separate_pca	Published	FE_HL_SF_6	Hindlegs	0.08260331336596388	-0.008309631997042264
+procrustes_aligned_separate_pca	Published	Fe_ML_O_1	Midlegs	0.06844068820941673	-0.03380175232061708
+procrustes_aligned_separate_pca	Published	Fe_ML_O_2	Midlegs	0.08340106596166579	-0.00657862128129909
+procrustes_aligned_separate_pca	Published	Fe_ML_O_3	Midlegs	0.08442049016521039	-0.007253792679747558
+procrustes_aligned_separate_pca	Published	Fe_ML_O_4	Midlegs	0.081211768181719	-0.010674048473477367
+procrustes_aligned_separate_pca	Published	Fe_ML_O_5	Midlegs	0.07970049253935468	-0.01883488338137778
+procrustes_aligned_separate_pca	Published	Fe_ML_O_6	Midlegs	0.08249252852458662	-0.013635080439619683
+procrustes_aligned_separate_pca	Published	Fe_ML_O_7	Midlegs	0.07964103994892163	-0.01771696645899949
+procrustes_aligned_separate_pca	Published	Fe_ML_SF_1	Midlegs	0.07664819942328017	-0.024033321982483126
+procrustes_aligned_separate_pca	Published	Fe_ML_SF_2	Midlegs	0.0751731775299304	-0.02622693704530263
+procrustes_aligned_separate_pca	Published	Fe_ML_SF_3	Midlegs	0.07933764730358261	-0.019965417731424146
+procrustes_aligned_separate_pca	Published	Fe_Os_SF_1	Proboscis	0.007234013493192476	0.034743561906684976
+procrustes_aligned_separate_pca	Published	Fe_Os_SF_2	Proboscis	0.008584568039396227	0.03526264487913262
+procrustes_aligned_separate_pca	Published	Fe_Os_SF_3	Proboscis	0.007465601112106815	0.037172538987034404
+procrustes_aligned_separate_pca	Published	Fe_Os_SF_4	Proboscis	0.007420367562666356	0.0420380351108558
+procrustes_aligned_separate_pca	Published	Fe_Os_SF_5	Proboscis	0.009789791109437259	0.037195820023239234
+procrustes_aligned_separate_pca	Published	Fe_Ov_O_1	Ovaries	-0.036950145779896734	-0.10632929933783954
+procrustes_aligned_separate_pca	Published	Fe_Ov_O_2	Ovaries	-0.032613247127974	-0.10749165778441927
+procrustes_aligned_separate_pca	Published	Fe_Ov_O_3	Ovaries	-0.03678636843931208	-0.10849927567804529
+procrustes_aligned_separate_pca	Published	Fe_Ov_O_4	Ovaries	-0.037218302475433875	-0.10810418847634298
+procrustes_aligned_separate_pca	Published	Fe_Ov_SF_1	Ovaries	-0.025674552616378108	-0.10238929176662931
+procrustes_aligned_separate_pca	Published	Fe_Ov_SF_2	Ovaries	-0.03278264495691449	-0.10490191364743377
+procrustes_aligned_separate_pca	Published	Fe_Ov_SF_3	Ovaries	-0.03202604177824271	-0.10574319545263769
+procrustes_aligned_separate_pca	Published	Fe_Pa_SF_1	Palps	-0.03604391164890637	0.041869926290111235
+procrustes_aligned_separate_pca	Published	Fe_Pa_SF_2	Palps	-0.044795310068159434	0.043700439761804266
+procrustes_aligned_separate_pca	Published	Fe_Pa_SF_3	Palps	-0.04406192172712117	0.04438026019241304
+procrustes_aligned_separate_pca	Published	Fe_Pa_SF_4	Palps	-0.04202142964840423	0.04464781769872595
+procrustes_aligned_separate_pca	Published	Fe_Rs_BF_1	Rostrum	-0.028824314331496837	0.04974215823141867
+procrustes_aligned_separate_pca	Published	Fe_Rs_BF_2	Rostrum	-0.01618556324282352	0.053985498702225715
+procrustes_aligned_separate_pca	Published	Fe_Rs_BF_3	Rostrum	-0.013089430774259395	0.04561031332985755
+procrustes_aligned_separate_pca	Published	Fe_Rs_SF_1	Rostrum	-0.003019934639351552	0.046656059619682985
+procrustes_aligned_separate_pca	Published	Fe_Rs_SF_2	Rostrum	-0.00485816728876331	0.04379778273072886
+procrustes_aligned_separate_pca	Published	Fe_Rs_SF_3	Rostrum	-0.005128074040883313	0.04636026214885686
+procrustes_aligned_separate_pca	Published	Ma_An_1	Antenna	-0.032990520881903504	0.07953054342913018
+procrustes_aligned_separate_pca	Published	Ma_An_2	Antenna	-0.034038396742372745	0.07975446904570635
+procrustes_aligned_separate_pca	Published	Ma_An_3	Antenna	-0.03447173094618639	0.08020068026953542
+procrustes_aligned_separate_pca	Published	Ma_At_1	Abdominal Tip	-0.019528030127786575	-0.03469656615214164
+procrustes_aligned_separate_pca	Published	Ma_At_2	Abdominal Tip	-0.02280545983989083	-0.03566239940013545
+procrustes_aligned_separate_pca	Published	Ma_At_3	Abdominal Tip	-0.014747934116224801	-0.03157666660728978
+procrustes_aligned_separate_pca	Published	Ma_Br_1	Brain	-0.1304459443333223	-0.050014899784257834
+procrustes_aligned_separate_pca	Published	Ma_Br_2	Brain	-0.13226662790196722	-0.049102912696467084
+procrustes_aligned_separate_pca	Published	Ma_Br_3	Brain	-0.12723184350524122	-0.04517063194295401
+procrustes_aligned_separate_pca	Published	Ma_FL_1	Forelegs	0.07922281843162758	-0.004909547582584632
+procrustes_aligned_separate_pca	Published	Ma_FL_2	Forelegs	0.07889692212707997	-0.002618420405980505
+procrustes_aligned_separate_pca	Published	Ma_FL_3	Forelegs	0.07831094514520912	-0.004178254579502357
+procrustes_aligned_separate_pca	Published	Ma_HL_1	Hindlegs	0.08040620006642717	-0.0055163336166565565
+procrustes_aligned_separate_pca	Published	Ma_HL_2	Hindlegs	0.08015953675219233	-0.004826089003354106
+procrustes_aligned_separate_pca	Published	Ma_HL_3	Hindlegs	0.08103211128987817	-0.00633853682407627
+procrustes_aligned_separate_pca	Published	Ma_HL_4	Hindlegs	0.07546103971181523	-0.00539245797188894
+procrustes_aligned_separate_pca	Published	Ma_HL_5	Hindlegs	0.08174199565095232	-0.004756835394003047
+procrustes_aligned_separate_pca	Published	Ma_ML_1	Midlegs	0.08072447630877216	-0.0015295456639842367
+procrustes_aligned_separate_pca	Published	Ma_ML_2	Midlegs	0.07612465578443012	-0.005614479721016755
+procrustes_aligned_separate_pca	Published	Ma_ML_3	Midlegs	0.07667899461435186	-0.010340361195362495
+procrustes_aligned_separate_pca	Published	Ma_Rs_1	Rostrum	-0.04284349382030314	0.030652153984179153
+procrustes_aligned_separate_pca	Published	Ma_Rs_2	Rostrum	-0.050248963567764544	0.03255509318140889
+procrustes_aligned_separate_pca	Published	Ma_Rs_3	Rostrum	-0.03560846350090209	0.03439126767111819
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_1	Antenna	-0.05219020476420339	0.09814147228919994
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_2	Antenna	-0.05090622074001122	0.10094314976885306
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_3	Antenna	-0.05073457524447433	0.09872521232996025
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_BF_4	Antenna	-0.04374972093143216	0.09359725347707225
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_O_2	Antenna	-0.046317222578053104	0.10015651110119834
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_O_3	Antenna	-0.047096843554311305	0.10080591994425196
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_O_4	Antenna	-0.047533743821072894	0.1026115198367879
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_1	Antenna	-0.05326322325854364	0.10272848725401192
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_2	Antenna	-0.050829698129864584	0.09506002805389098
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_3	Antenna	-0.05132763194748125	0.09497021741151128
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_4	Antenna	-0.04911733369913794	0.09686904563022167
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_5	Antenna	-0.047342286716792574	0.09772525983581803
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_6	Antenna	-0.047434733439253196	0.0978373331093406
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_7	Antenna	-0.044043518876296345	0.0993384427538115
+procrustes_aligned_separate_pca	Reanalysis	Fe_An_SF_8	Antenna	-0.043965241483286864	0.09648715383781009
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_1	Abdominal Tip	-0.021222072852530954	-0.030606769241261815
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_2	Abdominal Tip	-0.027153209170220537	-0.031033180293508513
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_3	Abdominal Tip	-0.028965319023560733	-0.03806007208869732
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_4	Abdominal Tip	-0.032701551468382765	-0.04126308269080962
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_5	Abdominal Tip	-0.03803670333974037	-0.040120422136609796
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_6	Abdominal Tip	-0.03266528694694842	-0.039901042589997486
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_O_7	Abdominal Tip	-0.029736985579441225	-0.03501446469747767
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_SF_1	Abdominal Tip	-0.03315623246854149	-0.034778915832161604
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_SF_2	Abdominal Tip	-0.03253846603489648	-0.03273139382534148
+procrustes_aligned_separate_pca	Reanalysis	Fe_At_SF_3	Abdominal Tip	-0.031715179500675504	-0.033303032061828663
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_1	Brain	-0.12330802733133871	-0.040101621590336284
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_2	Brain	-0.13234145014130347	-0.039307143023968184
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_3	Brain	-0.13211043542030781	-0.04711954588573249
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_BF_4	Brain	-0.1255042526988627	-0.031980074297904525
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_1	Brain	-0.12721920971578357	-0.045317845092539534
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_2	Brain	-0.12996388945375023	-0.04438803514268801
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_3	Brain	-0.1327014409874438	-0.04717563440221163
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_O_4	Brain	-0.1312486870364489	-0.04339394748654392
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_1	Brain	-0.12885174191859639	-0.02819256523845317
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_4	Brain	-0.12998075807200823	-0.05032026597199903
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_5	Brain	-0.120577491002641	-0.03497702437129291
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_6	Brain	-0.12084756382609455	-0.02984722755606188
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_7	Brain	-0.12774537189336865	-0.04818063067868502
+procrustes_aligned_separate_pca	Reanalysis	Fe_Br_SF_8	Brain	-0.12782237869739513	-0.014721680330006778
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_1	Forelegs	0.07618868647091027	-0.015874357559227153
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_2	Forelegs	0.08417075040865876	-0.00602832520034472
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_3	Forelegs	0.08764672375192353	-0.0013015309779883502
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_4	Forelegs	0.08184179446829085	-0.007720731788198741
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_5	Forelegs	0.07792567190874548	-0.01263251200696659
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_6	Forelegs	0.07283433323799003	-0.021272540995294017
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_O_7	Forelegs	0.07161008581146776	-0.02308202255715046
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_SF_1	Forelegs	0.07658409447113716	-0.017526940133956705
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_SF_2	Forelegs	0.07965784721469105	-0.010796955272248361
+procrustes_aligned_separate_pca	Reanalysis	Fe_FL_SF_3	Forelegs	0.06324253454313368	-0.032434147171124625
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_1	Hindlegs	0.07923919432039726	-0.010830126334271427
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_2	Hindlegs	0.07327392650696692	-0.022861783075745434
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_3	Hindlegs	0.07901352987006238	-0.005745915399621673
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_BF_4	Hindlegs	0.07567731019687196	-0.012614251223395833
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_1	Hindlegs	0.09079405776285586	-0.003185761088583826
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_2	Hindlegs	0.09155123972855048	-0.0021213803903452756
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_3	Hindlegs	0.08536283434989705	-0.004085738010550659
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_4	Hindlegs	0.08568077848523478	-0.0070322119574359335
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_5	Hindlegs	0.08594422194665013	-0.003726243338226593
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_6	Hindlegs	0.08255447878557204	-0.0077977829370682065
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_7	Hindlegs	0.07707868470799617	-0.007822253258741925
+procrustes_aligned_separate_pca	Reanalysis	Fe_HL_O_8	Hindlegs	0.08072593166802906	-0.005274065846600713
+procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_1	Hindlegs	0.08062544708376762	-0.01017352805358153
+procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_2	Hindlegs	0.07965731441298668	-0.0118562447833564
+procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_3	Hindlegs	0.08196863068444209	-0.006440613788759898
+procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_4	Hindlegs	0.08253091376826953	-0.006051337897825257
+procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_5	Hindlegs	0.07811155673057031	-0.011923029398235446
+procrustes_aligned_separate_pca	Reanalysis	FE_HL_SF_6	Hindlegs	0.08048115379528774	-0.005595779095787912
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_1	Midlegs	0.06005504084551585	-0.03556945838703773
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_2	Midlegs	0.08544198314004982	-0.005582099386894425
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_3	Midlegs	0.08736594508689806	-0.005750409701226613
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_4	Midlegs	0.08346773167271372	-0.009933249051009245
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_5	Midlegs	0.07428194758597303	-0.018282818492668385
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_6	Midlegs	0.07756163312781994	-0.014543606880079052
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_O_7	Midlegs	0.079808008114332	-0.016841993916623516
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_SF_1	Midlegs	0.07056870942820226	-0.024122044418489596
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_SF_2	Midlegs	0.07030224937058718	-0.02499093358716786
+procrustes_aligned_separate_pca	Reanalysis	Fe_ML_SF_3	Midlegs	0.07512906744440921	-0.018815323388617473
+procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_1	Proboscis	0.012497486352149067	0.03469330838950714
+procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_2	Proboscis	0.013900009916386949	0.03658419202381317
+procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_3	Proboscis	0.013619223737250587	0.03736018096922338
+procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_4	Proboscis	0.012622770869056282	0.04243646745574286
+procrustes_aligned_separate_pca	Reanalysis	Fe_Os_SF_5	Proboscis	0.014817757897166795	0.03872907287189552
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_1	Ovaries	-0.043697297176740625	-0.11045978099005686
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_2	Ovaries	-0.039852850544435645	-0.111317219923097
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_3	Ovaries	-0.044509819531938104	-0.11265267835685178
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_O_4	Ovaries	-0.04447529277229622	-0.11253842926466964
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_SF_1	Ovaries	-0.02887068181376752	-0.10443148880689698
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_SF_2	Ovaries	-0.03894557121930659	-0.10814790332070007
+procrustes_aligned_separate_pca	Reanalysis	Fe_Ov_SF_3	Ovaries	-0.038568400427286945	-0.10882335488747302
+procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_1	Palps	-0.030640330833510837	0.036923138933903525
+procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_2	Palps	-0.039146976575603135	0.03632403772348184
+procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_3	Palps	-0.03926286549140619	0.03703010766336782
+procrustes_aligned_separate_pca	Reanalysis	Fe_Pa_SF_4	Palps	-0.03566840301680712	0.041296277260850174
+procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_BF_1	Rostrum	-0.021934302870292126	0.049631365260959896
+procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_BF_2	Rostrum	-0.01147529807066229	0.054698139506696185
+procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_BF_3	Rostrum	-0.007523408871174405	0.04565546673462062
+procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_SF_1	Rostrum	0.001272918064231615	0.04509853197805556
+procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_SF_2	Rostrum	0.00036187566479187834	0.04335729450453037
+procrustes_aligned_separate_pca	Reanalysis	Fe_Rs_SF_3	Rostrum	-0.000906136864670376	0.04663970089366178
+procrustes_aligned_separate_pca	Reanalysis	Ma_An_1	Antenna	-0.03542075634840091	0.08401044309593184
+procrustes_aligned_separate_pca	Reanalysis	Ma_An_2	Antenna	-0.03796226803128858	0.08291088390012298
+procrustes_aligned_separate_pca	Reanalysis	Ma_An_3	Antenna	-0.03794933938670288	0.08297333462882922
+procrustes_aligned_separate_pca	Reanalysis	Ma_At_1	Abdominal Tip	-0.019629774658576793	-0.04281942965463738
+procrustes_aligned_separate_pca	Reanalysis	Ma_At_2	Abdominal Tip	-0.022760851360966484	-0.04354329482483534
+procrustes_aligned_separate_pca	Reanalysis	Ma_At_3	Abdominal Tip	-0.01685993370159234	-0.03975857137405247
+procrustes_aligned_separate_pca	Reanalysis	Ma_Br_1	Brain	-0.12898028660240313	-0.051065093754109926
+procrustes_aligned_separate_pca	Reanalysis	Ma_Br_2	Brain	-0.13115443672475727	-0.04999583611703436
+procrustes_aligned_separate_pca	Reanalysis	Ma_Br_3	Brain	-0.12571404882214138	-0.04433986287416924
+procrustes_aligned_separate_pca	Reanalysis	Ma_FL_1	Forelegs	0.08067970166332535	-0.00351991792054948
+procrustes_aligned_separate_pca	Reanalysis	Ma_FL_2	Forelegs	0.08102878071087634	-0.0021124623598848696
+procrustes_aligned_separate_pca	Reanalysis	Ma_FL_3	Forelegs	0.07991646044511434	-0.0033672835178072996
+procrustes_aligned_separate_pca	Reanalysis	Ma_HL_1	Hindlegs	0.08186956590289152	-0.0031235620945629355
+procrustes_aligned_separate_pca	Reanalysis	Ma_HL_2	Hindlegs	0.08130143773631668	-0.0032759196848796556
+procrustes_aligned_separate_pca	Reanalysis	Ma_HL_3	Hindlegs	0.08234652219926467	-0.004533034007360039
+procrustes_aligned_separate_pca	Reanalysis	Ma_HL_4	Hindlegs	0.0727153950986949	-0.004162430590914474
+procrustes_aligned_separate_pca	Reanalysis	Ma_HL_5	Hindlegs	0.07870735905562405	-0.003463058961565522
+procrustes_aligned_separate_pca	Reanalysis	Ma_ML_1	Midlegs	0.08179902963359413	-0.001135345940450091
+procrustes_aligned_separate_pca	Reanalysis	Ma_ML_2	Midlegs	0.0785685962833132	-0.004501884051938272
+procrustes_aligned_separate_pca	Reanalysis	Ma_ML_3	Midlegs	0.0785285517744346	-0.008603703310079943
+procrustes_aligned_separate_pca	Reanalysis	Ma_Rs_1	Rostrum	-0.03586765423955058	0.03214398201435082
+procrustes_aligned_separate_pca	Reanalysis	Ma_Rs_2	Rostrum	-0.042289898714577695	0.03276334734492247
+procrustes_aligned_separate_pca	Reanalysis	Ma_Rs_3	Rostrum	-0.028476697476988246	0.03451093007693482
+joint_pca	Published	Fe_An_BF_1	Antenna	-26.914954457629275	53.170640792382095
+joint_pca	Published	Fe_An_BF_2	Antenna	-26.280540152433108	52.38297354108344
+joint_pca	Published	Fe_An_BF_3	Antenna	-26.051589972487637	52.19757481442142
+joint_pca	Published	Fe_An_BF_4	Antenna	-22.0354006068445	50.29800032742186
+joint_pca	Published	Fe_An_O_2	Antenna	-23.075929229791328	52.84374618021901
+joint_pca	Published	Fe_An_O_3	Antenna	-23.2932125071869	53.52921375177068
+joint_pca	Published	Fe_An_O_4	Antenna	-23.399722574835028	53.62674033358207
+joint_pca	Published	Fe_An_SF_1	Antenna	-28.006367713508943	51.49066866461853
+joint_pca	Published	Fe_An_SF_2	Antenna	-26.85249164793204	47.12014420298472
+joint_pca	Published	Fe_An_SF_3	Antenna	-27.55921123655268	47.446623596950694
+joint_pca	Published	Fe_An_SF_4	Antenna	-26.38099988264117	48.50342810131308
+joint_pca	Published	Fe_An_SF_5	Antenna	-23.75284772063461	51.93437956116307
+joint_pca	Published	Fe_An_SF_6	Antenna	-23.766411180978977	51.438625364076536
+joint_pca	Published	Fe_An_SF_7	Antenna	-21.925981752582906	51.40154499532903
+joint_pca	Published	Fe_An_SF_8	Antenna	-21.81743681781326	50.79612594264296
+joint_pca	Published	Fe_At_O_1	Abdominal Tip	-13.148318076030053	-15.072906396488788
+joint_pca	Published	Fe_At_O_2	Abdominal Tip	-16.1097592414297	-15.144426854087975
+joint_pca	Published	Fe_At_O_3	Abdominal Tip	-16.448356827930322	-18.88915673212491
+joint_pca	Published	Fe_At_O_4	Abdominal Tip	-18.48141211934173	-20.187513398386336
+joint_pca	Published	Fe_At_O_5	Abdominal Tip	-20.786811221790344	-20.29891617924374
+joint_pca	Published	Fe_At_O_6	Abdominal Tip	-17.365863062699912	-20.695910518982373
+joint_pca	Published	Fe_At_O_7	Abdominal Tip	-15.760705939035999	-17.668344858744423
+joint_pca	Published	Fe_At_SF_1	Abdominal Tip	-17.849383354519286	-17.548363374182554
+joint_pca	Published	Fe_At_SF_2	Abdominal Tip	-17.50265348556541	-16.841109507169712
+joint_pca	Published	Fe_At_SF_3	Abdominal Tip	-17.012176260256062	-16.939904998443026
+joint_pca	Published	Fe_Br_BF_1	Brain	-68.85886454953528	-21.368267545379382
+joint_pca	Published	Fe_Br_BF_2	Brain	-73.15980904644537	-21.146538236958275
+joint_pca	Published	Fe_Br_BF_3	Brain	-72.61182701073	-25.68577926457302
+joint_pca	Published	Fe_Br_BF_4	Brain	-69.55847619199729	-18.891958129941656
+joint_pca	Published	Fe_Br_O_1	Brain	-70.70056885162765	-24.26228892224495
+joint_pca	Published	Fe_Br_O_2	Brain	-71.74960190469923	-23.878291652357348
+joint_pca	Published	Fe_Br_O_3	Brain	-72.66185730773164	-25.305414082288458
+joint_pca	Published	Fe_Br_O_4	Brain	-72.18348576055105	-23.65739307492693
+joint_pca	Published	Fe_Br_SF_1	Brain	-70.82009655076	-15.426301104066503
+joint_pca	Published	Fe_Br_SF_4	Brain	-71.64917044974266	-26.803470737824565
+joint_pca	Published	Fe_Br_SF_5	Brain	-67.26024589447191	-20.004232220146797
+joint_pca	Published	Fe_Br_SF_6	Brain	-67.08634843248845	-17.422155140213423
+joint_pca	Published	Fe_Br_SF_7	Brain	-70.19732560271989	-26.999271768338026
+joint_pca	Published	Fe_Br_SF_8	Brain	-69.87064673957458	-10.039255973592969
+joint_pca	Published	Fe_FL_O_1	Forelegs	40.77722013274001	-9.459187892112492
+joint_pca	Published	Fe_FL_O_2	Forelegs	42.190492388778054	-3.9974803913020125
+joint_pca	Published	Fe_FL_O_3	Forelegs	43.54711871044371	-2.3469910008804193
+joint_pca	Published	Fe_FL_O_4	Forelegs	40.695230718042694	-5.339722354455817
+joint_pca	Published	Fe_FL_O_5	Forelegs	39.05313475836176	-7.625414581488541
+joint_pca	Published	Fe_FL_O_6	Forelegs	39.353090222553604	-11.600988695967638
+joint_pca	Published	Fe_FL_O_7	Forelegs	39.29661518854394	-12.73121587439116
+joint_pca	Published	Fe_FL_SF_1	Forelegs	41.49985772691499	-10.645881639243985
+joint_pca	Published	Fe_FL_SF_2	Forelegs	42.6143943840512	-7.476259178201631
+joint_pca	Published	Fe_FL_SF_3	Forelegs	35.59720234026591	-17.27251767415612
+joint_pca	Published	Fe_HL_BF_1	Hindlegs	41.616796717629775	-6.828428223892113
+joint_pca	Published	Fe_HL_BF_2	Hindlegs	37.582522769511854	-13.086580794416307
+joint_pca	Published	Fe_HL_BF_3	Hindlegs	40.81499417939626	-4.398888487504189
+joint_pca	Published	Fe_HL_BF_4	Hindlegs	39.23248685562185	-7.9075388747403075
+joint_pca	Published	Fe_HL_O_1	Hindlegs	45.17410583085315	-3.919038494804883
+joint_pca	Published	Fe_HL_O_2	Hindlegs	46.15722519498823	-2.63830117944841
+joint_pca	Published	Fe_HL_O_3	Hindlegs	42.990282833401544	-2.9009068231225847
+joint_pca	Published	Fe_HL_O_4	Hindlegs	43.00573752698602	-5.5660568176682865
+joint_pca	Published	Fe_HL_O_5	Hindlegs	43.2597529576999	-3.4107949939291293
+joint_pca	Published	Fe_HL_O_6	Hindlegs	44.02158797222349	-6.204820837924453
+joint_pca	Published	Fe_HL_O_7	Hindlegs	40.224302263543684	-6.512649867012363
+joint_pca	Published	Fe_HL_O_8	Hindlegs	42.892987439516936	-4.066938686150484
+joint_pca	Published	FE_HL_SF_1	Hindlegs	42.97328178519127	-7.840192923888822
+joint_pca	Published	FE_HL_SF_2	Hindlegs	41.7037438908915	-7.445436259601973
+joint_pca	Published	FE_HL_SF_3	Hindlegs	42.57506015961981	-4.379716013905575
+joint_pca	Published	FE_HL_SF_4	Hindlegs	42.965190151835635	-4.526651284489296
+joint_pca	Published	FE_HL_SF_5	Hindlegs	41.5072114067982	-6.500258984712678
+joint_pca	Published	FE_HL_SF_6	Hindlegs	42.220218583196804	-5.404291957572593
+joint_pca	Published	Fe_ML_O_1	Midlegs	34.00156156745443	-18.66625082278715
+joint_pca	Published	Fe_ML_O_2	Midlegs	42.87288633565315	-4.62870802701459
+joint_pca	Published	Fe_ML_O_3	Midlegs	43.407451000285384	-4.883992090986117
+joint_pca	Published	Fe_ML_O_4	Midlegs	41.63096331787849	-6.77653648736539
+joint_pca	Published	Fe_ML_O_5	Midlegs	40.51761677985667	-10.969626378584056
+joint_pca	Published	Fe_ML_O_6	Midlegs	42.15025223448215	-8.196124071414122
+joint_pca	Published	Fe_ML_O_7	Midlegs	40.47478137690335	-10.36505277752324
+joint_pca	Published	Fe_ML_SF_1	Midlegs	38.6914175142928	-13.671714120492894
+joint_pca	Published	Fe_ML_SF_2	Midlegs	37.88516447586747	-14.786108158589997
+joint_pca	Published	Fe_ML_SF_3	Midlegs	40.296090322435475	-11.594468978571193
+joint_pca	Published	Fe_Os_SF_1	Proboscis	4.023903233639062	17.437006633513427
+joint_pca	Published	Fe_Os_SF_2	Proboscis	4.629027582345244	17.8012454965593
+joint_pca	Published	Fe_Os_SF_3	Proboscis	4.102925576580023	18.69382250621486
+joint_pca	Published	Fe_Os_SF_4	Proboscis	3.98274281154761	21.68567029028972
+joint_pca	Published	Fe_Os_SF_5	Proboscis	5.511843931518203	18.88470264276804
+joint_pca	Published	Fe_Ov_O_1	Ovaries	-22.111240968566236	-55.801589895179994
+joint_pca	Published	Fe_Ov_O_2	Ovaries	-19.96905793167996	-56.294685358804514
+joint_pca	Published	Fe_Ov_O_3	Ovaries	-22.127270770396304	-56.9566154752224
+joint_pca	Published	Fe_Ov_O_4	Ovaries	-22.434331353181094	-56.75037838005293
+joint_pca	Published	Fe_Ov_SF_1	Ovaries	-15.934719940333771	-53.81263734605272
+joint_pca	Published	Fe_Ov_SF_2	Ovaries	-19.731168284345966	-54.942487818215824
+joint_pca	Published	Fe_Ov_SF_3	Ovaries	-19.398481461209066	-55.406715086888646
+joint_pca	Published	Fe_Pa_SF_1	Palps	-18.82241559381624	21.47443683654849
+joint_pca	Published	Fe_Pa_SF_2	Palps	-23.246909017456918	22.74666157366067
+joint_pca	Published	Fe_Pa_SF_3	Palps	-23.057776961357103	23.15662536626194
+joint_pca	Published	Fe_Pa_SF_4	Palps	-21.677729221290083	23.314435060986472
+joint_pca	Published	Fe_Rs_BF_1	Rostrum	-14.27008124367787	25.550058058878932
+joint_pca	Published	Fe_Rs_BF_2	Rostrum	-7.919483517730357	27.51565896146412
+joint_pca	Published	Fe_Rs_BF_3	Rostrum	-6.090178936832	23.19839107802353
+joint_pca	Published	Fe_Rs_SF_1	Rostrum	-0.5575622555677479	23.805601774148204
+joint_pca	Published	Fe_Rs_SF_2	Rostrum	-1.5107021774297453	22.113028511064304
+joint_pca	Published	Fe_Rs_SF_3	Rostrum	-1.840176667714109	23.634777184515045
+joint_pca	Published	Ma_An_1	Antenna	-18.58109649328571	41.91641119369574
+joint_pca	Published	Ma_An_2	Antenna	-19.39142922129925	41.99979903088736
+joint_pca	Published	Ma_An_3	Antenna	-19.623238561817058	42.23417852546794
+joint_pca	Published	Ma_At_1	Abdominal Tip	-11.045722426660959	-17.64652093114265
+joint_pca	Published	Ma_At_2	Abdominal Tip	-12.840896140170562	-18.163788081913378
+joint_pca	Published	Ma_At_3	Abdominal Tip	-8.60428844348391	-15.911049171047456
+joint_pca	Published	Ma_Br_1	Brain	-70.44461722637762	-26.84938716944924
+joint_pca	Published	Ma_Br_2	Brain	-71.44241141136696	-26.43681498373334
+joint_pca	Published	Ma_Br_3	Brain	-69.01523851041007	-24.60652151608273
+joint_pca	Published	Ma_FL_1	Forelegs	40.492261109775704	-3.8667844076295554
+joint_pca	Published	Ma_FL_2	Forelegs	40.3940212893302	-2.781923297773985
+joint_pca	Published	Ma_FL_3	Forelegs	40.06695468643513	-3.6588735601116475
+joint_pca	Published	Ma_HL_1	Hindlegs	41.107010965490794	-3.9665956120321555
+joint_pca	Published	Ma_HL_2	Hindlegs	40.94847839516941	-3.645097276118259
+joint_pca	Published	Ma_HL_3	Hindlegs	41.420882028265616	-4.405638707847475
+joint_pca	Published	Ma_HL_4	Hindlegs	38.48125799714476	-3.9624472296259596
+joint_pca	Published	Ma_HL_5	Hindlegs	41.90371781927386	-3.5304833850955344
+joint_pca	Published	Ma_ML_1	Midlegs	41.41888780380929	-2.2415644388748146
+joint_pca	Published	Ma_ML_2	Midlegs	38.95060758284414	-4.172837873303931
+joint_pca	Published	Ma_ML_3	Midlegs	39.00422084624708	-6.666118890544856
+joint_pca	Published	Ma_Rs_1	Rostrum	-22.423554410551226	14.890610488713454
+joint_pca	Published	Ma_Rs_2	Rostrum	-26.21960725990626	15.898136373885102
+joint_pca	Published	Ma_Rs_3	Rostrum	-18.545297560391173	16.83343614439715
+joint_pca	Reanalysis	Fe_An_BF_1	Antenna	-23.942498983811134	51.71533117046219
+joint_pca	Reanalysis	Fe_An_BF_2	Antenna	-23.423126526507225	53.0668052788598
+joint_pca	Reanalysis	Fe_An_BF_3	Antenna	-23.259583919799105	52.04257474748276
+joint_pca	Reanalysis	Fe_An_BF_4	Antenna	-19.49171156561529	49.28299613111701
+joint_pca	Reanalysis	Fe_An_O_2	Antenna	-20.830427055448922	52.774978274057396
+joint_pca	Reanalysis	Fe_An_O_3	Antenna	-21.26023831919898	53.183441345292074
+joint_pca	Reanalysis	Fe_An_O_4	Antenna	-21.42202595707645	54.040897580148936
+joint_pca	Reanalysis	Fe_An_SF_1	Antenna	-25.28262672943647	54.737897373704016
+joint_pca	Reanalysis	Fe_An_SF_2	Antenna	-24.187437321903353	50.34270182570382
+joint_pca	Reanalysis	Fe_An_SF_3	Antenna	-24.727493286147073	50.523861172796906
+joint_pca	Reanalysis	Fe_An_SF_4	Antenna	-23.551222585464544	51.45583352496389
+joint_pca	Reanalysis	Fe_An_SF_5	Antenna	-21.299652558528567	51.4871595326077
+joint_pca	Reanalysis	Fe_An_SF_6	Antenna	-21.305450900457714	51.40392004277934
+joint_pca	Reanalysis	Fe_An_SF_7	Antenna	-19.606420367359856	52.17648681992903
+joint_pca	Reanalysis	Fe_An_SF_8	Antenna	-19.480685985642207	50.83009277580071
+joint_pca	Reanalysis	Fe_At_O_1	Abdominal Tip	-10.589396167078334	-13.065485168936853
+joint_pca	Reanalysis	Fe_At_O_2	Abdominal Tip	-13.787641523314106	-13.331568543445199
+joint_pca	Reanalysis	Fe_At_O_3	Abdominal Tip	-14.417939489435627	-16.88679509092441
+joint_pca	Reanalysis	Fe_At_O_4	Abdominal Tip	-16.38419632001134	-18.359516987326565
+joint_pca	Reanalysis	Fe_At_O_5	Abdominal Tip	-18.66471479752952	-18.27504369486557
+joint_pca	Reanalysis	Fe_At_O_6	Abdominal Tip	-15.664641653718828	-18.16577700711431
+joint_pca	Reanalysis	Fe_At_O_7	Abdominal Tip	-14.052893313090214	-15.869049608165769
+joint_pca	Reanalysis	Fe_At_SF_1	Abdominal Tip	-16.130145480606338	-16.049900609523164
+joint_pca	Reanalysis	Fe_At_SF_2	Abdominal Tip	-15.821650237525406	-15.089384842153736
+joint_pca	Reanalysis	Fe_At_SF_3	Abdominal Tip	-15.325363176483503	-15.367901013452624
+joint_pca	Reanalysis	Fe_Br_BF_1	Brain	-64.57399618583439	-19.864046778590826
+joint_pca	Reanalysis	Fe_Br_BF_2	Brain	-69.44850637527436	-19.702540014316632
+joint_pca	Reanalysis	Fe_Br_BF_3	Brain	-69.29401186293397	-23.92142291574978
+joint_pca	Reanalysis	Fe_Br_BF_4	Brain	-66.19475284842639	-15.911268837686894
+joint_pca	Reanalysis	Fe_Br_O_1	Brain	-66.69216355982444	-23.098882539765917
+joint_pca	Reanalysis	Fe_Br_O_2	Brain	-68.0557773120063	-22.54047584835752
+joint_pca	Reanalysis	Fe_Br_O_3	Brain	-69.35440179443158	-23.944782768884846
+joint_pca	Reanalysis	Fe_Br_O_4	Brain	-68.65916308134635	-22.08833140015705
+joint_pca	Reanalysis	Fe_Br_SF_1	Brain	-68.0222261477123	-13.474484891920355
+joint_pca	Reanalysis	Fe_Br_SF_4	Brain	-68.6413859662673	-25.288189926823595
+joint_pca	Reanalysis	Fe_Br_SF_5	Brain	-63.14692975221841	-17.4864472542423
+joint_pca	Reanalysis	Fe_Br_SF_6	Brain	-63.4369516884977	-15.023494591153785
+joint_pca	Reanalysis	Fe_Br_SF_7	Brain	-66.87145690832267	-24.888493383342652
+joint_pca	Reanalysis	Fe_Br_SF_8	Brain	-66.7600999683379	-7.15736492152338
+joint_pca	Reanalysis	Fe_FL_O_1	Forelegs	40.99793073825286	-8.883789913030752
+joint_pca	Reanalysis	Fe_FL_O_2	Forelegs	44.21916075477067	-3.478110363786573
+joint_pca	Reanalysis	Fe_FL_O_3	Forelegs	46.13726549957247	-1.0659566235292135
+joint_pca	Reanalysis	Fe_FL_O_4	Forelegs	43.138558862714	-4.271723983182266
+joint_pca	Reanalysis	Fe_FL_O_5	Forelegs	41.17093251262331	-6.812696640506192
+joint_pca	Reanalysis	Fe_FL_O_6	Forelegs	39.327499042365645	-11.49653364122189
+joint_pca	Reanalysis	Fe_FL_O_7	Forelegs	38.8805208807715	-12.370693509128333
+joint_pca	Reanalysis	Fe_FL_SF_1	Forelegs	41.264195572121565	-9.81163803051096
+joint_pca	Reanalysis	Fe_FL_SF_2	Forelegs	42.9528056172916	-6.5331614843310515
+joint_pca	Reanalysis	Fe_FL_SF_3	Forelegs	34.60268258312964	-17.24685696076715
+joint_pca	Reanalysis	Fe_HL_BF_1	Hindlegs	42.057001691351566	-6.146931769479989
+joint_pca	Reanalysis	Fe_HL_BF_2	Hindlegs	38.7430875803345	-11.767092294600584
+joint_pca	Reanalysis	Fe_HL_BF_3	Hindlegs	41.81303416524826	-3.410561244460264
+joint_pca	Reanalysis	Fe_HL_BF_4	Hindlegs	40.08414130353399	-7.019193252757084
+joint_pca	Reanalysis	Fe_HL_O_1	Hindlegs	47.81723053231172	-2.157045387990745
+joint_pca	Reanalysis	Fe_HL_O_2	Hindlegs	48.305319722108706	-1.6435450656917119
+joint_pca	Reanalysis	Fe_HL_O_3	Hindlegs	45.16535145023059	-2.5849359713632514
+joint_pca	Reanalysis	Fe_HL_O_4	Hindlegs	45.20677350146187	-4.032853832041156
+joint_pca	Reanalysis	Fe_HL_O_5	Hindlegs	45.317493032354044	-2.401894708850212
+joint_pca	Reanalysis	Fe_HL_O_6	Hindlegs	44.44023800010425	-5.0886454805809915
+joint_pca	Reanalysis	Fe_HL_O_7	Hindlegs	41.27059826992121	-4.941600527496009
+joint_pca	Reanalysis	Fe_HL_O_8	Hindlegs	43.253584577068544	-3.580631781992314
+joint_pca	Reanalysis	FE_HL_SF_1	Hindlegs	43.33341450572221	-6.204188861098024
+joint_pca	Reanalysis	FE_HL_SF_2	Hindlegs	42.18250645459216	-6.712868022894927
+joint_pca	Reanalysis	FE_HL_SF_3	Hindlegs	43.24830981942189	-3.9302778742529303
+joint_pca	Reanalysis	FE_HL_SF_4	Hindlegs	43.57106084328443	-3.711347734606327
+joint_pca	Reanalysis	FE_HL_SF_5	Hindlegs	41.41513795179914	-6.592617493162822
+joint_pca	Reanalysis	FE_HL_SF_6	Hindlegs	43.13366758602676	-3.8486897985024773
+joint_pca	Reanalysis	Fe_ML_O_1	Midlegs	32.94009562887446	-18.76291362344076
+joint_pca	Reanalysis	Fe_ML_O_2	Midlegs	45.156383570044476	-3.3687103449452436
+joint_pca	Reanalysis	Fe_ML_O_3	Midlegs	46.047378830585316	-3.368278887367122
+joint_pca	Reanalysis	Fe_ML_O_4	Midlegs	44.07533839119878	-5.502215722066895
+joint_pca	Reanalysis	Fe_ML_O_5	Midlegs	39.99199681746521	-10.276107661359706
+joint_pca	Reanalysis	Fe_ML_O_6	Midlegs	41.65333793743858	-8.352633214355487
+joint_pca	Reanalysis	Fe_ML_O_7	Midlegs	42.410186300205154	-9.067634911063207
+joint_pca	Reanalysis	Fe_ML_SF_1	Midlegs	38.27116996720699	-13.165054919124703
+joint_pca	Reanalysis	Fe_ML_SF_2	Midlegs	38.070821289132425	-13.845663747844812
+joint_pca	Reanalysis	Fe_ML_SF_3	Midlegs	40.44036414218934	-10.573930355978705
+joint_pca	Reanalysis	Fe_Os_SF_1	Proboscis	7.055377176932264	18.450315061027624
+joint_pca	Reanalysis	Fe_Os_SF_2	Proboscis	7.9950626607915085	19.43148997358115
+joint_pca	Reanalysis	Fe_Os_SF_3	Proboscis	7.5526000415762375	19.94439816140105
+joint_pca	Reanalysis	Fe_Os_SF_4	Proboscis	7.362766797785045	22.317859156211643
+joint_pca	Reanalysis	Fe_Os_SF_5	Proboscis	8.424000825742638	20.66589073802462
+joint_pca	Reanalysis	Fe_Ov_O_1	Ovaries	-20.60474251358748	-54.42078002735519
+joint_pca	Reanalysis	Fe_Ov_O_2	Ovaries	-18.717813789707517	-54.71536106044373
+joint_pca	Reanalysis	Fe_Ov_O_3	Ovaries	-21.11251288976143	-55.71098111896688
+joint_pca	Reanalysis	Fe_Ov_O_4	Ovaries	-21.215628105290254	-55.61136809822943
+joint_pca	Reanalysis	Fe_Ov_SF_1	Ovaries	-13.699396634615377	-51.97286515081067
+joint_pca	Reanalysis	Fe_Ov_SF_2	Ovaries	-18.684893970593276	-53.795489786100894
+joint_pca	Reanalysis	Fe_Ov_SF_3	Ovaries	-18.34621123659822	-54.346902957883664
+joint_pca	Reanalysis	Fe_Pa_SF_1	Palps	-15.38543196575872	21.001277967624343
+joint_pca	Reanalysis	Fe_Pa_SF_2	Palps	-19.77454549961096	21.26065371801393
+joint_pca	Reanalysis	Fe_Pa_SF_3	Palps	-19.83795257991036	21.563397203698045
+joint_pca	Reanalysis	Fe_Pa_SF_4	Palps	-18.27119587618584	23.626201868118958
+joint_pca	Reanalysis	Fe_Rs_BF_1	Rostrum	-10.618886062729628	26.444719391227242
+joint_pca	Reanalysis	Fe_Rs_BF_2	Rostrum	-4.962137900311149	29.2797814030476
+joint_pca	Reanalysis	Fe_Rs_BF_3	Rostrum	-2.9401353938272963	24.4917197986549
+joint_pca	Reanalysis	Fe_Rs_SF_1	Rostrum	2.0085888350720356	24.195381604287487
+joint_pca	Reanalysis	Fe_Rs_SF_2	Rostrum	1.3344094871876113	23.202700038527947
+joint_pca	Reanalysis	Fe_Rs_SF_3	Rostrum	0.9310949237939566	24.9635270553361
+joint_pca	Reanalysis	Ma_An_1	Antenna	-15.846949607164424	44.954573083700076
+joint_pca	Reanalysis	Ma_An_2	Antenna	-16.880567128078596	44.407881977783745
+joint_pca	Reanalysis	Ma_An_3	Antenna	-17.048562875900295	44.48975479748999
+joint_pca	Reanalysis	Ma_At_1	Abdominal Tip	-9.289232076239779	-20.364264071801124
+joint_pca	Reanalysis	Ma_At_2	Abdominal Tip	-10.783055916537611	-20.717202433945555
+joint_pca	Reanalysis	Ma_At_3	Abdominal Tip	-7.673776363992353	-18.83727657295274
+joint_pca	Reanalysis	Ma_Br_1	Brain	-68.58781887330963	-25.750291702825123
+joint_pca	Reanalysis	Ma_Br_2	Brain	-69.73732550790045	-25.211612312206757
+joint_pca	Reanalysis	Ma_Br_3	Brain	-66.97818652288095	-22.31486909994132
+joint_pca	Reanalysis	Ma_FL_1	Forelegs	42.684965448602334	-2.420240406828138
+joint_pca	Reanalysis	Ma_FL_2	Forelegs	42.65550608786348	-1.5100673503149689
+joint_pca	Reanalysis	Ma_FL_3	Forelegs	42.532729330623624	-2.086710458004655
+joint_pca	Reanalysis	Ma_HL_1	Hindlegs	43.44074976959645	-2.1458859334627123
+joint_pca	Reanalysis	Ma_HL_2	Hindlegs	43.3497889407467	-2.226630054826484
+joint_pca	Reanalysis	Ma_HL_3	Hindlegs	43.88181217202274	-2.820505210464203
+joint_pca	Reanalysis	Ma_HL_4	Hindlegs	39.18967543945651	-2.876633279107331
+joint_pca	Reanalysis	Ma_HL_5	Hindlegs	42.358882484460416	-2.52472981600897
+joint_pca	Reanalysis	Ma_ML_1	Midlegs	43.32935856417023	-1.1829281506368126
+joint_pca	Reanalysis	Ma_ML_2	Midlegs	41.52966389594411	-2.9413944735100346
+joint_pca	Reanalysis	Ma_ML_3	Midlegs	41.646600542263116	-4.973704339909778
+joint_pca	Reanalysis	Ma_Rs_1	Rostrum	-18.93085327333937	17.1612580670156
+joint_pca	Reanalysis	Ma_Rs_2	Rostrum	-22.54034677041051	17.338429645146423
+joint_pca	Reanalysis	Ma_Rs_3	Rostrum	-14.926270712890437	18.36371520056008

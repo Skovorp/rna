@@ -46,7 +46,7 @@ from expression_explorer.ucsc import (
 APP_DIR = Path(__file__).resolve().parent
 EXPRESSION_DIR = APP_DIR.parent / "expression"
 UCSC_MANIFEST = EXPRESSION_DIR / "ucsc_mosquito_cell_atlas_genes.json.gz"
-DATA_SCHEMA_VERSION = "2026-09-15-published-papers-v3"
+DATA_SCHEMA_VERSION = "2026-09-15-explicit-published-gene-mappings-v1"
 
 FAMILIES = {
     "IR - Ionotropic receptors": "Ionotropic receptors (IR)",
@@ -112,6 +112,13 @@ ANNOTATION_COLUMNS = [
     "orthodb_category",
     "naming_evidence",
     "search_text",
+    "vectorbase_AAEL",
+    "vectorbase_symbol",
+    "vectorbase_description",
+    "ncbi_symbol",
+    "ncbi_description",
+    "mapping_status",
+    "mapping_sources",
 ]
 
 st.set_page_config(
@@ -1610,6 +1617,13 @@ def annotation_table(matches: pd.DataFrame) -> pd.DataFrame:
             "orthodb_category": "OrthoDB category",
             "naming_evidence": "Naming evidence",
             "search_text": "Known aliases",
+            "vectorbase_AAEL": "VectorBase ID",
+            "vectorbase_symbol": "VectorBase symbol",
+            "vectorbase_description": "VectorBase description",
+            "ncbi_symbol": "NCBI symbol",
+            "ncbi_description": "NCBI description",
+            "mapping_status": "Mapping status",
+            "mapping_sources": "Mapping sources",
         }
     )
 
@@ -1680,12 +1694,11 @@ def render_home() -> None:
 
         - [**Ovary: published vs reprocessed**](/Ovary_paper_vs_reprocessed) — TPM
           agreement, exact zero ↔ non-zero transitions, PCA, and a
-          sample-identity check. Pearson r 0.972; 2.8% of gene-sample pairs
-          disagree by more than 2 log₂.
+          sample-identity check using only identical IDs and explicit paper-provided
+          identifier links. The page reports the current matched subset and statistics.
         - [**Neurotranscriptome: published vs reprocessed**](/Atlas_paper_vs_reprocessed) —
-          the same checks across 9,605 directly matched genes and all 122 samples
-          present in the published matrix. Pearson r 0.930; 4.1% of gene-sample
-          pairs disagree by more than 2 log₂.
+          the same checks using identical IDs and explicit paper-provided links,
+          across all 122 samples present in the published matrix.
 
         TPM is descriptive normalized abundance. Differential-expression
         statistics are displayed only from precomputed count-aware pipeline
@@ -2029,6 +2042,14 @@ elif mode == "Genes":
                     "median_tpm": "Median TPM",
                     "max_tpm": "Maximum TPM",
                     "top_context": "Top context",
+                    "vectorbase_AAEL": "VectorBase ID",
+                    "vectorbase_symbol": "VectorBase symbol",
+                    "vectorbase_description": "VectorBase description",
+                    "ncbi_symbol": "NCBI symbol",
+                    "ncbi_description": "NCBI description",
+                    "mapping_status": "Mapping status",
+                    "mapping_sources": "Mapping sources",
+                    "ambiguous_aliases": "Ambiguous aliases",
                 }
             ).drop_duplicates(["Study", "Gene", "Stable ID"])
             st.dataframe(
@@ -2053,6 +2074,24 @@ elif mode == "Genes":
                     "Maximum TPM": st.column_config.NumberColumn(format="%.2f"),
                 },
             )
+
+            description_columns = ["Gene", "VectorBase ID", "VectorBase symbol",
+                                   "VectorBase description", "NCBI symbol", "NCBI description",
+                                   "Mapping status", "Mapping sources", "Ambiguous aliases"]
+            descriptions = summary_table[description_columns].drop_duplicates()
+            st.markdown("### Gene descriptions")
+            for _, gene in descriptions.iterrows():
+                with st.expander(str(gene["Gene"]), expanded=len(descriptions) <= 3):
+                    st.markdown("**VectorBase**")
+                    st.write(gene["VectorBase description"] or "No description supplied in Table S1.4.")
+                    st.caption(" · ".join(str(gene[column]) for column in ("VectorBase ID", "VectorBase symbol") if gene[column]))
+                    st.markdown("**NCBI**")
+                    st.write(gene["NCBI description"] or "No description supplied in Table S1.4.")
+                    if gene["NCBI symbol"]:
+                        st.caption(str(gene["NCBI symbol"]))
+                    if gene["Ambiguous aliases"]:
+                        st.caption(f"Shared or conflicting published aliases: {gene['Ambiguous aliases']}")
+                    st.caption("Descriptions: Goldman Table S1.4. Full identifier links and paper evidence are downloadable from Methods.")
 
             render_ucsc_cell_atlas(atlas_entries, enabled_gene_keys)
 
