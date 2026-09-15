@@ -14,6 +14,9 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from expression_explorer.clustering import METHODS, sample_embedding
+from expression_explorer.catalog import PRIVATE_DATASET_KEYS
+from expression_explorer.catalog_ui import render_catalog
+from expression_explorer.fruitless import render_fruitless
 from expression_explorer.data import (
     DATASET_ORDER,
     expression_long,
@@ -44,7 +47,7 @@ from expression_explorer.ucsc import (
 APP_DIR = Path(__file__).resolve().parent
 EXPRESSION_DIR = APP_DIR.parent / "expression"
 UCSC_MANIFEST = EXPRESSION_DIR / "ucsc_mosquito_cell_atlas_genes.json.gz"
-DATA_SCHEMA_VERSION = "2026-08-04-all-pairs-deseq2-v2"
+DATA_SCHEMA_VERSION = "2026-09-15-published-papers-v3"
 
 FAMILIES = {
     "IR - Ionotropic receptors": "Ionotropic receptors (IR)",
@@ -309,10 +312,9 @@ def datasets_resource(schema_version: str):
     return load_datasets(EXPRESSION_DIR)
 
 
-# Datasets hidden until the viewer unlocks them from the footer. The password is
+# Datasets hidden until the viewer unlocks them from the catalog or menu. The password is
 # checked server-side against a SHA-256 digest, so private data is never sent to
 # the browser for a locked session.
-PRIVATE_DATASET_KEYS = frozenset({"crop", "yedlin"})
 _PRIVATE_PASSWORD_SHA256 = "a7e70ed2033498dc9e9852fb666b72bf7a6abcff8dd22d86f165b5c0989c88fa"
 
 
@@ -1076,12 +1078,18 @@ def default_grouping(dataset) -> tuple[str, str]:
         return "condition_label", "Condition"
     if dataset.key == "atlas":
         return "tissue_condition", "Tissue + condition"
+    if dataset.key == "morita":
+        return "condition_label", "Genotype"
+    if dataset.key == "jove":
+        return "condition_label", "Sex + mouthpart"
     return "sample", "Sample"
 
 
 def sample_groupings(dataset) -> list[tuple[str, str]]:
     """Return the biological sample metadata exposed for filtering and color."""
     configured = {
+        "morita": [("genotype", "Genotype")],
+        "jove": [("sex", "Sex"), ("tissue", "Mouthpart")],
         "elife": [
             ("reproductive_state", "Reproductive state / time"),
         ],
@@ -1648,10 +1656,6 @@ def render_home() -> None:
         This site brings together *Aedes aegypti* RNA-seq expression data
         across tissues, feeding conditions, and reproductive states.
 
-        <h2><a href="/Methods" target="_self">Methodology →</a></h2>
-
-        Pipeline, reference, and parameters used for the reprocessed datasets.
-
         Use the menu above to:
 
         - **Genes** — search gene symbols and historical identifiers, then compare expression across studies.
@@ -1659,17 +1663,12 @@ def render_home() -> None:
         - **Differential expression** — browse precomputed DESeq2 contrasts. Available only for our reprocessed datasets.
         - **Clusters** — inspect relationships between biological samples using PCA, UMAP, or t-SNE.
 
-        ## Datasets
-
-        | Dataset | What is displayed | Comparison |
-        |---|---|---|
-        | **Ovary — published** | Published TPM supplement from [Venkataraman et al.](https://www.biorxiv.org/content/10.1101/2022.03.01.482582) (`PRJNA796320`) | [Published vs reprocessed](/Ovary_paper_vs_reprocessed) |
-        | **Ovary — reprocessed** | Our STAR + Salmon gene TPM matrix and all 55 pairwise DESeq2 contrasts over the same 33 raw samples | [Published vs reprocessed](/Ovary_paper_vs_reprocessed) |
-        | **Neurotranscriptome — published** | Published `AaegL.RU` and legacy `AaegL3.3` matrices from [Matthews et al.](https://www.biorxiv.org/content/10.1101/026823) (`PRJNA236239`) | [Published vs reprocessed](/Atlas_paper_vs_reprocessed) |
-        | **Neurotranscriptome — reprocessed** | Our STAR + Salmon gene TPM matrix over the same raw reads and all 378 pairwise DESeq2 contrasts | [Published vs reprocessed](/Atlas_paper_vs_reprocessed) |
-        | **Midgut — reprocessed** | Our STAR + Salmon gene TPM matrix and all 28 pairwise DESeq2 contrasts | No published counterpart |
-        | **Fat body & Malpighian tubules — reprocessed (private)** | Our STAR + Salmon gene TPM matrix over the blood-meal time course and all 66 pairwise DESeq2 contrasts | No published counterpart |
-        | **Crop — reprocessed (private)** | Our STAR + Salmon gene TPM matrix from three non-blood-fed biological replicates | No published counterpart; one condition, so no differential contrasts |
+        """,
+    )
+    render_catalog(EXPRESSION_DIR, private_datasets_unlocked(), navigate_private_datasets)
+    st.markdown(
+        """
+        <h2><a href="/Methods" target="_self">Methodology →</a></h2>
 
         Every reprocessed dataset above went through the *identical* pipeline,
         reference, and parameters — see [Methods](/Methods). Published datasets keep
@@ -1689,13 +1688,6 @@ def render_home() -> None:
           present in the published matrix. Pearson r 0.930; 4.1% of gene-sample
           pairs disagree by more than 2 log₂.
 
-        Midgut, fat body / Malpighian tubules, and crop have no published
-        counterpart to compare against.
-
-        ## Other sources
-
-        - [Goldman et al.](https://www.biorxiv.org/content/10.1101/2025.02.25.639765) — embedded UCSC single-nucleus Mosquito Cell Atlas views on the Genes page. External visualization, not a locally reprocessed dataset.
-
         TPM is descriptive normalized abundance. Differential-expression
         statistics are displayed only from precomputed count-aware pipeline
         outputs, never recomputed from TPM in the app.
@@ -1712,6 +1704,10 @@ def render_home() -> None:
 
 def navigate_home() -> None:
     st.session_state["site_navigation"] = "Home"
+
+
+def navigate_private_datasets() -> None:
+    st.session_state["site_navigation"] = "Private datasets"
 
 
 def _try_unlock_private_datasets() -> None:
@@ -1788,7 +1784,16 @@ if mode in navigation_items and st.query_params.get("page") != mode:
 
 # The introduction and private-access controls do not need expression data.
 # Render navigation first and load matrices only when an explorer is opened.
-if mode not in ("Home", "Private datasets"):
+gene_view = "Gene TPM"
+if mode == "Genes":
+    gene_views = ["Gene TPM", "Fruitless exon counts"]
+    if "gene_expression_view" not in st.session_state:
+        st.session_state["gene_expression_view"] = (
+            "Fruitless exon counts" if st.query_params.get("view") == "fruitless" else "Gene TPM"
+        )
+    gene_view = st.segmented_control("Expression view", gene_views, key="gene_expression_view")
+
+if mode not in ("Home", "Private datasets") and gene_view != "Fruitless exon counts":
     datasets = datasets_resource(DATA_SCHEMA_VERSION)
     if not private_datasets_unlocked():
         datasets = {
@@ -1815,6 +1820,10 @@ elif mode == "Private datasets":
     render_private_datasets()
 
 elif mode == "Genes":
+    if gene_view == "Fruitless exon counts":
+        render_fruitless(EXPRESSION_DIR)
+        st.markdown('<div class="bzz-done"></div>', unsafe_allow_html=True)
+        st.stop()
     page_heading(
         "Gene explorer",
         "Search genes and historical identifiers, then compare all resolved genes across the selected experiments.",
@@ -1822,6 +1831,9 @@ elif mode == "Genes":
     default_selected_keys = [
         key for key in ("elife", "neuro_ru") if key in study_keys
     ] or study_keys[:1]
+    requested_study = st.query_params.get("study")
+    if requested_study in study_keys:
+        default_selected_keys = [requested_study]
     selected_keys_for_tokens = [
         key
         for key in st.session_state.get("gene_studies", default_selected_keys)
@@ -2279,7 +2291,7 @@ elif mode == "Differential expression":
             format_func=lambda key: (
                 datasets[key].label
                 if key in differential_contrasts
-                else f"{datasets[key].label} — NOT AVAILABLE"
+                else f"{datasets[key].label} (NOT AVAILABLE)"
             ),
             key="differential_study",
         )
@@ -2537,7 +2549,11 @@ else:
             cluster_method = st.selectbox("Method", METHODS, key="cluster_method")
 
         cluster_dataset = datasets[cluster_key]
-        if cluster_key.startswith("neuro_") or cluster_key == "atlas":
+        if cluster_key == "morita":
+            color_candidates = [("genotype", "Genotype")]
+        elif cluster_key == "jove":
+            color_candidates = [("condition_label", "Sex + mouthpart"), ("sex", "Sex"), ("tissue", "Mouthpart")]
+        elif cluster_key.startswith("neuro_") or cluster_key == "atlas":
             state_field = (
                 "reproductive_state" if cluster_key == "atlas" else "condition_label"
             )

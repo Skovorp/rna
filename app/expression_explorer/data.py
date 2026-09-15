@@ -13,6 +13,8 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
+from .catalog import DATASET_LABELS
+
 
 @dataclass(frozen=True)
 class ExpressionDataset:
@@ -48,6 +50,8 @@ DATASET_ORDER = (
     "neuro_ru",
     "atlas",
     "midgut",
+    "morita",
+    "jove",
     "yedlin",
     "crop",
     "neuro_legacy",
@@ -682,14 +686,14 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "ovary_star_salmon_gene_tpm.tsv.gz",
         "elife",
         "ovary",
-        "Ovary — reprocessed",
+        DATASET_LABELS["elife"],
         "Venkataraman et al. raw reads, our nf-core reprocessing",
     )
     midgut = star_salmon_dataset(
         "midgut_star_salmon_gene_tpm.tsv.gz",
         "midgut",
         "midgut",
-        "Midgut — reprocessed",
+        DATASET_LABELS["midgut"],
         "Nadav Shai, Vosshall lab midgut RNA-seq",
     )
     atlas_path = expression_dir / "atlas_star_salmon_gene_tpm.tsv.gz"
@@ -703,7 +707,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         atlas_path,
         "atlas",
         crosswalk,
-        label="Neurotranscriptome — reprocessed",
+        label=DATASET_LABELS["atlas"],
         paper="Matthews et al. raw reads, our nf-core reprocessing",
         annotation_version="AaegL5, VectorBase 58 + Jové et al. 2019",
         samples=atlas_samples,
@@ -713,21 +717,21 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "yedlin_star_salmon_gene_tpm.tsv.gz",
         "yedlin",
         "fat body / Malpighian tubules",
-        "Fat body & Malpighian tubules — reprocessed",
+        DATASET_LABELS["yedlin"],
         "Yedlin, Vosshall lab fat body / Malpighian tubule RNA-seq",
     )
     crop = star_salmon_dataset(
         "crop_star_salmon_gene_tpm.tsv.gz",
         "crop",
         "crop",
-        "Crop — reprocessed",
+        DATASET_LABELS["crop"],
         "Vosshall lab crop RNA-seq",
     )
 
     datasets = {
         "ovary_paper": ExpressionDataset(
             key="ovary_paper",
-            label="Ovary — published",
+            label=DATASET_LABELS["ovary_paper"],
             paper="Venkataraman et al., eLife 2023",
             annotation_version="Published TPM supplement",
             genes=paper_genes,
@@ -737,7 +741,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "elife": ovary,
         "neuro_ru": ExpressionDataset(
             key="neuro_ru",
-            label="Neurotranscriptome — published (AaegL.RU)",
+            label=DATASET_LABELS["neuro_ru"],
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL.RU (recommended)",
             genes=ru_genes,
@@ -746,7 +750,7 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         ),
         "neuro_legacy": ExpressionDataset(
             key="neuro_legacy",
-            label="Neurotranscriptome — published (legacy AaegL3.3)",
+            label=DATASET_LABELS["neuro_legacy"],
             paper="Matthews et al., BMC Genomics 2016",
             annotation_version="AaegL3.3 (compatibility)",
             genes=legacy_genes,
@@ -758,6 +762,39 @@ def _build_datasets(expression_dir: Path) -> dict[str, ExpressionDataset]:
         "yedlin": yedlin,
         "crop": crop,
     }
+
+    symbol_to_stable = {
+        canonical_symbol(symbol, stable).casefold(): stable
+        for stable, symbol in crosswalk.items() if symbol
+    }
+    for key, year, paper, annotation in (
+        ("morita", 2025, "Morita et al., Science Advances 2025", "Authors' AaegLVP_VB58-Jove19 GTF; Salmon transcript TPM summed by gene"),
+        ("jove", 2020, "Jové et al., Neuron 2020", "Authors' merged RefSeq AaegL5 / manual chemoreceptor annotation"),
+    ):
+        frame = pd.read_csv(expression_dir / f"{key}_{year}_gene_tpm.tsv.gz", sep="\t").fillna("")
+        identifiers = frame[["gene_id", "gene_name"]].copy()
+        if key == "morita":
+            stable_ids = identifiers["gene_id"]
+            symbols = identifiers["gene_name"].where(
+                identifiers["gene_name"].ne(""), stable_ids.map(crosswalk).fillna("")
+            )
+        else:
+            # Receptors use names such as Ir25a as GeneID, while their second
+            # column spells out "Ionotropic receptor 25a". Keep the symbol.
+            symbols = identifiers["gene_name"].where(
+                identifiers["gene_id"].str.fullmatch(r"gene\d+"), identifiers["gene_id"]
+            )
+            stable_ids = symbols.str.casefold().map(symbol_to_stable).fillna(symbols)
+        genes = _finalize_genes(identifiers, stable_ids, identifiers["gene_id"], symbols)
+        values = frame.drop(columns=["gene_id", "gene_name"]).apply(pd.to_numeric, errors="raise")
+        samples = pd.read_csv(expression_dir / f"{key}_{year}_samples.tsv", sep="\t").set_index("sample", drop=False)
+        if set(samples.index) != set(values.columns):
+            raise ValueError(f"Published {key} sample metadata does not match TPM columns")
+        values = values.loc[:, samples.index]
+        datasets[key] = ExpressionDataset(
+            key=key, label=DATASET_LABELS[key], paper=paper,
+            annotation_version=annotation, genes=genes, values=values, samples=samples,
+        )
 
     import_dir = expression_dir / "imports"
     if import_dir.exists():

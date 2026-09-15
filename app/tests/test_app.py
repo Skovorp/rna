@@ -184,13 +184,13 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "Use the menu above to:" in home_html
     assert "## Datasets" in home_html
     assert "## Comparisons" in home_html
-    assert "**Ovary — published**" in home_html
-    assert "**Ovary — reprocessed**" in home_html
-    assert "**Neurotranscriptome — published**" in home_html
-    assert "**Neurotranscriptome — reprocessed**" in home_html
-    assert "**Midgut — reprocessed**" in home_html
-    assert "**Fat body & Malpighian tubules — reprocessed (private)**" in home_html
-    assert "**Crop — reprocessed (private)**" in home_html
+    assert "**Ovary (published)**" in home_html
+    assert "**Ovary (reprocessed)**" in home_html
+    assert "**Neurotranscriptome (published)**" in home_html
+    assert "**Neurotranscriptome (reprocessed)**" in home_html
+    assert "**Midgut (reprocessed)**" in home_html
+    assert "Fat body & Malpighian tubules" not in home_html
+    assert "Crop (reprocessed" not in home_html
     assert "eLife" not in home_html
     assert "BMC Genomics" not in home_html
     assert "Cell 2025" not in home_html
@@ -302,8 +302,8 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "Group median TPM" not in captions
 
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
-    assert len(studies.options) == 5
-    assert "Midgut — reprocessed" in studies.options
+    assert len(studies.options) == 7
+    assert "Midgut (reprocessed)" in studies.options
     assert all("legacy" not in option.casefold() for option in studies.options)
     assert studies.value == ["elife", "neuro_ru"]
 
@@ -390,7 +390,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     )
     table_count = len(app.dataframe) + len(app.table)
     # UMAP and expression controls stay focused despite embedding two atlas views.
-    assert widget_count + table_count <= 27
+    assert widget_count + table_count <= 28
 
     logo = next(button for button in app.button if button.label == "🧬 Aedes RNA Atlas")
     navigation = _widgets_with_options(app, NAVIGATION_ITEMS)
@@ -421,8 +421,8 @@ def test_private_dataset_control_is_a_top_level_page(monkeypatch):
 
     _select_page(app, "Genes")
     studies = next(widget for widget in app.multiselect if widget.label == "Studies")
-    assert "Fat body & Malpighian tubules — reprocessed" in studies.options
-    assert "Crop — reprocessed" in studies.options
+    assert "Fat body & Malpighian tubules (reprocessed, private)" in studies.options
+    assert "Crop (reprocessed, private)" in studies.options
     assert not any(widget.label == "Password" for widget in app.text_input)
 
 
@@ -697,7 +697,7 @@ def test_gene_graph_filters_and_group_colors_do_not_change_details(monkeypatch):
         if "Samples ≥1 TPM" in frame.value.columns
     )
     ovary_summary = summary[
-        summary["Study"] == "Ovary — reprocessed"
+        summary["Study"] == "Ovary (reprocessed)"
     ]
     assert all(value.endswith("/33") for value in ovary_summary["Samples ≥1 TPM"])
 
@@ -818,7 +818,7 @@ def test_gene_results_show_aliases_and_missing_studies(monkeypatch):
     warnings = " ".join(element.value for element in app.warning)
     assert "Gene not found:" in warnings
     assert "ir7a" in warnings
-    assert "Neurotranscriptome — published (AaegL.RU)" in warnings
+    assert "Neurotranscriptome (published, AaegL.RU)" in warnings
     matched_genes = _matched_gene_editor(app).value
     assert len(_mean_tpm_columns(matched_genes)) == 2
     assert any(

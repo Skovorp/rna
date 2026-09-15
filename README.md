@@ -9,25 +9,31 @@ Small Streamlit prototype for exploring *Aedes aegypti* RNA-seq TPM matrices.
 - Compare expression across tissues, conditions, and ovary reproductive states, for both published (paper) and reprocessed matrices.
 - Browse every pairwise DESeq2 contrast for our reprocessed datasets: 55 ovary, 378 tissue-atlas, 28 midgut, and 66 private fat-body / Malpighian-tubule contrasts. Separate target and reference selectors expose either fold-change direction without recomputing the underlying DESeq2 test. Paper datasets and the single-condition crop dataset are marked `NOT AVAILABLE` rather than being tested from TPM values in the app.
 - Read the **Methods** page for the exact shared pipeline and the **Ovary paper vs reprocessed** and **Tissue atlas paper vs reprocessed** pages for direct comparisons with the published matrices.
+- Use the Home dataset catalog to open raw-read sources and download complete reprocessed TPM tables. Private studies appear only after unlocking them from the catalog's last row.
+- Explore the published Morita (2025) leg and Jové (2020) mouthpart TPM tables in Genes, Families, and Clusters. Genes also has a separate **Fruitless exon counts** view for Basrur (2020), preserving the authors' normalized-count units and missing replicates.
 - Explore IR, OR, GR, and OBP gene families with replicate-aware plots and heatmaps, using one sortable table with a mean-expression column per study to control visibility for predefined and custom families.
 - Map biological samples with PCA, UMAP, or t-SNE using all expression genes by default or a smaller most-variable subset.
 - Inspect available paper annotations, orthologs, aliases, and raw per-sample TPM values.
 
 ## Datasets
 
-User-facing names follow one rule: **biological scope — provenance — optional
-version**. “Published” means values released by the paper authors; “reprocessed”
+User-facing names follow one rule: **biological scope (provenance, optional
+version)**. “Published” means values released by the paper authors; “reprocessed”
 means raw reads run through our shared pipeline.
 
 | Dataset | Source | Differential expression |
 | --- | --- | --- |
-| Ovary — published | Venkataraman et al. published TPM | — |
-| Ovary — reprocessed | Our STAR + Salmon run over the same 33 raw samples | 55 pairwise contrasts |
-| Neurotranscriptome — published (AaegL.RU + legacy AaegL3.3) | Matthews et al. published TPM | — |
-| Neurotranscriptome — reprocessed | Our STAR + Salmon run over the same raw reads | 378 pairwise contrasts |
-| Midgut — reprocessed | Vosshall lab midgut RNA-seq | 28 pairwise contrasts |
-| Fat body & Malpighian tubules — reprocessed (private) | Vosshall lab blood-meal time course | 66 pairwise contrasts |
-| Crop — reprocessed (private) | Vosshall lab crop RNA-seq | — (single condition) |
+| Ovary (published) | Venkataraman et al. published TPM | — |
+| Ovary (reprocessed) | Our STAR + Salmon run over the same 33 raw samples | 55 pairwise contrasts |
+| Neurotranscriptome (published, AaegL.RU + legacy AaegL3.3) | Matthews et al. published TPM | — |
+| Neurotranscriptome (reprocessed) | Our STAR + Salmon run over the same raw reads | 378 pairwise contrasts |
+| Midgut (reprocessed) | Vosshall lab midgut RNA-seq | 28 pairwise contrasts |
+| Legs, wild type & Orco mutants (published) | Morita et al. Salmon TPM, summed by gene | — |
+| Mouthparts (published) | Jové et al. published TPM | — |
+| Fruitless exons (published) | Basrur et al. normalized exon counts, in a separate Genes view | — |
+| Mosquito Cell Atlas (published) | Goldman et al. embedded UCSC single-nucleus views | — |
+| Fat body & Malpighian tubules (reprocessed, private) | Vosshall lab blood-meal time course | 66 pairwise contrasts |
+| Crop (reprocessed, private) | Vosshall lab crop RNA-seq | — (single condition) |
 
 The neurotranscriptome comparison uses the 122 samples present in the
 published matrix.

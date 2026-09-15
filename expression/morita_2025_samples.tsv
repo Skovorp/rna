@@ -1,0 +1,11 @@
+sample	sex	tissue	genotype	condition	condition_label	tissue_condition	replicate	reproductive_state
+WT1	female	forelegs and midlegs	Wild type	WT	Wild type	Legs / Wild type	1	Not specified
+WT2	female	forelegs and midlegs	Wild type	WT	Wild type	Legs / Wild type	2	Not specified
+WT3	female	forelegs and midlegs	Wild type	WT	Wild type	Legs / Wild type	3	Not specified
+WT4	female	forelegs and midlegs	Wild type	WT	Wild type	Legs / Wild type	4	Not specified
+WT5	female	forelegs and midlegs	Wild type	WT	Wild type	Legs / Wild type	5	Not specified
+KO1	female	forelegs and midlegs	Orco mutant (5/16)	KO	Orco mutant (5/16)	Legs / Orco mutant (5/16)	1	Not specified
+KO2	female	forelegs and midlegs	Orco mutant (5/16)	KO	Orco mutant (5/16)	Legs / Orco mutant (5/16)	2	Not specified
+KO3	female	forelegs and midlegs	Orco mutant (5/16)	KO	Orco mutant (5/16)	Legs / Orco mutant (5/16)	3	Not specified
+KO4	female	forelegs and midlegs	Orco mutant (5/16)	KO	Orco mutant (5/16)	Legs / Orco mutant (5/16)	4	Not specified
+KO5	female	forelegs and midlegs	Orco mutant (5/16)	KO	Orco mutant (5/16)	Legs / Orco mutant (5/16)	5	Not specified

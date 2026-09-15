@@ -1,13 +1,22 @@
 # Data sources
 
-The repository includes processed TPM expression matrices and metadata from two open-access studies:
+The repository includes published TPM matrices, reprocessed matrices, and source-linked expression tables:
 
 1. Venkataraman K et al. (2023). *Two novel, tightly linked, and rapidly evolving genes underlie Aedes aegypti mosquito reproductive resilience during drought.* eLife 12:e80489. DOI: [10.7554/eLife.80489](https://doi.org/10.7554/eLife.80489). GEO `GSE193470`; BioProject `PRJNA796320`; Zenodo `7758401`. Article and Zenodo materials are CC BY 4.0.
 2. Matthews BJ et al. (2016). *The neurotranscriptome of the Aedes aegypti mosquito.* BMC Genomics 17:32. DOI: [10.1186/s12864-015-2239-0](https://doi.org/10.1186/s12864-015-2239-0). BioProject `PRJNA236239`. Article supplementary materials are CC BY 4.0.
+3. Morita T et al. (2025). *Cross-modal sensory compensation increases mosquito attraction to humans.* Science Advances. DOI: [10.1126/sciadv.adn5758](https://doi.org/10.1126/sciadv.adn5758). Raw reads: [PRJNA1020561](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1020561). Authors' [Salmon quantification tables and GTF](https://github.com/VosshallLab/Morita_Vosshall2023/tree/main/figure8): 18,943 gene rows × 10 female leg samples, five wild-type and five Orco 5/16 mutants. Gene TPM is the sum of the authors' transcript TPM using their GTF transcript-to-gene map, matching their `tximport` abundance calculation. No reads were reprocessed and no count normalization or differential test was rerun.
+4. Jové V et al. (2020). *Sensory Discrimination of Blood and Floral Nectar by Aedes aegypti Mosquitoes.* Neuron. DOI: [10.1016/j.neuron.2020.09.019](https://doi.org/10.1016/j.neuron.2020.09.019). Raw reads: [PRJNA605870](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA605870). The authors' [published TPM CSV](https://github.com/VosshallLab/Jove_Vosshall_2020/tree/master/RNAseq_merged_annotation) has 14,676 rows × 12 samples (female stylet, female labium, male stylet; four replicates each). All values are preserved from the CSV. Gene names come from Data File 1; its numeric values agree with the CSV within the workbook's <5e-7 TPM rounding, including exact agreement on zeros. Paper GeneID and LOC identifiers remain searchable; named chemoreceptors use their published symbols.
+5. Basrur NS et al. (2020). *Fruitless mutant male mosquitoes gain attraction to human odor.* eLife 9:e63982. DOI: [10.7554/eLife.63982](https://doi.org/10.7554/eLife.63982). The [Figure 1 workbook](https://cdn.elifesciences.org/articles/63982/elife-63982-fig1-data1-v3.xlsx) provides **normalized exon counts**, not genome-wide gene TPM: 273 observations from Figure 1G (39 brain exons, four female / three male replicates) and 144 from Figure 1H (m, f, c1 across tissues). These are available in the Genes page's **Fruitless exon counts** view, with missing replicates retained as absent. The Aedes measurements reuse [PRJNA236239](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA236239); the paper's new [PRJNA612100](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA612100) raw brain reads are from other mosquito species and are not mixed into the Aedes gene-TPM matrices.
+
+Source URLs pinned to author-repository commits, SHA-256 checksums, and extraction validation are recorded in `expression/published_2020_2025_provenance.json`. Rebuild the three imports with `scripts/import_published_expression.py --sources <downloaded-source-directory> --output expression` (one-time build dependencies: pandas, numpy, openpyxl). Runtime uses only the compact TSV files.
 
 It also includes the Nadav Shai / Vosshall lab midgut RNA-seq dataset: 24 paired-end biological libraries spanning non-blood-fed male midgut and female midgut at non-blood-fed, 3, 6, 12, 24, 48, and 72 hours post-blood-meal. The bundled TPM matrix was generated with `nf-core/rnaseq` 3.26.0 and Salmon against the AaegL5 VectorBase 58 + Jové et al. 2019 annotation.
 
 The Genes page also embeds the [UCSC Aedes aegypti Mosquito Cell Atlas](https://cells.ucsc.edu/?ds=mosquito+all), from Goldman OV et al. (2025), *A single-nucleus transcriptomic atlas of the adult Aedes aegypti mosquito*, Cell 188:7267–7290.e26, DOI [10.1016/j.cell.2025.10.008](https://doi.org/10.1016/j.cell.2025.10.008). This is a deep-linked external visualization, not a locally reprocessed expression dataset. Its values are normalized single-nucleus expression rather than TPM.
+
+Goldman raw reads are at [PRJNA1223381](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1223381), with reused antenna / palp reads at [PRJNA794050](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA794050). The Home catalog links both accessions. Lab-provided midgut and private reads have no verified public raw-data link in this bundle.
+
+Home download buttons serve the exact bundled reprocessed `.tsv.gz` TPM files. Private catalog rows and their download controls appear only after the session is unlocked; the server checks the catalog's private flag before resolving a download file. Home does not parse any expression matrix.
 
 The files under `expression/` contain the validated gene-level Salmon matrices for every reprocessed dataset, faithful tabular extracts of the published matrices, and all precomputed pairwise DESeq2 results: 55 ovary contrasts, 378 tissue-atlas contrasts, 28 midgut contrasts, and 66 private fat-body / Malpighian-tubule contrasts. TPM values are descriptive normalized abundance, not raw read counts; the app displays differential-expression statistics only from the precomputed count-aware pipeline outputs.
 
@@ -22,14 +31,18 @@ closely they agree.
 
 | Dataset | Displayed values | Differential expression |
 | --- | --- | --- |
-| Ovary — published | Venkataraman et al. published TPM supplement | Not available |
-| Ovary — reprocessed | Our STAR + Salmon gene TPM from all 33 `PRJNA796320` raw samples | All 55 pairwise DESeq2 contrasts |
-| Neurotranscriptome — published (AaegL.RU) | Matthews et al. published `AaegL.RU` TPM matrix | Not available |
-| Neurotranscriptome — published (legacy AaegL3.3) | Matthews et al. published legacy matrix, retained for identifier compatibility | Not available |
-| Neurotranscriptome — reprocessed | Our STAR + Salmon gene TPM from 125 `PRJNA236239` raw libraries | All 378 pairwise DESeq2 contrasts |
-| Midgut — reprocessed | Our STAR + Salmon gene TPM from the Vosshall lab midgut raw reads | All 28 pairwise DESeq2 contrasts |
-| Fat body & Malpighian tubules — reprocessed (private) | Our STAR + Salmon gene TPM from the Vosshall lab raw reads | All 66 pairwise DESeq2 contrasts |
-| Crop — reprocessed (private) | Our STAR + Salmon gene TPM from the Vosshall lab crop raw reads | Not applicable — a single condition, so no contrasts exist |
+| Ovary (published) | Venkataraman et al. published TPM supplement | Not available |
+| Ovary (reprocessed) | Our STAR + Salmon gene TPM from all 33 `PRJNA796320` raw samples | All 55 pairwise DESeq2 contrasts |
+| Neurotranscriptome (published, AaegL.RU) | Matthews et al. published `AaegL.RU` TPM matrix | Not available |
+| Neurotranscriptome (published, legacy AaegL3.3) | Matthews et al. published legacy matrix, retained for identifier compatibility | Not available |
+| Neurotranscriptome (reprocessed) | Our STAR + Salmon gene TPM from 125 `PRJNA236239` raw libraries | All 378 pairwise DESeq2 contrasts |
+| Midgut (reprocessed) | Our STAR + Salmon gene TPM from the Vosshall lab midgut raw reads | All 28 pairwise DESeq2 contrasts |
+| Legs, wild type & Orco mutants (published) | Morita et al. author Salmon TPM summed by gene, 10 samples | Not available |
+| Mouthparts (published) | Jové et al. published gene TPM, 12 samples | Not available |
+| Fruitless exons (published) | Basrur et al. normalized exon counts in a separate Genes view | Not available |
+| Mosquito Cell Atlas (published) | Goldman et al. normalized single-nucleus expression, embedded from UCSC | Not available |
+| Fat body & Malpighian tubules (reprocessed, private) | Our STAR + Salmon gene TPM from the Vosshall lab raw reads | All 66 pairwise DESeq2 contrasts |
+| Crop (reprocessed, private) | Our STAR + Salmon gene TPM from the Vosshall lab crop raw reads | Not applicable — a single condition, so no contrasts exist |
 
 The paper-vs-reprocessed tissue-atlas comparison uses all 122 samples present in
 the published matrix. The reprocessing recovered three additional libraries

@@ -1,0 +1,13 @@
+sample	sex	tissue	condition	condition_label	tissue_condition	replicate	reproductive_state
+Female1	female	stylet	Female	Female stylet	Female stylet	1	Not specified
+Female2	female	stylet	Female	Female stylet	Female stylet	2	Not specified
+Female3	female	stylet	Female	Female stylet	Female stylet	3	Not specified
+Female4	female	stylet	Female	Female stylet	Female stylet	4	Not specified
+Labium1	female	labium	Labium	Female labium	Female labium	1	Not specified
+Labium2	female	labium	Labium	Female labium	Female labium	2	Not specified
+Labium3	female	labium	Labium	Female labium	Female labium	3	Not specified
+Labium4	female	labium	Labium	Female labium	Female labium	4	Not specified
+Male1	male	stylet	Male	Male stylet	Male stylet	1	Not specified
+Male2	male	stylet	Male	Male stylet	Male stylet	2	Not specified
+Male3	male	stylet	Male	Male stylet	Male stylet	3	Not specified
+Male4	male	stylet	Male	Male stylet	Male stylet	4	Not specified

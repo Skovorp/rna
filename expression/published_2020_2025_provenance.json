@@ -1,0 +1,63 @@
+{
+  "sources": {
+    "morita_orco_vs_wt_quants.zip": {
+      "url": "https://raw.githubusercontent.com/VosshallLab/Morita_Vosshall2023/a8a1fdcc11491967fae9cbb593e18aebd930cb63/figure8/orco_vs_wt_quants.zip",
+      "sha256": "a3ddc5935626cfb74b1696daa7cb2989f58c7f4ffda6dffd7ab7e302dd4d063a"
+    },
+    "morita_annotation.gtf.zip": {
+      "url": "https://raw.githubusercontent.com/VosshallLab/Morita_Vosshall2023/a8a1fdcc11491967fae9cbb593e18aebd930cb63/figure8/AaegLVP_VB58-Jove19.gtf.zip",
+      "sha256": "606dec6be38d169a8e56faeef68c119e423f15976851580f83327ad0d0e5952c"
+    },
+    "morita_chemoreceptors.tsv": {
+      "url": "https://raw.githubusercontent.com/VosshallLab/Morita_Vosshall2023/a8a1fdcc11491967fae9cbb593e18aebd930cb63/figure8/chemoreceptor_gene_list.tsv",
+      "sha256": "6504dddf9c9de05a25881578c612fcdeb8a7d58cc370d3b6e09d8216e919e0e9"
+    },
+    "jove_2020_tpm.csv": {
+      "url": "https://raw.githubusercontent.com/VosshallLab/Jove_Vosshall_2020/78d9b066340dd2f25e8f8b40d4fec7a8f99652f3/RNAseq_merged_annotation/merge_19_2_3_TPM_final.csv",
+      "sha256": "805fb891e74c4b0dd0f893ee427a5d9696e9fa77c3f4c1a08193617ef3705367"
+    },
+    "jove_data_file_1.xlsx": {
+      "url": "https://raw.githubusercontent.com/VosshallLab/Jove_Vosshall_2020/78d9b066340dd2f25e8f8b40d4fec7a8f99652f3/Data_File_1_Neuron.xlsx",
+      "sha256": "b0cb5ad01ee41accd4eea0af8f00ae056162b636be40c5ff3142838ecd71fff0"
+    },
+    "basrur-fig1.xlsx": {
+      "url": "https://cdn.elifesciences.org/articles/63982/elife-63982-fig1-data1-v3.xlsx",
+      "sha256": "7a931083694c36e460ef0bdc98705767f50cd1c9173a1e4b041d58eba107eb5a"
+    }
+  },
+  "morita": {
+    "genes": 18943,
+    "samples": 10,
+    "unit": "TPM",
+    "aggregation": "Sum author Salmon transcript TPM by the authors' GTF gene_id (tximport abundance).",
+    "transcript_tpm_sums": {
+      "WT1": 999999.999949,
+      "WT2": 999999.999925,
+      "WT3": 1000000.000048,
+      "WT4": 1000000.000015,
+      "WT5": 1000000.0000199999,
+      "KO1": 1000000.000051,
+      "KO2": 999999.999971,
+      "KO3": 1000000.000032,
+      "KO4": 1000000.000051,
+      "KO5": 1000000.0000110001
+    }
+  },
+  "jove": {
+    "genes": 14676,
+    "samples": 12,
+    "unit": "TPM",
+    "validation": "All CSV values match Data File 1 within its 5e-7 TPM rounding tolerance; zero patterns match exactly.",
+    "max_workbook_rounding_difference": 4.9856998884934e-07
+  },
+  "basrur": {
+    "observations": 417,
+    "unit": "Normalized exon counts",
+    "panels": {
+      "Figure 1G": 273,
+      "Figure 1H": 144
+    },
+    "scope": "Aedes aegypti fruitless exons; reuses Matthews 2016 reads (PRJNA236239).",
+    "other_species_raw_accession": "PRJNA612100"
+  }
+}
