@@ -23,7 +23,7 @@ NEURO_RAW = (("PRJNA236239", "https://www.ncbi.nlm.nih.gov/bioproject/PRJNA23623
 CATALOG = (
     CatalogEntry(
         "ovary_paper", "Ovary (published)",
-        "Published TPM from [Venkataraman et al. (2023)](https://www.biorxiv.org/content/10.1101/2022.03.01.482582).",
+        "Published TPM from [Venkataraman et al. (2023)](https://doi.org/10.7554/eLife.80489).",
         OVARY_RAW, "/Ovary_paper_vs_reprocessed",
     ),
     CatalogEntry(
@@ -34,7 +34,7 @@ CATALOG = (
     ),
     CatalogEntry(
         "neuro_ru", "Neurotranscriptome (published)",
-        "Published AaegL.RU and legacy AaegL3.3 TPM from [Matthews et al. (2016)](https://www.biorxiv.org/content/10.1101/026823).",
+        "Published AaegL.RU and legacy AaegL3.3 TPM from [Matthews et al. (2016)](https://doi.org/10.1186/s12864-015-2239-0).",
         NEURO_RAW, "/Atlas_paper_vs_reprocessed",
     ),
     CatalogEntry(

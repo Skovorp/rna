@@ -598,10 +598,16 @@ def matched_gene_entries(
                     "families": {},
                     "aliases": {},
                     "study_keys": [],
+                    "vectorbase_description": "",
+                    "ncbi_description": "",
                 },
             )
             family = GENE_FAMILY_SHORT_LABELS.get(str(gene.family), "Other")
             entry["families"].setdefault(family.casefold(), family)
+            for field in ("vectorbase_description", "ncbi_description"):
+                if not entry[field]:
+                    value = getattr(gene, field, "")
+                    entry[field] = "" if pd.isna(value) else str(value).strip()
             for alias in gene.aliases:
                 alias_text = str(alias).strip()
                 if alias_text and alias_text.casefold() != entry_key:
@@ -837,7 +843,7 @@ def render_matched_gene_table(
             st.session_state[revision_key] += 1
 
     mean_columns = {
-        study_key: f"Mean TPM: {datasets[study_key].label}"
+        study_key: f"{datasets[study_key].label} mean TPM"
         for study_key in mean_tpm_by_study
     }
     rows: list[dict[str, object]] = []
@@ -851,6 +857,12 @@ def render_matched_gene_table(
             "Include": bool(enabled_by_gene[display_key]),
             "Gene": display_name,
             "Family": "/".join(families),
+            "VectorBase description": (
+                str(entry.get("vectorbase_description") or "") or "No description supplied in Table S1.4."
+            ),
+            "NCBI description": (
+                str(entry.get("ncbi_description") or "") or "No description supplied in Table S1.4."
+            ),
             "Alternative names": (
                 ", ".join(aliases) if aliases else "No alternative names found"
             ),
@@ -888,6 +900,8 @@ def render_matched_gene_table(
         disabled=[
             "Gene",
             "Family",
+            "VectorBase description",
+            "NCBI description",
             *mean_columns.values(),
             "Alternative names",
             "Study coverage",
@@ -900,11 +914,21 @@ def render_matched_gene_table(
             ),
             "Gene": st.column_config.TextColumn(width="small"),
             "Family": st.column_config.TextColumn(width="small"),
+            "VectorBase description": st.column_config.TextColumn(
+                help="Goldman Table S1.4 VectorBase description.",
+                width="medium",
+            ),
+            "NCBI description": st.column_config.TextColumn(
+                help="Goldman Table S1.4 NCBI description.",
+                width="medium",
+            ),
             **{
+                # The grid renders headers on a canvas and never wraps them, so
+                # size each column to its own label instead of a fixed "small".
                 column_name: st.column_config.NumberColumn(
                     format="%.2f",
                     help=f"Mean TPM across every biological sample in {datasets[study_key].label}.",
-                    width="small",
+                    width=min(max(96, 7 * len(column_name) + 32), 320),
                 )
                 for study_key, column_name in mean_columns.items()
             },
@@ -2074,24 +2098,6 @@ elif mode == "Genes":
                     "Maximum TPM": st.column_config.NumberColumn(format="%.2f"),
                 },
             )
-
-            description_columns = ["Gene", "VectorBase ID", "VectorBase symbol",
-                                   "VectorBase description", "NCBI symbol", "NCBI description",
-                                   "Mapping status", "Mapping sources", "Ambiguous aliases"]
-            descriptions = summary_table[description_columns].drop_duplicates()
-            st.markdown("### Gene descriptions")
-            for _, gene in descriptions.iterrows():
-                with st.expander(str(gene["Gene"]), expanded=len(descriptions) <= 3):
-                    st.markdown("**VectorBase**")
-                    st.write(gene["VectorBase description"] or "No description supplied in Table S1.4.")
-                    st.caption(" · ".join(str(gene[column]) for column in ("VectorBase ID", "VectorBase symbol") if gene[column]))
-                    st.markdown("**NCBI**")
-                    st.write(gene["NCBI description"] or "No description supplied in Table S1.4.")
-                    if gene["NCBI symbol"]:
-                        st.caption(str(gene["NCBI symbol"]))
-                    if gene["Ambiguous aliases"]:
-                        st.caption(f"Shared or conflicting published aliases: {gene['Ambiguous aliases']}")
-                    st.caption("Descriptions: Goldman Table S1.4. Full identifier links and paper evidence are downloadable from Methods.")
 
             render_ucsc_cell_atlas(atlas_entries, enabled_gene_keys)
 

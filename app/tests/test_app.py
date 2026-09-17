@@ -106,7 +106,7 @@ def _matched_gene_editor(app):
         for element in app.dataframe
         if MATCHED_GENE_COLUMNS <= set(element.value.columns)
         and any(
-            str(column).startswith("Mean TPM: ")
+            str(column).endswith(" mean TPM")
             for column in element.value.columns
         )
     ]
@@ -116,7 +116,7 @@ def _matched_gene_editor(app):
 
 def _mean_tpm_columns(frame):
     return [
-        column for column in frame.columns if str(column).startswith("Mean TPM: ")
+        column for column in frame.columns if str(column).endswith(" mean TPM")
     ]
 
 
@@ -191,11 +191,12 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert "**Midgut (reprocessed)**" in home_html
     assert "Fat body & Malpighian tubules" not in home_html
     assert "Crop (reprocessed" not in home_html
-    assert "eLife" not in home_html
-    assert "BMC Genomics" not in home_html
     assert "Cell 2025" not in home_html
-    assert "10.1101/2022.03.01.482582" in home_html
-    assert "10.1101/026823" in home_html
+    # Paper links point at the final publications, not the bioRxiv preprints.
+    assert "10.7554/eLife.80489" in home_html
+    assert "10.1186/s12864-015-2239-0" in home_html
+    assert "biorxiv.org/content/10.1101/2022.03.01.482582" not in home_html
+    assert "biorxiv.org/content/10.1101/026823" not in home_html
     assert "Mosquito Cell Atlas (published)" not in home_html
     assert "10.1101/2025.02.25.639765" not in home_html
     assert "identical* pipeline" in home_html
@@ -273,7 +274,7 @@ def test_default_app_renders_without_exceptions(monkeypatch):
     assert len(mean_tpm_columns) == 2
     assert matched_genes[mean_tpm_columns[0]].dropna().is_monotonic_decreasing
     for mean_tpm_column in mean_tpm_columns:
-        study_label = mean_tpm_column.removeprefix("Mean TPM: ")
+        study_label = mean_tpm_column.removesuffix(" mean TPM")
         study_values = raw_tables[0][raw_tables[0]["Study"] == study_label]
         raw_mean_tpm = study_values.groupby("Gene")["TPM"].mean()
         for _, matched_gene in matched_genes.iterrows():

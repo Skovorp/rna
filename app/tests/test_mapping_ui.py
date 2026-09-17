@@ -55,9 +55,14 @@ def test_gene_details_show_both_original_descriptions():
     query = next(widget for widget in app.text_input if widget.label == "Genes or identifiers")
     query.set_value("Ppk317").run()
     assert not app.exception, [item.message for item in app.exception]
-    descriptions = next(expander for expander in app.expander if expander.label == "ppk317")
-    text = " ".join(item.value for item in descriptions.markdown)
-    assert "VectorBase" in text and "pickpocket 317" in text
-    assert "NCBI" in text and "pickpocket protein" in text
-    captions = " ".join(item.value for item in descriptions.caption)
-    assert "AAEL000873" in captions and "LOC5567199" in captions
+    # Descriptions live in the matched-genes table itself, not in a section below it.
+    assert not any(expander.label == "ppk317" for expander in app.expander)
+    matched = next(
+        element.value
+        for element in app.dataframe
+        if {"Include", "Gene", "VectorBase description", "NCBI description"} <= set(element.value.columns)
+    )
+    row = matched[matched["Gene"].str.casefold() == "ppk317"].iloc[0]
+    assert "pickpocket 317" in row["VectorBase description"]
+    assert row["NCBI description"] == "pickpocket protein"
+    assert "AAEL000873" in row["Alternative names"] and "LOC5567199" in row["Alternative names"]
